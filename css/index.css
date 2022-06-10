@@ -2,23 +2,23 @@
     padding: 0;
     margin: 0;
 }
- 
+
 body {
     background-color: ghostwhite;
     user-select: none;
 }
- 
+
 ul {
     list-style: none;
 }
- 
+
 header {
     position: relative;
     width: 100%;
     height: 50px;
     background-color: brown;
 }
- 
+
 .title {
     display: inline-block;
     font-size: 30px;
@@ -28,7 +28,7 @@ header {
     margin-left: 22%;
     cursor: pointer;
 }
- 
+
 .search {
     position: absolute;
     transform: translateX(88%);
@@ -36,7 +36,7 @@ header {
     width: 30%;
     height: 100%;
 }
- 
+
 .search input {
     display: inline-block;
     width: 90%;
@@ -47,7 +47,7 @@ header {
     padding-left: 8px;
     border: none transparent;
 }
- 
+
 .dolist,
 .donelist {
     position: relative;
@@ -55,7 +55,7 @@ header {
     font-weight: 600;
     margin: 10px 1px;
 }
- 
+
 .donumber,
 .donenumber {
     position: absolute;
@@ -68,7 +68,7 @@ header {
     font-size: 16px;
     text-align: center;
 }
- 
+
 .dothings,
 .donethigs,
 .dothings li,
@@ -76,7 +76,7 @@ header {
     position: relative;
     margin-top: 8px;
 }
- 
+
 .dothings li,
 .donethings li {
     width: 99%;
@@ -90,23 +90,23 @@ header {
     font-weight: 200;
     background-color: rgb(233, 242, 250);
 }
- 
+
 .dothings li p,
 .donethings li p {
     position: relative;
 }
- 
+
 .dothings li p input,
 .donethings li p input {
     position: absolute;
     top: 6px;
     outline-color: green;
 }
- 
+
 .donethings li {
     opacity: .6;
 }
- 
+
 .front {
     display: inline-block;
     position: absolute;
@@ -115,7 +115,7 @@ header {
     width: 5px;
     background-color: orange;
 }
- 
+
 .rightbox {
     position: absolute;
     top: 1px;
@@ -123,7 +123,7 @@ header {
     width: 20px;
     height: 20px;
 }
- 
+
 .close {
     position: absolute;
     width: 20px;
@@ -135,7 +135,7 @@ header {
     border: 2px solid gray;
     cursor: pointer;
 }
- 
+
 .close::before {
     content: "";
     background-color: grey;
@@ -146,7 +146,7 @@ header {
     height: 13px;
     border-radius: 7px;
 }
- 
+
 footer {
     display: block;
     width: 300px;
