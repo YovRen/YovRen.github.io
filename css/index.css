@@ -45,17 +45,15 @@ header {
     margin-top: 7px;
     outline-style: none;
     padding-left: 8px;
-    border: none;
-    border-color: transparent;
+    border: none transparent;
 }
  
 .dolist,
 .donelist {
     position: relative;
-    margin: 25px 35%;
-    font-size: 25px;
+    font-size: 20px;
     font-weight: 600;
-    margin-bottom: 30px;
+    margin: 10px 1px;
 }
  
 .donumber,
@@ -69,7 +67,6 @@ header {
     background-color: lightgrey;
     font-size: 16px;
     text-align: center;
-    cursor: pointer;
 }
  
 .dothings,
@@ -83,12 +80,12 @@ header {
 .dothings li,
 .donethings li {
     width: 99%;
-    height: 32px;
+    height: 30px;
     border-radius: 6px;
     box-sizing: border-box;
     overflow: hidden;
     padding-left: 40px;
-    line-height: 32px;
+    line-height: 30px;
     font-size: 15px;
     font-weight: 200;
     background-color: rgb(233, 242, 250);
@@ -121,7 +118,7 @@ header {
  
 .rightbox {
     position: absolute;
-    top: 6px;
+    top: 1px;
     left: 10px;
     width: 20px;
     height: 20px;
