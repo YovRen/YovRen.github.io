@@ -1,70 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>todolist 每日待办清单</title>
-    <link rel="stylesheet" href="css/index.css">
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>今晚，整片星空将为你一人闪烁</title>
     <style>
-        ul.nav {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
+        #videofilm {
+            height: 100%;
+            width: auto;
+            position: fixed;
+            z-index: -1;
         }
 
-        li.nav {
-            background-color: brown;
-            float: left;
-            width: 50%;
-            text-align: center;
-            border: 1px solid #f4f4f4;
-            border-radius: 5px;
+        h1 {
+            font-size: 16px;
+            color: #B1BCE6;
+            font-family: '楷体';
         }
 
-        li a:hover.nav {
-            background-color: #111;
-        }
     </style>
-
-
+    <link rel="stylesheet" href="css/skystar.css">
 </head>
 
 
 <body>
-
-<header>
-    <label for="sear">
-        <div class="title">todolist</div>
-    </label>
-    <div class="search"><input type="text" placeholder="制定todo" id="sear"></div>
-</header>
-
-<div class="col-xs-12">
-    <div class="dolist">
-        <span>正在进行</span><span class="donumber">0</span>
-        <ul class="dothings"></ul>
-    </div>
-    <div class="donelist">
-        <span>已经完成</span><span class="donenumber">0</span>
-        <ul class="donethings"></ul>
-    </div>
+<video id="videofilm" poster="img/skystar2.jpg" autoplay muted loop>
+    <source src="img/skystar.mp4" type="video/mp4">
+</video>
+<div class="text">
+    <h1>今晚，整片星空将为你一人闪烁</h1>
 </div>
+<a class="todo" href="todolist.html"></a>
+
+<div class="container"></div>
+<script src="js/skystar.js"></script>
 
 
-<ul class="nav">
-    <li class="nav"><a class="active" href="#home">主页</a></li>
-    <li class="nav"><a href="#news">新闻</a></li>
-</ul>
-
-
-<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.3.0/jquery.min.js"></script>
-<script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script src="js/index.js"></script>
 </body>
-
 </html>
