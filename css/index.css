@@ -1,0 +1,158 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+ 
+body {
+    background-color: ghostwhite;
+    user-select: none;
+}
+ 
+ul {
+    list-style: none;
+}
+ 
+header {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background-color: brown;
+}
+ 
+.title {
+    display: inline-block;
+    font-size: 30px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: white;
+    line-height: 50px;
+    margin-left: 22%;
+    cursor: pointer;
+}
+ 
+.search {
+    position: absolute;
+    transform: translateX(88%);
+    display: inline-block;
+    width: 30%;
+    height: 100%;
+}
+ 
+.search input {
+    display: inline-block;
+    width: 90%;
+    height: 70%;
+    border-radius: 10px;
+    margin-top: 7px;
+    outline-style: none;
+    padding-left: 8px;
+    border: none;
+    border-color: transparent;
+}
+ 
+.dolist,
+.donelist {
+    position: relative;
+    margin: 25px 35%;
+    font-size: 25px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+ 
+.donumber,
+.donenumber {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 8px;
+    right: 13px;
+    border-radius: 6px;
+    background-color: lightgrey;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+}
+ 
+.dothings,
+.donethigs,
+.dothings li,
+.donethings li {
+    position: relative;
+    margin-top: 8px;
+}
+ 
+.dothings li,
+.donethings li {
+    width: 99%;
+    height: 32px;
+    border-radius: 6px;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding-left: 40px;
+    line-height: 32px;
+    font-size: 15px;
+    font-weight: 200;
+    background-color: rgb(233, 242, 250);
+}
+ 
+.dothings li p,
+.donethings li p {
+    position: relative;
+}
+ 
+.dothings li p input,
+.donethings li p input {
+    position: absolute;
+    top: 6px;
+    outline-color: green;
+}
+ 
+.donethings li {
+    opacity: .6;
+}
+ 
+.front {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 5px;
+    background-color: orange;
+}
+ 
+.rightbox {
+    position: absolute;
+    top: 6px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+}
+ 
+.close {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 6px;
+    right: 8px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 2px solid gray;
+    cursor: pointer;
+}
+ 
+.close::before {
+    content: "";
+    background-color: grey;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 13px;
+    height: 13px;
+    border-radius: 7px;
+}
+ 
+footer {
+    display: block;
+    width: 300px;
+    height: 100px;
+    margin: 30px 42%;
+}
