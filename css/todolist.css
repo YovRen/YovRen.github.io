@@ -182,3 +182,28 @@ li a:hover.nav {
     background-color: #111;
     z-index: 1;
 }
+
+.diary-content{
+    margin: 0 5px 0 65px;
+    padding: 0px;
+    font-size: 15px;
+    line-height: 1.5em;
+    overflow: hidden;
+    word-break:break-all;
+}
+.diary-meta{
+    color: #aaa;
+    margin: 7px 0 0 65px;
+    font-size: 12px;
+}
+
+.search button{
+    display: inline-block;
+    width: 100%;
+    height: 70%;
+    border-radius: 10px;
+    margin-top: 7px;
+    outline-style: none;
+    padding-left: 8px;
+    border: none transparent;
+}

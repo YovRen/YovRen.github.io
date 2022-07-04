@@ -1,4 +1,6 @@
 const {Query, User} = AV;
+
+console.log(returnCitySN)
 AV.init({
     appId: "szRqJxj4rGr47DBsfiYqh9qA-gzGzoHsz",
     appKey: "UCGehmC6gOKYHSKpoMLeaRFJ",
@@ -9,7 +11,20 @@ const title = document.querySelector("#title")
 const content = document.querySelector("#content")
 const submit = document.querySelector("#submit")
 const diarythings = document.querySelector(".diarythings")
+const toggle = document.querySelector("#toggle")
+const write = document.querySelector("#write")
 load()
+
+
+toggle.addEventListener("click", async event => {
+    $("#write").fadeToggle("slow");
+    if (write.getAttribute('style').length === 11) {
+        toggle.innerHTML = "写日记";
+    } else {
+        toggle.innerHTML = "看日记";
+    }
+    await load()
+})
 
 submit.addEventListener("click", async event => {
     if (content.value !== '') {
@@ -31,11 +46,13 @@ async function getData() {
     return data
 }
 
+
 function saveData(data) {
     const Diary = AV.Object.extend('Diary');
     const diary = new Diary();
     diary.set('title', data.title);
     diary.set('content', data.content);
+    diary.set('city', returnCitySN['cname'])
     diary.save()
 }
 
@@ -43,9 +60,18 @@ async function load() {
 
     diarythings.innerHTML = ''
     let datas = await getData()
-    for (let i = 0; i < datas.length; i++) {
+    for (let i = datas.length - 1; i >= 0; i--) {
         let lis = document.createElement("li")
-        lis.innerHTML = "<span id="+datas[i].id+">"+datas[i].attributes.title+"</span>"+"<span id="+datas[i].id+">"+datas[i].attributes.content+"</span>"
+        let time = datas[i].getCreatedAt().getFullYear() + "-" + datas[i].getCreatedAt().getMonth() + 1 + "-" + datas[i].getCreatedAt().getDate() + " " + datas[i].getCreatedAt().getHours() + ":" + datas[i].getCreatedAt().getMinutes()
+        lis.innerHTML = "<div class='cell'>\n" +
+            "<div class='diary-content'><a>" + datas[i].attributes.content + "</a></div>" +
+            "<div class='diary-meta'>" +
+            "<i class='glyphicon glyphicon-user'></i>" +
+            "•<i class='glyphicon glyphicon-time'></i>" + time +
+            "•《" + datas[i].attributes.title + "》" +
+            "•<i class='glyphicon glyphicon-globe'></i>[" + datas[i].attributes.city + "]" +
+            "</div>" +
+            "</div>"
         diarythings.appendChild(lis)
     }
 

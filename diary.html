@@ -7,7 +7,6 @@
     <title>写新日记 - 拉普达</title>
     <link rel="stylesheet" href="css/todolist.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/lib.css">
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/todolist.css">
 
@@ -17,8 +16,16 @@
 
 <body>
 
+<header>
+    <label>
+        <div class="title">diary</div>
+    </label>
+    <div class="search">
+        <button class="btn btn-primary" id="toggle">看日记</button>
+    </div>
+</header>
 
-<div class="box cell controls col-xs-12">
+<div class="box cell controls col-xs-12" id="write">
     <input id="title" type="text" class="PostDiaryForm-Title form-group" placeholder="写个标题吧...[可空]..."
            autocomplete="off" maxlength="50">
 
@@ -33,56 +40,6 @@
 </div>
 
 <div class="col-xs-12 box controls cell">
-    <ul>
-        <div class="cell">
-            <div class=" form-group">写个标题吧...[可空]...</div>
-            <div class="form-group">写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘
-                😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ...
-            </div>
-        </div>
-        <div class="cell">
-            <div class=" form-group">写个标题吧...[可空]...</div>
-            <div class="form-group">写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘
-                😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ...
-            </div>
-        </div>
-        <div class="cell">
-            <div class=" form-group">写个标题吧...[可空]...</div>
-            <div class="form-group">写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘
-                😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ...
-            </div>
-        </div>
-        <div class="cell">
-            <div class=" form-group">写个标题吧...[可空]...</div>
-            <div class="form-group">写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘
-                😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ...
-            </div>
-        </div>
-        <div class="cell">
-            <div class=" form-group">写个标题吧...[可空]...</div>
-            <div class="form-group">写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘
-                😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ...
-            </div>
-        </div>
-        <div class="cell">
-            <div class=" form-group">写个标题吧...[可空]...</div>
-            <div class="form-group">写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘
-                😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ...
-            </div>
-        </div>
-        <div class="cell">
-            <div class=" form-group">写个标题吧...[可空]...</div>
-            <div class="form-group">写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘
-                😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ...
-            </div>
-        </div>
-        <div class="cell">
-            <div class=" form-group">写个标题吧...[可空]...</div>
-            <div class="form-group">写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘
-                😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ...
-            </div>
-        </div>
-    </ul>
     <ul class="diarythings"></ul>
 </div>
 
@@ -91,7 +48,7 @@
     <li class="nav"><a class="nav" href="#news">新闻</a></li>
 </ul>
 
-
+<script src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.3.0/jquery.min.js"></script>
 <script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
