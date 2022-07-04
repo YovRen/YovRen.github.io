@@ -10,8 +10,9 @@ const dothings = document.querySelector(".dothings")
 const donethings = document.querySelector(".donethings")
 const donumber = document.querySelector(".donumber")
 const donenumber = document.querySelector(".donenumber")
+
 load()
-//给搜索框添加键盘事件 如果敲击了回车键 并且搜索框里有东西 那么就储存到key：todolist 里
+
 sear.addEventListener("keydown", async event => {
     if (event.keyCode === 13) {
         if (sear.value !== '') {
@@ -69,7 +70,6 @@ async function load() {
         closes[i].addEventListener("click", async function () {
             const todo = AV.Object.createWithoutData('Todolist', this.id);
             await todo.destroy()
-            console.log("deltet")
             await load()
         })
     }
@@ -77,16 +77,13 @@ async function load() {
     let inputs = document.querySelectorAll(".rightbox")
     for (let i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener("click", async function () {
-            console.log(inputs[i].id)
             const todo = AV.Object.createWithoutData('Todolist', this.id);
             todo.set('done', inputs[i].checked)
             await todo.save()
-            console.log("checked")
             await load()
         })
     }
 
-    //修改任务数量
     donumber.innerHTML = docount
     donenumber.innerHTML = donecount
 }

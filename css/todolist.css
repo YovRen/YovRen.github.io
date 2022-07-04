@@ -154,8 +154,10 @@ footer {
     margin: 30px 42%;
 }
 
+
+
 ul.nav {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
 }
