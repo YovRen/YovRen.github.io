@@ -1,6 +1,5 @@
 const {Query, User} = AV;
 
-console.log(returnCitySN)
 AV.init({
     appId: "szRqJxj4rGr47DBsfiYqh9qA-gzGzoHsz",
     appKey: "UCGehmC6gOKYHSKpoMLeaRFJ",
@@ -15,6 +14,31 @@ const toggle = document.querySelector("#toggle")
 const write = document.querySelector("#write")
 load()
 
+function Weather() {
+    let ret = "未知";
+    jQuery.support.cors = true;
+    $.ajax({
+        url: "http://wthrcdn.etouch.cn/weather_mini",
+        type: "GET",
+        dataType: 'json',
+        data: {city: (returnCitySN['cname'])},
+        async: false,
+        success: function (res) {
+            var maxTemperature = res.data.forecast[0].high;//最高温度
+            var minTemperature = res.data.forecast[0].low;//最低温度
+            var weather = minTemperature.split(' ')[1] + '~' + maxTemperature.split(' ')[1];
+            var type = res.data.forecast[0].type;//天气状态
+            ret = weather + ' ' + type;
+        },
+        error: function (err) {
+            ret = "未知";
+        }
+    });
+    console.log(ret);
+    return ret;
+}
+
+Weather()
 
 toggle.addEventListener("click", async event => {
     $("#write").fadeToggle("slow");
@@ -53,6 +77,7 @@ function saveData(data) {
     diary.set('title', data.title);
     diary.set('content', data.content);
     diary.set('city', returnCitySN['cname'])
+    diary.set('weather', Weather())
     diary.save()
 }
 
@@ -62,17 +87,25 @@ async function load() {
     let datas = await getData()
     for (let i = datas.length - 1; i >= 0; i--) {
         let lis = document.createElement("li")
+        if (datas[i].attributes.city[0]==='天'){
+            lis.innerHTML = "<div class=avatar><img class = avatar src='img/users/xiaoran.png' ></div>"
+        }else if (datas[i].attributes.city[0]==='云'){
+            lis.innerHTML = "<div class=avatar><img class = avatar src='img/users/mengzhu.png' ></div>"
+        }
         let time = datas[i].getCreatedAt().getFullYear() + "-" + datas[i].getCreatedAt().getMonth() + 1 + "-" + datas[i].getCreatedAt().getDate() + " " + datas[i].getCreatedAt().getHours() + ":" + datas[i].getCreatedAt().getMinutes()
-        lis.innerHTML = "<div class='cell'>\n" +
-            "<div class='diary-content'><a>" + datas[i].attributes.content + "</a></div>" +
+        lis.innerHTML +=
+            "<div class='cell'>\n" +
+            "<div class='diary-content'><span style='font-size:19px'>" + datas[i].attributes.content[0] + "</span>" + datas[i].attributes.content.substr(1) + "</div>" +
             "<div class='diary-meta'>" +
             "<i class='glyphicon glyphicon-user'></i>" +
-            "•<i class='glyphicon glyphicon-time'></i>" + time +
-            "•《" + datas[i].attributes.title + "》" +
-            "•<i class='glyphicon glyphicon-globe'></i>[" + datas[i].attributes.city + "]" +
+            " • <i class='glyphicon glyphicon-time'></i>" + time +
+            " • 《" + datas[i].attributes.title + "》" +
+            " • <i class='glyphicon glyphicon-globe'></i> [" + datas[i].attributes.city + "]" +
+            " • <i class='glyphicon glyphicon-new-window'></i>" + datas[i].attributes.weather +
             "</div>" +
             "</div>"
         diarythings.appendChild(lis)
     }
 
 }
+
