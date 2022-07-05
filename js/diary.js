@@ -96,7 +96,7 @@ async function load() {
         lis.innerHTML +=
             "<div class='cell'>\n" +
             "<div class='diary-content'><span style='font-size:19px'>" + datas[i].attributes.content[0] + "</span>" + datas[i].attributes.content.substr(1) + "</div>" +
-            "<div class='diary-meta'>" +
+            "<div class='diary-title'>" +
             "<i class='glyphicon glyphicon-user'></i>" +
             " • <i class='glyphicon glyphicon-time'></i>" + time +
             " • 《" + datas[i].attributes.title + "》" +

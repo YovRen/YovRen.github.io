@@ -7,7 +7,7 @@
     <title>写新日记 - 拉普达</title>
     <link rel="stylesheet" href="css/todolist.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/app.css">
+    <!--    <link rel="stylesheet" href="css/app.css">-->
     <link rel="stylesheet" href="css/todolist.css">
 
 
@@ -21,32 +21,31 @@
         <div class="title">diary</div>
     </label>
     <div class="search">
-        <button class="btn btn-primary" id="toggle">看日记</button>
+        <button class="btn" id="toggle">看日记</button>
     </div>
 </header>
 
-<div class="box cell controls col-xs-12" id="write">
-    <input id="title" type="text" class="PostDiaryForm-Title form-group" placeholder="写个标题吧...[可空]..."
-           autocomplete="off" maxlength="50">
 
+<div class="cell col-xs-12" id="write">
+    <input id="title" type="text" class="PostDiaryForm-Title form-control form-group" placeholder="写个标题吧...[可空]..."
+           autocomplete="off" maxlength="50">
 
     <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
               placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
               maxlength="8000"></textarea>
 
-
-    <button id="submit" class="btn btn-primary form-control">😊 提 交</button>
-
+    <button id="submit" class="btn form-control form-group">😊 提 交</button>
 </div>
-
-<div class="col-xs-12 box controls cell">
+<div class="col-xs-12 cell">
     <ul class="diarythings"></ul>
 </div>
 
+
 <ul class="nav">
-    <li class="nav"><a class="active nav" href="todolist.html">待办事项</a></li>
-    <li class="nav"><a class="nav" href="#news">新闻</a></li>
+    <li><a href="index.html">待办事项</a></li>
+    <li><a href="#news">新闻</a></li>
 </ul>
+
 
 <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.3.0/jquery.min.js"></script>

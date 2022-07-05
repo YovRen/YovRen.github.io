@@ -4,13 +4,10 @@
 }
 
 body {
-    background-color: ghostwhite;
+    background: darkgray;
     user-select: none;
 }
 
-ul {
-    list-style: none;
-}
 
 header {
     position: relative;
@@ -38,6 +35,17 @@ header {
 }
 
 .search input {
+    display: inline-block;
+    width: 100%;
+    height: 70%;
+    border-radius: 10px;
+    margin-top: 7px;
+    outline-style: none;
+    padding-left: 8px;
+    border: none transparent;
+}
+
+.search button {
     display: inline-block;
     width: 100%;
     height: 70%;
@@ -147,13 +155,6 @@ header {
     border-radius: 7px;
 }
 
-footer {
-    display: block;
-    width: 300px;
-    height: 100px;
-    margin: 30px 42%;
-}
-
 
 ul.nav {
     position: fixed;
@@ -161,8 +162,7 @@ ul.nav {
     width: 100%;
 }
 
-
-li.nav {
+ul.nav li {
     background-color: brown;
     float: left;
     width: 50%;
@@ -171,16 +171,46 @@ li.nav {
     border-radius: 5px;
 }
 
-li a.nav {
+ul.nav li a {
     font-size: 20px;
     font-weight: 400;
     color: white;
 }
 
-li a:hover.nav {
-    background-color: #111;
+ul.nav li a:hover {
+    background-color: #ccc;
     z-index: 1;
 }
+
+
+.PostDiaryForm-Title {
+    width: 100%;
+    min-height: 38px;
+    resize: none;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.PostDiaryForm-Content {
+    overflow-x: hidden;
+    word-wrap: break-word;
+    resize: none;
+    height: 345px;
+}
+
+div.avatar {
+    margin-top: 10px;
+    margin-left: 5px;
+    float: left;
+}
+
+div.avatar img {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+
 
 .diary-content {
     margin: 0 5px 0 65px;
@@ -191,32 +221,40 @@ li a:hover.nav {
     word-break: break-all;
 }
 
-.diary-meta {
+.diary-title {
     color: #aaa;
     margin: 7px 0 0 65px;
     font-size: 12px;
 }
 
-.search button {
-    display: inline-block;
-    width: 100%;
-    height: 70%;
-    border-radius: 10px;
-    margin-top: 7px;
-    outline-style: none;
-    padding-left: 8px;
-    border: none transparent;
+.cell {
+    padding: 10px 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #e2e2e2;
 }
 
-div.avatar {
-    margin-top: 10px;
-    margin-left: 5px;
-    float: left;
+
+.form-group {
+    overflow-x: hidden;
+    word-wrap: break-word;
+    resize: none;
 }
 
-.avatar img {
-    width: 48px;
-    height: 48px;
-    border-radius: 6px;
-    border: 1px solid #eee;
+
+.btn {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #000;
+    font-size: 14px;
+    line-height: 26px;
+    text-shadow: 0px 1px 0px #fff;
+    background: linear-gradient(to bottom, #FDFDFD 0%, #C5C5C5 100%);
+    box-shadow: 0px 2px 3px rgba(173, 173, 173, 0.7);
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
 }

@@ -1,24 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>今晚，整片星空将为你一人闪烁</title>
-    <link rel="stylesheet" href="css/skystar.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todolist 每日待办清单</title>
+    <link rel="stylesheet" href="css/todolist.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+
+
 </head>
 
 
 <body>
-<video id="videofilm" autoplay muted loop>
-    <source src="img/skystar.mp4" type="video/mp4">
-</video>
-<div class="text">
-    <h1>今晚，整片星空将为你一人闪烁</h1>
+
+<header>
+    <label for="sear">
+        <div class="title">todolist</div>
+    </label>
+    <div class="search"><input type="text" placeholder="制定todo" id="sear"></div>
+</header>
+
+<div class="col-xs-12">
+    <div class="dolist">
+        <span>正在进行</span>
+        <span class="donumber">0</span>
+        <ul class="dothings"></ul>
+    </div>
+    <div class="donelist">
+        <span>已经完成</span>
+        <span class="donenumber">0</span>
+        <ul class="donethings"></ul>
+    </div>
 </div>
-<a class="todo" href="todolist.html"></a>
 
-<script src="js/skystar.js"></script>
 
+<ul class="nav">
+    <li><a href="diary.html">日记点滴</a></li>
+    <li><a href="#news">新闻</a></li>
+</ul>
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.3.0/jquery.min.js"></script>
+<script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="js/todolist.js"></script>
 </body>
+
 </html>
