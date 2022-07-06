@@ -22,22 +22,8 @@ $('#image').on('change', async function () {
 });
 
 
-/**
- * 图像转Base64
- */
-function getBase64Image(img) {
-    var canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    var ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, img.width, img.height);
-    var ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
-    return canvas.toDataURL("image/" + ext);
-}
-
-
 toggle.addEventListener("click", async event => {
-    $("#write").fadeToggle("slow");
+    $("#write").fadeToggle();
     if (write.getAttribute('style').length === 11) {
         toggle.innerHTML = "写日记";
     } else {
