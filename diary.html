@@ -7,7 +7,7 @@
     <title>写新日记 - 拉普达</title>
     <link rel="stylesheet" href="css/todolist.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/todolist.css">
 
 
@@ -34,128 +34,18 @@
               placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
               maxlength="8000"></textarea>
 
-    <button id="submit" class="btn form-control form-group">😊 提 交</button>
+    <div class="item">
+        <div class="addImg"></div>
+        <input id="image" type="file" class="upload_input" onchange="change(this)"/>
+        <div class="preBlock">
+            <img class="preview" id="preview" alt="" name="pic" width="200" height="200"/>
+        </div>
+        <div class="delete">×</div>
+    </div>
+    <button id="submit" class="btn">😊 提 交</button>
 </div>
-<div class="col-xs-12 cell">
-    <ul class="diarythings"></ul>
-    <ul class="timeline">
-        <li>
-            <div class="tldate">Apr 2014</div>
-        </li>
-
-        <li>
-            <div class="tl-circ"></div>
-            <div class="timeline-panel">
-                <div class="tl-heading">
-                    <h4>Surprising Headline Right Here</h4>
-                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 3 hours ago</small></p>
-                </div>
-                <div class="tl-body">
-                    <p>Lorem Ipsum and such.</p>
-                </div>
-            </div>
-        </li>
-
-        <li class="timeline-inverted">
-            <div class="tl-circ"></div>
-            <div class="timeline-panel">
-                <div class="tl-heading">
-                    <h4>Breaking into Spring!</h4>
-                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 4/07/2014</small></p>
-                </div>
-                <div class="tl-body">
-                    <p>Hope the weather gets a bit nicer...</p>
-
-                    <p>Y'know, with more sunlight.</p>
-                </div>
-            </div>
-        </li>
-
-        <li>
-            <div class="tldate">Mar 2014</div>
-        </li>
-
-        <li>
-            <div class="tl-circ"></div>
-            <div class="timeline-panel">
-                <div class="tl-heading">
-                    <h4>New Apple Device Release Date</h4>
-                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 3/22/2014</small></p>
-                </div>
-                <div class="tl-body">
-                    <p>In memory of Steve Jobs.</p>
-                </div>
-            </div>
-        </li>
-        <li class="timeline-inverted">
-            <div class="timeline-panel">
-                <div class="tl-heading">
-                    <h4>No icon here</h4>
-                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 3/16/2014</small></p>
-                </div>
-                <div class="tl-body">
-                    <p>Here you'll find some beautiful photography for your viewing pleasure, courtesy of <a
-                            href="http://lorempixel.com/">lorempixel</a>.</p>
-                    <img src="img/users/xiaoran.png">
-
-                    <p><img src="http://lorempixel.com/600/300/nightlife/" alt="lorem pixel"></p>
-                </div>
-            </div>
-        </li>
-        <li>
-            <div class="tl-circ"></div>
-            <div class="timeline-panel">
-                <div class="tl-heading">
-                    <h4>Some Important Date!</h4>
-                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 3/03/2014</small></p>
-                </div>
-                <div class="tl-body">
-                    <p>Write up a quick summary of the event.</p>
-                </div>
-            </div>
-        </li>
-        <li>
-            <div class="timeline-panel noarrow">
-                <div class="tl-heading">
-                    <h4>Secondary Timeline Box</h4>
-                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 3/01/2014</small></p>
-                </div>
-                <div class="tl-body">
-                    <p>This might be a follow-up post with related info. Maybe we include some extra links, tweets, user
-                        comments, photos, etc.</p>
-                </div>
-            </div>
-        </li>
-
-        <li>
-            <div class="tldate">Feb 2014</div>
-        </li>
-
-        <li class="timeline-inverted">
-            <div class="tl-circ"></div>
-            <div class="timeline-panel">
-                <div class="tl-heading">
-                    <h4>The Winter Months</h4>
-                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 02/23/2014</small></p>
-                </div>
-                <div class="tl-body">
-                    <p>Gee time really flies when you're having fun.</p>
-                </div>
-            </div>
-        </li>
-        <li>
-            <div class="tl-circ"></div>
-            <div class="timeline-panel">
-                <div class="tl-heading">
-                    <h4>Yeah we're pretty much done here</h4>
-                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> 02/11/2014</small></p>
-                </div>
-                <div class="tl-body">
-                    <p>Wasn't this fun though?</p>
-                </div>
-            </div>
-        </li>
-    </ul>
+<div class="col-xs-12">
+    <ul class="timeline"></ul>
 </div>
 
 

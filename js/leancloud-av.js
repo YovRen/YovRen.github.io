@@ -13465,7 +13465,7 @@ module.exports = function (AV) {
      * game.set("finished", true);
      *
      * @param {String} key The key to set.
-     * @param {Any} value The value to give it.
+     * @param {FormData} value The value to give it.
      * @param {Object} [options]
      * @param {Boolean} [options.silent]
      * @return {AV.Object} self if succeeded, throws if the value is not valid.
