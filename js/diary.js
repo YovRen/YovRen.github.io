@@ -147,8 +147,8 @@ async function load() {
                 "</div>\n" +
                 "<div class=\"tl-body\">\n" +
                 "<span style='font-size:19px'>" + datas[i].attributes.content[0] + "</span>" + datas[i].attributes.content.substr(1) +
-                "<img src='" + datas[i].attributes.image.attributes.url + "'></img>" +
                 "</div>" +
+                "<img src='" + datas[i].attributes.image.attributes.url + "'></img>" +
                 "</div>";
         }
         console.log(lis)
