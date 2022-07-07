@@ -11,7 +11,7 @@ body, html {
     box-shadow: inset 0 5vh 30vh 5vh #d6c2c2;
     font-family: "Share Tech Mono", monospace;
     color: black;
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 
 html.full {
