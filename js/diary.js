@@ -87,10 +87,14 @@ function saveData(data) {
     diary.set('title', data.title);
     diary.set('content', data.content);
     diary.set('city', returnCitySN['cname']);
-    // diary.set('weather', weather());
+    diary.set('weather', weather());
     diary.set('time', time());
-    console.log(file)
     diary.set('image', file);
+    if(returnCitySN['cname'][0]==="天"){
+        diary.set('author', "小燃");
+    }else if(returnCitySN['cname'][0]==="云"){
+        diary.set('author', "梦竹");
+    }
     diary.save();
 }
 

@@ -5,12 +5,18 @@
 
 
 body, html {
-    background: -webkit-linear-gradient(white, #e0d1d1);
+    width: 100%;
+    height: max-content;
     background: linear-gradient(white, #e0d1d1);
     box-shadow: inset 0 5vh 30vh 5vh #d6c2c2;
     font-family: "Share Tech Mono", monospace;
-    color: white;
-    font-size: 2rem;
+    color: black;
+    font-size: 0.8rem;
+}
+
+html.full {
+    width: 100%;
+    height: 100%;
 }
 
 header {
@@ -260,4 +266,302 @@ div.avatar img {
     box-shadow: 0px 2px 3px rgba(173, 173, 173, 0.7);
     border: 1px solid #e1e1e1;
     border-radius: 5px;
+}
+
+
+img {
+    border: 0;
+    max-width: 100%;
+}
+
+.timeline {
+    list-style: none;
+    padding: 20px 0 20px;
+    position: relative;
+}
+
+.timeline:before {
+    top: 0;
+    bottom: 0;
+    position: absolute;
+    content: " ";
+    width: 3px;
+    background: linear-gradient(green, darkgreen);
+    left: 50%;
+    margin-left: -1.5px;
+}
+
+.tldate {
+    display: block;
+    width: 200px;
+    background: green;
+    border: 3px solid green;
+    color: #ededed;
+    margin: 0 auto;
+    padding: 3px 0;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    -webkit-box-shadow: 0 0 11px rgba(0, 0, 0, 0.35);
+}
+
+.timeline li {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.timeline li:after {
+    clear: both;
+}
+
+.timeline li:before, .timeline li:after {
+    content: " ";
+    display: table;
+}
+
+/** timeline panels **/
+.timeline li .timeline-panel {
+    width: 46%;
+    float: left;
+    background: pink;
+    border: 1px solid pink;
+    padding: 20px;
+    position: relative;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+}
+
+/** panel arrows **/
+.timeline li .timeline-panel:after {
+    position: absolute;
+    top: 27px;
+    right: -14px;
+    display: inline-block;
+    border-top: 14px solid transparent;
+    border-left: 14px solid pink;
+    border-right: 0 solid pink;
+    border-bottom: 14px solid transparent;
+    content: " ";
+}
+
+
+/** timeline circle icons **/
+.timeline li .tl-circ {
+    position: absolute;
+    top: 23px;
+    left: 50%;
+    text-align: center;
+    background: pink;
+    color: #fff;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    margin-left: -16px;
+    border: 3px solid pink;
+    border-radius: 50%;
+    z-index: 99999;
+}
+
+
+/** timeline content **/
+
+.tl-heading h4 {
+    margin: 0;
+    color: #c25b4e;
+}
+
+.tl-body p, .tl-body ul {
+    margin-bottom: 0;
+}
+
+.tl-body > p + p {
+    margin-top: 5px;
+}
+
+/** media queries **/
+@media (max-width: 991px) {
+    .timeline li .timeline-panel {
+        width: 44%;
+    }
+}
+
+@media (max-width: 700px) {
+    .page-header h1 {
+        font-size: 1.8em;
+    }
+
+    ul.timeline:before {
+        left: 40px;
+    }
+
+    .tldate {
+        width: 140px;
+    }
+
+    ul.timeline li .timeline-panel {
+        width: calc(100% - 90px);
+        width: -moz-calc(100% - 90px);
+        width: -webkit-calc(100% - 90px);
+    }
+
+    ul.timeline li .tl-circ {
+        top: 22px;
+        left: 22px;
+        margin-left: 0;
+
+    }
+
+    ul.timeline > li > .tldate {
+        margin: 0;
+    }
+
+    ul.timeline > li > .timeline-panel {
+        float: right;
+    }
+
+    ul.timeline > li > .timeline-panel:before {
+        border-left-width: 0;
+        border-right-width: 15px;
+        left: -15px;
+        right: auto;
+    }
+
+    ul.timeline > li > .timeline-panel:after {
+        border-left-width: 0;
+        border-right-width: 14px;
+        left: -14px;
+        right: auto;
+    }
+}
+
+
+.item {
+    display: inline-block;
+    position: relative;
+    padding: 5px;
+    margin: 10px;
+    width: 40px;
+    height: 40px;
+}
+
+.addImg {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    cursor: pointer;
+}
+
+
+.preview, .preBlock {
+    position: absolute;
+    display: block;
+    width: 40px;
+    height: 40px;
+    left: 0;
+    top: 0;
+}
+
+.delete {
+    width: 22px;
+    position: absolute;
+    right: -12px;
+    top: -12px;
+    cursor: pointer;
+    display: none;
+    text-align: center;
+    line-height: 22px;
+    font-size: 14px;
+    color: #fff;
+    font-weight: bold;
+    background: #999;
+    border-radius: 50%;
+}
+
+.preBlock img {
+    display: block;
+    width: 40px;
+    height: 40px;
+}
+
+.upload_input {
+    display: block;
+    width: 0;
+    height: 0;
+    -webkit-opacity: 0.0;
+    /* Netscape and Older than Firefox 0.9 */
+    -moz-opacity: 0.0;
+    /* Safari 1.x (pre WebKit!) 老式khtml内核的Safari浏览器*/
+    -khtml-opacity: 0.0;
+    /* IE9 + etc...modern browsers */
+    opacity: .0;
+    /* IE 4-9 */
+    filter: alpha(opacity=0);
+    /*This works in IE 8 & 9 too*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    /*IE4-IE9*/
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+}
+
+div.balloon {
+    position: absolute;
+    border-radius: 50%;
+}
+
+
+.balloon {
+    opacity: 0.95;
+    position: fixed;
+    -webkit-transform: translate3d(-50%, -50%, 0);
+    transform: translate3d(-50%, -50%, 0);
+    width: 10rem;
+    height: 10rem;
+    background: #faf9f9;
+    border-radius: 10rem 10rem 4rem 10rem;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    box-shadow: inset -0.5rem -0.5rem 5rem -0.5rem #c99c9c, 3rem 3rem 1.5rem rgba(153, 102, 102, 0.2);
+    -webkit-animation: float1 10s infinite ease-out;
+    animation: float1 10s infinite ease-out;
+}
+
+@-webkit-keyframes float1 {
+    0% {
+        -webkit-transform: rotate(40deg) translateY(0) translateX(0);
+        transform: rotate(40deg) translateY(0) translateX(0);
+    }
+    100% {
+        -webkit-transform: rotate(50deg) translateY(-85vh) translateX(-85vh);
+        transform: rotate(50deg) translateY(-85vh) translateX(-85vh);
+    }
+}
+
+@keyframes float1 {
+    0% {
+        -webkit-transform: rotate(40deg) translateY(0) translateX(0);
+        transform: rotate(40deg) translateY(0) translateX(0);
+    }
+    100% {
+        -webkit-transform: rotate(50deg) translateY(-85vh) translateX(-85vh);
+        transform: rotate(50deg) translateY(-85vh) translateX(-85vh);
+    }
+}
+
+.balloon:after {
+    content: '';
+    position: absolute;
+    bottom: -.05rem;
+    right: -.05rem;
+    border-top: 0.5rem solid transparent;
+    border-bottom: 0.5rem solid transparent;
+    border-right: 0.9rem solid #dbbdbd;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    border-radius: 1rem;
 }
