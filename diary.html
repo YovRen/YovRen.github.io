@@ -9,7 +9,177 @@
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/todolist.css">
+    <style>
+        html {
+            font-size: 1vh;
+        }
 
+
+
+        .balloon {
+            top: 100vh;
+            opacity: 0.95;
+            position: absolute;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+            width: 10rem;
+            height: 10rem;
+            background: #faf9f9;
+            border-radius: 10rem 10rem 4rem 10rem;
+            -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+            box-shadow: inset -0.5rem -0.5rem 5rem -0.5rem #c99c9c, 3rem 3rem 1.5rem rgba(153, 102, 102, 0.2);
+            -webkit-animation: float1 10s infinite ease-out;
+            animation: float1 10s infinite ease-out;
+        }
+
+        @-webkit-keyframes float1 {
+            0% {
+                -webkit-transform: rotate(40deg) translateY(0) translateX(0);
+                transform: rotate(40deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: rotate(50deg) translateY(-85vh) translateX(-85vh);
+                transform: rotate(50deg) translateY(-85vh) translateX(-85vh);
+            }
+        }
+
+        @keyframes float1 {
+            0% {
+                -webkit-transform: rotate(40deg) translateY(0) translateX(0);
+                transform: rotate(40deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: rotate(50deg) translateY(-85vh) translateX(-85vh);
+                transform: rotate(50deg) translateY(-85vh) translateX(-85vh);
+            }
+        }
+
+        @-webkit-keyframes float2 {
+            0% {
+                -webkit-transform: rotate(55deg) translateY(0) translateX(0);
+                transform: rotate(55deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: rotate(45deg) translateY(-85vh) translateX(-85vh);
+                transform: rotate(45deg) translateY(-85vh) translateX(-85vh);
+            }
+        }
+
+        @keyframes float2 {
+            0% {
+                -webkit-transform: rotate(55deg) translateY(0) translateX(0);
+                transform: rotate(55deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: rotate(45deg) translateY(-85vh) translateX(-85vh);
+                transform: rotate(45deg) translateY(-85vh) translateX(-85vh);
+            }
+        }
+
+        @-webkit-keyframes float3 {
+            0% {
+                -webkit-transform: rotate(45deg) translateY(0) translateX(0);
+                transform: rotate(45deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: rotate(35deg) translateY(-85vh) translateX(-85vh);
+                transform: rotate(35deg) translateY(-85vh) translateX(-85vh);
+            }
+        }
+
+        @keyframes float3 {
+            0% {
+                -webkit-transform: rotate(45deg) translateY(0) translateX(0);
+                transform: rotate(45deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: rotate(35deg) translateY(-85vh) translateX(-85vh);
+                transform: rotate(35deg) translateY(-85vh) translateX(-85vh);
+            }
+        }
+
+        @-webkit-keyframes floatfront1 {
+            0% {
+                -webkit-transform: scale(1.3) rotate(40deg) translateY(0) translateX(0);
+                transform: scale(1.3) rotate(40deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: scale(1.3) rotate(50deg) translateY(-100vh) translateX(-100vh);
+                transform: scale(1.3) rotate(50deg) translateY(-100vh) translateX(-100vh);
+            }
+        }
+
+        @keyframes floatfront1 {
+            0% {
+                -webkit-transform: scale(1.3) rotate(40deg) translateY(0) translateX(0);
+                transform: scale(1.3) rotate(40deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: scale(1.3) rotate(50deg) translateY(-100vh) translateX(-100vh);
+                transform: scale(1.3) rotate(50deg) translateY(-100vh) translateX(-100vh);
+            }
+        }
+
+        @-webkit-keyframes floatfront2 {
+            0% {
+                -webkit-transform: scale(1.3) rotate(55deg) translateY(0) translateX(0);
+                transform: scale(1.3) rotate(55deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: scale(1.3) rotate(45deg) translateY(-100vh) translateX(-85vh);
+                transform: scale(1.3) rotate(45deg) translateY(-100vh) translateX(-85vh);
+            }
+        }
+
+        @keyframes floatfront2 {
+            0% {
+                -webkit-transform: scale(1.3) rotate(55deg) translateY(0) translateX(0);
+                transform: scale(1.3) rotate(55deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: scale(1.3) rotate(45deg) translateY(-100vh) translateX(-85vh);
+                transform: scale(1.3) rotate(45deg) translateY(-100vh) translateX(-85vh);
+            }
+        }
+
+        @-webkit-keyframes floatfront3 {
+            0% {
+                -webkit-transform: scale(1.3) rotate(45deg) translateY(0) translateX(0);
+                transform: scale(1.3) rotate(45deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: scale(1.3) rotate(35deg) translateY(-85vh) translateX(-100vh);
+                transform: scale(1.3) rotate(35deg) translateY(-85vh) translateX(-100vh);
+            }
+        }
+
+        @keyframes floatfront3 {
+            0% {
+                -webkit-transform: scale(1.3) rotate(45deg) translateY(0) translateX(0);
+                transform: scale(1.3) rotate(45deg) translateY(0) translateX(0);
+            }
+            100% {
+                -webkit-transform: scale(1.3) rotate(35deg) translateY(-85vh) translateX(-100vh);
+                transform: scale(1.3) rotate(35deg) translateY(-85vh) translateX(-100vh);
+            }
+        }
+
+        .balloon:after {
+            content: '';
+            position: absolute;
+            bottom: -.05rem;
+            right: -.05rem;
+            border-top: 0.5rem solid transparent;
+            border-bottom: 0.5rem solid transparent;
+            border-right: 0.9rem solid #dbbdbd;
+            -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+            border-radius: 1rem;
+        }
+
+
+    </style>
 
 </head>
 
@@ -25,7 +195,13 @@
     </div>
 </header>
 
-
+<div class="holder">
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+</div>
 <div class="cell col-xs-12" id="write">
     <input id="title" type="text" class="PostDiaryForm-Title form-control form-group" placeholder="写个标题吧...[可空]..."
            autocomplete="off" maxlength="50">
@@ -53,12 +229,35 @@
     <li><a href="index.html">待办事项</a></li>
     <li><a href="#news">新闻</a></li>
 </ul>
-
+<div class="holder">
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+</div>
 
 <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.3.0/jquery.min.js"></script>
 <script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="js/diary.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript">
+    //照片
+    var n = 1;
+    var t = setInterval(function () {
+        var b = new Balloon("url(img/opera/" + n + ".jpg)");
+        //绘制气球
+        b.drawBalloon(document.body);
+        //气球动起来
+        b.run();
+        n++;
+        if (n > 10) {
+            clearInterval(t);
+        }
+    }, 1000);
+
+</script>
 </body>
 </html>

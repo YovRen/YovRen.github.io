@@ -1,6 +1,5 @@
-body {
-    background: #333;
-}
+
+
 
 img {
     border: 0;
@@ -291,3 +290,10 @@ img {
     /*IE4-IE9*/
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
 }
+
+div.balloon {
+    position: absolute;
+    border-radius: 50%;
+}
+
+
