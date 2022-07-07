@@ -107,23 +107,29 @@ async function load() {
             timeline.appendChild(date);
             olddate = newdate;
         }
+        let avatar = 'img/users/avatar-1.jpg'
+        if(datas[i].attributes.author==="小燃"){
+            avatar = 'img/users/xiaoran.png';
+        }else if(datas[i].attributes.author==="梦竹"){
+            avatar = 'img/users/mengzhu.png';
+        }
         let lis = document.createElement("li")
         lis.innerHTML =
-            "<img class=\"tl-circ\" src='img/users/xiaoran.png'></img>\n" +
+            "<img class=\"tl-circ\" src="+avatar+"></img>\n" +
             "<div class=\"timeline-panel\">\n" +
             "<div class=\"tl-heading\">\n" +
             "<h4>" + datas[i].attributes.title + "</h4>\n" +
-            "<div class=\"small text-muted\">\n" +
-            "<i class=\"glyphicon glyphicon-globe\"></i> [" + datas[i].attributes.city + "] • " + datas[i].attributes.weather +
-            "</div>\n" +
             "</div>\n" +
             "<div class=\"tl-body\">\n" +
             "<span style='font-size:19px'>" + datas[i].attributes.content[0] + "</span>" + datas[i].attributes.content.substr(1) +
             "</div>" +
+            "<div class=\"small text-muted\">\n" +
+            "<i class=\"glyphicon glyphicon-globe\"></i> [" + datas[i].attributes.city + "] • " + datas[i].attributes.weather +
+            "</div>\n" +
             "</div>";
         if (datas[i].attributes.image) {
             lis.innerHTML =
-                "<img class=\"tl-circ\" src='img/users/xiaoran.png'></img>\n" +
+                "<img class=\"tl-circ\" src="+avatar+"></img>\n" +
                 "<div class=\"timeline-panel\">\n" +
                 "<div class=\"tl-heading\">\n" +
                 "<h4>" + datas[i].attributes.title + "</h4>\n" +

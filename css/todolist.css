@@ -4,7 +4,7 @@
 }
 
 body {
-    background: darkgray;
+    background: #ffe8ee;
     user-select: none;
 }
 
@@ -13,7 +13,7 @@ header {
     position: relative;
     width: 100%;
     height: 50px;
-    background-color: brown;
+    background-color: green;
 }
 
 .title {
@@ -163,7 +163,7 @@ ul.nav {
 }
 
 ul.nav li {
-    background-color: brown;
+    background-color: green;
     float: left;
     width: 50%;
     text-align: center;

@@ -27,7 +27,7 @@ img {
     position: absolute;
     content: " ";
     width: 3px;
-    background-color: #eee;
+    background-color: green;
     left: 50%;
     margin-left: -1.5px;
 }
@@ -35,11 +35,12 @@ img {
 .tldate {
     display: block;
     width: 200px;
-    background: #414141;
-    border: 3px solid #212121;
+    background: green;
+    border: 3px solid green;
     color: #ededed;
     margin: 0 auto;
     padding: 3px 0;
+    border-radius: 8px;
     font-weight: bold;
     text-align: center;
     -webkit-box-shadow: 0 0 11px rgba(0, 0, 0, 0.35);
@@ -68,8 +69,8 @@ img {
 .timeline li .timeline-panel {
     width: 46%;
     float: left;
-    background: #fff;
-    border: 1px solid #d4d4d4;
+    background: pink;
+    border: 1px solid pink;
     padding: 20px;
     position: relative;
     -webkit-border-radius: 8px;
@@ -87,8 +88,8 @@ img {
     right: -15px;
     display: inline-block;
     border-top: 15px solid transparent;
-    border-left: 15px solid #ccc;
-    border-right: 0 solid #ccc;
+    border-left: 15px solid pink;
+    border-right: 0 solid pink;
     border-bottom: 15px solid transparent;
     content: " ";
 }
@@ -99,8 +100,8 @@ img {
     right: -14px;
     display: inline-block;
     border-top: 14px solid transparent;
-    border-left: 14px solid #fff;
-    border-right: 0 solid #fff;
+    border-left: 14px solid pink;
+    border-right: 0 solid pink;
     border-bottom: 14px solid transparent;
     content: " ";
 }
@@ -137,17 +138,14 @@ img {
     top: 23px;
     left: 50%;
     text-align: center;
-    background: #6a8db3;
+    background: pink;
     color: #fff;
     width: 35px;
     height: 35px;
     line-height: 35px;
     margin-left: -16px;
-    border: 3px solid #90acc7;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
-    border-bottom-right-radius: 50%;
-    border-bottom-left-radius: 50%;
+    border: 3px solid pink;
+    border-radius: 50%;
     z-index: 99999;
 }
 
