@@ -6,10 +6,10 @@ function Balloon(pic) {
     this.div.setAttribute("class", "balloon");
     this.div.setAttribute("position", "fixed");
 
-    this.bg=pic
+    this.bg = pic
     this.r = 80;
-    this.speedX = randomRange(-0.6,0.6);
-    this.speedY = randomRange(-1.5,-0.5);
+    this.speedX = randomRange(-0.6, 0.6);
+    this.speedY = randomRange(-1.5, -0.5);
 
 }
 
@@ -19,7 +19,7 @@ Balloon.prototype.drawBalloon = function (parent) {
     var style = this.div.style;
     this.div.style.width = this.r + "px";
     this.div.style.height = this.r + "px";
-    style.left = randomRange(0,this.parent.offsetWidth)+"px";
+    style.left = randomRange(0, this.parent.offsetWidth) + "px";
     style.bottom = "0";
     style.background = this.bg;
     parent.appendChild(this.div);

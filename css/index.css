@@ -55,13 +55,9 @@ header {
     border: none transparent;
 }
 
-.search button {
-    display: inline-block;
-    width: 100%;
-    height: 70%;
-    border-radius: 10px;
-    margin-top: 7px;
-    outline-style: none;
+.search button {display: inline-block;width: 100%;
+    height: 70%;border-radius: 10px;
+    margin-top: 7px;outline-style: none;
     padding-left: 8px;
     border: none transparent;
 }
@@ -154,16 +150,7 @@ header {
     cursor: pointer;
 }
 
-.close::before {
-    content: "";
-    background-color: grey;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 13px;
-    height: 13px;
-    border-radius: 7px;
-}
+
 
 
 ul.nav {
@@ -247,13 +234,6 @@ div.avatar img {
     border-radius: 5px;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
     border-bottom: 1px solid #e2e2e2;
-}
-
-
-.form-group {
-    overflow-x: hidden;
-    word-wrap: break-word;
-    resize: none;
 }
 
 
@@ -572,6 +552,7 @@ div.balloon {
 
 #writer {
     position: fixed;
+    top: 70%;
     width: 50px;
     height: 50px;
     border-radius: 10px;
