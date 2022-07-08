@@ -19,9 +19,6 @@
     <label>
         <div class="title">diary</div>
     </label>
-    <div class="search">
-        <button class="btn" id="toggle">看日记</button>
-    </div>
 </header>
 
 <div style="position: fixed">
@@ -31,7 +28,14 @@
     <div class="balloon"></div>
     <div class="balloon"></div>
 </div>
-<div class="cell col-xs-12" id="write">
+
+
+<div class="col-xs-12">
+    <ul class="timeline"></ul>
+</div>
+
+
+<div class="cell col-xs-12" id="write" style="position: fixed">
     <input id="title" type="text" class="PostDiaryForm-Title form-control form-group" placeholder="写个标题吧...[可空]..."
            autocomplete="off" maxlength="50">
 
@@ -49,11 +53,8 @@
     </div>
     <button id="submit" class="btn">😊 提 交</button>
 </div>
-<div class="col-xs-12">
-    <ul class="timeline"></ul>
+<div id="writer">
 </div>
-
-
 <ul class="nav">
     <li><a href="index.html">待办事项</a></li>
     <li><a href="#news">新闻</a></li>

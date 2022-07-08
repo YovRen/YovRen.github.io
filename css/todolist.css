@@ -6,18 +6,18 @@
 
 body, html {
     width: 100%;
-    height: max-content;
-    background: linear-gradient(white, #e0d1d1);
+    height: 100%;
+    /*background: linear-gradient(white, #e0d1d1);*/
     box-shadow: inset 0 5vh 30vh 5vh #d6c2c2;
+    background-image: url("../img/disney2.jfif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
     font-family: "Share Tech Mono", monospace;
     color: black;
     font-size: 1rem;
 }
 
-html.full {
-    width: 100%;
-    height: 100%;
-}
 
 header {
     position: relative;
@@ -238,6 +238,9 @@ div.avatar img {
 }
 
 .cell {
+    width: 80%;
+    left: 10%;
+    height: 250px;
     padding: 10px 10px;
     background-color: #fff;
     border: 1px solid #ddd;
@@ -324,6 +327,7 @@ img {
     width: 46%;
     float: left;
     background: pink;
+    opacity: 92%;
     border: 1px solid pink;
     padding: 20px;
     position: relative;
@@ -564,4 +568,12 @@ div.balloon {
     -webkit-transform: rotate(45deg);
     transform: rotate(45deg);
     border-radius: 1rem;
+}
+
+#writer {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background-image: url("../img/logo-dark.jpg")
 }
