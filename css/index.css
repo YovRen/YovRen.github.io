@@ -23,7 +23,7 @@ header {
     position: relative;
     width: 100%;
     height: 50px;
-    background-color: green;
+    background-color: plum;
 }
 
 .title {
@@ -114,7 +114,7 @@ header {
 .donethings li p input {
     position: absolute;
     top: 6px;
-    outline-color: green;
+    outline-color: plum;
 }
 
 .donethings li {
@@ -160,7 +160,7 @@ ul.nav {
 }
 
 ul.nav li {
-    background-color: green;
+    background-color: plum;
     float: left;
     width: 50%;
     text-align: center;
@@ -269,7 +269,7 @@ img {
     position: absolute;
     content: " ";
     width: 3px;
-    background: linear-gradient(green, darkgreen);
+    background: linear-gradient(plum, darkplum);
     left: 50%;
     margin-left: -1.5px;
 }
@@ -277,8 +277,8 @@ img {
 .tldate {
     display: block;
     width: 200px;
-    background: green;
-    border: 3px solid green;
+    background: plum;
+    border: 3px solid plum;
     color: #ededed;
     margin: 0 auto;
     padding: 3px 0;
