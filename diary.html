@@ -20,14 +20,6 @@
     </label>
 </header>
 
-<div style="position: fixed">
-    <div class="balloon"></div>
-    <div class="balloon"></div>
-    <div class="balloon"></div>
-    <div class="balloon"></div>
-    <div class="balloon"></div>
-</div>
-
 
 <div class="col-xs-12">
     <ul class="timeline"></ul>
@@ -58,38 +50,14 @@
     <li><a href="index.html">待办事项</a></li>
     <li><a href="#news">新闻</a></li>
 </ul>
-<div style="position: fixed">
-    <div class="balloon"></div>
-    <div class="balloon"></div>
-    <div class="balloon"></div>
-    <div class="balloon"></div>
-    <div class="balloon"></div>
-</div>
 
 <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.3.0/jquery.min.js"></script>
-<script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+<script src="js/bootstrap.min.js"></script>
 <script src="js/diary.js"></script>
-<script type="text/javascript" src="js/diary.js"></script>
-<script type="text/javascript" src="js/addimg.js"></script>
-<script type="text/javascript" src="js/balloon.js"></script>
-<script type="text/javascript" src="js/move.js"></script>
-<script type="text/javascript">
-    //照片
-    var n = 1;
-    var t = setInterval(function () {
-        var b = new Balloon("url(img/opera/" + n + ".jpg)");
-        //绘制气球
-        b.drawBalloon(document.body);
-        //气球动起来
-        b.run();
-        n++;
-        if (n > 10) {
-            clearInterval(t);
-        }
-    }, 1000);
+<script src="js/addimg.js"></script>
+<script src="js/move.js"></script>
 
-</script>
 </body>
 </html>
