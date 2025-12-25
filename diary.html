@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>写新日记 - 拉普达</title>
+    <meta name="description" content="记录日记与时间线的本地页面，支持暗色模式切换与离线缓存建议。">
+    <meta name="theme-color" content="plum">
     <link rel="stylesheet" href="css/index.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css">
@@ -14,50 +17,52 @@
 
 <body>
 
-<header>
-    <label>
+    <header>
         <div class="title">diary</div>
-    </label>
-</header>
-
-
-<div class="col-xs-12">
-    <ul class="timeline"></ul>
-</div>
-
-
-<div class="cell col-xs-12" id="write" style="position: fixed;" hidden>
-    <input id="title" type="text" class="PostDiaryForm-Title form-control form-group" placeholder="写个标题吧...[可空]..."
-           autocomplete="off" maxlength="50">
-
-    <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
-              placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
-              maxlength="8000"></textarea>
-
-    <div class="item">
-        <div class="addImg"></div>
-        <input id="image" type="file" class="upload_input" onchange="change(this)"/>
-        <div class="preBlock">
-            <img class="preview" id="preview" alt="" name="pic" width="200" height="200"/>
+        <div class="controls">
+            <button id="theme-toggle" class="theme-toggle" aria-pressed="false" aria-label="切换主题">🌙</button>
         </div>
-        <div class="delete">×</div>
-    </div>
-    <button id="submit" class="btn">😊 提 交</button>
-</div>
-<div id="writer">
-</div>
-<ul class="nav">
-    <li><a href="index.html">待办事项</a></li>
-    <li><a href="#news">新闻</a></li>
-</ul>
+    </header>
 
-<script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
-<script src="js/jquery.min.js"></script>
-<script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/diary.js"></script>
-<script src="js/addimg.js"></script>
-<script src="js/move.js"></script>
+
+    <div class="col-xs-12">
+        <ul class="timeline"></ul>
+    </div>
+
+
+    <div class="cell col-xs-12" id="write" style="position: fixed;" hidden>
+        <input id="title" type="text" class="PostDiaryForm-Title form-control form-group" placeholder="写个标题吧...[可空]..."
+            autocomplete="off" maxlength="50">
+
+        <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
+            placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
+            maxlength="8000"></textarea>
+
+        <div class="item">
+            <div class="addImg"></div>
+            <input id="image" type="file" class="upload_input" onchange="change(this)" />
+            <div class="preBlock">
+                <img class="preview" id="preview" alt="" name="pic" width="200" height="200" />
+            </div>
+            <div class="delete">×</div>
+        </div>
+        <button id="submit" class="btn">😊 提 交</button>
+    </div>
+    <div id="writer">
+    </div>
+    <ul class="nav">
+        <li><a href="index.html">待办事项</a></li>
+        <li><a href="#news">新闻</a></li>
+    </ul>
+
+    <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/diary.js"></script>
+    <script src="js/addimg.js"></script>
+    <script src="js/move.js"></script>
 
 </body>
+
 </html>
