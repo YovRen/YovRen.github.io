@@ -1,5 +1,11 @@
 // AV.init 已在 HTML 中初始化，这里不再重复初始化
+<<<<<<< HEAD
 // 直接使用 AV.Query 和 AV.User，不声明常量避免重复声明错误
+=======
+// 使用全局 AV 对象
+const Query = AV.Query;
+const User = AV.User;
+>>>>>>> c6b6709af0f74118742dad4f3efc5af4622df3ee
 
 let title, content, submit, image, timeline, diaryEntries, searchInput;
 let newDiaryBtn, cancelEditBtn, editingId, moodSelect, writeOverlay;
