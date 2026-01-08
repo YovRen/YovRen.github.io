@@ -7,17 +7,16 @@ const Query = AV.Query;
 const User = AV.User;
 >>>>>>> c6b6709af0f74118742dad4f3efc5af4622df3ee
 
-let title, content, submit, image, timeline, diaryEntries, searchInput;
+let title, content, submit, timeline, diaryEntries, searchInput;
 let newDiaryBtn, cancelEditBtn, editingId, moodSelect, writeOverlay;
 let allDiaries = []
-let file;
 let contentEditor = null;
 
 function initDiaryElements() {
     title = document.querySelector("#title")
     content = document.querySelector("#content")
     submit = document.querySelector("#submit")
-    image = document.querySelector("#image")
+    // image 字段已移除，图片通过图床直接插入 Markdown 内容
     timeline = document.querySelector(".timeline")
     diaryEntries = document.querySelector("#diary-entries")
     searchInput = document.querySelector("#search-diary")
@@ -92,10 +91,6 @@ function setupDiaryEventListeners() {
                 content.value = ''
             }
             if (moodSelect) moodSelect.value = '😊'
-            file = null
-            if (document.querySelector("#preview")) {
-                document.querySelector("#preview").src = ''
-            }
             // 重新初始化编辑器（如果还没初始化）
             if (!contentEditor && content) {
                 setTimeout(() => {
@@ -113,7 +108,6 @@ function setupDiaryEventListeners() {
             if (editingId) editingId.value = ''
             if (title) title.value = ''
             if (content) content.value = ''
-            file = null
         })
     }
 
@@ -125,7 +119,6 @@ function setupDiaryEventListeners() {
                 if (editingId) editingId.value = ''
                 if (title) title.value = ''
                 if (content) content.value = ''
-                file = null
             }
         })
     }
@@ -147,15 +140,7 @@ function setupDiaryEventListeners() {
         })
     }
 
-    // 图片上传
-    if (image && typeof $ !== 'undefined') {
-        $(image).on('change', async function () {
-            const localFile = this.files[0];
-            if (localFile) {
-                file = new AV.File($(this).val(), localFile);
-            }
-        });
-    }
+    // 图片上传已通过图床处理（image-upload.js），无需单独处理
 
     // 提交表单
     if (submit) {
@@ -188,7 +173,6 @@ function setupDiaryEventListeners() {
                 }
                 if (editingId) editingId.value = ''
                 if (writeOverlay) writeOverlay.hidden = true
-                file = null
                 await load()
             }
         })
@@ -237,28 +221,30 @@ function saveData(data) {
     diary.set('title', data.title);
     diary.set('content', data.content);
     diary.set('mood', data.mood || '😊');
-    diary.set('city', returnCitySN['cname']);
+    diary.set('city', returnCitySN && returnCitySN['cname'] ? returnCitySN['cname'] : '未知');
     diary.set('weather', weather());
     diary.set('time', time());
-    if (file) {
-        diary.set('image', file);
+    // 图片已通过图床直接插入 Markdown 内容，无需单独的 image 字段
+    
+    // 使用当前登录用户作为作者（必须登录）
+    const currentUser = AV.User.current();
+    if (!currentUser) {
+        throw new Error('请先登录才能写日记');
     }
-    if (returnCitySN['cname'][0] === "天") {
-        diary.set('author', "小燃");
-    } else if (returnCitySN['cname'][0] === "云") {
-        diary.set('author', "梦竹");
-    }
+    const username = currentUser.get('username') || currentUser.get('email') || '未知用户';
+    diary.set('author', username);
+    // 保存用户对象的引用
+    diary.set('user', currentUser);
+    
     diary.save();
 }
 
 async function updateData(id, data) {
-    const diary = AV.Object.createWithoutData('Diary', id);
+    const diary = AV.Object.createWithoutData('diary', id);
     diary.set('title', data.title);
     diary.set('content', data.content);
     diary.set('mood', data.mood || '😊');
-    if (file) {
-        diary.set('image', file);
-    }
+    // 图片已通过图床直接插入 Markdown 内容，无需单独的 image 字段
     await diary.save();
 }
 
@@ -352,10 +338,8 @@ function createDiaryEntry(diary) {
     const time = diary.attributes.time || ''
     const city = diary.attributes.city || '未知'
     const weather = diary.attributes.weather || '未知'
-    const imageHtml = diary.attributes.image
-        ? `<div class="diary-image"><img src="${diary.attributes.image.attributes.url}" alt="日记图片"></div>`
-        : ''
-
+    // 图片已通过图床直接插入 Markdown 内容，无需单独的 image 字段
+    
     const entry = document.createElement("div")
     entry.className = "diary-entry"
     entry.innerHTML = `
@@ -370,7 +354,6 @@ function createDiaryEntry(diary) {
         </div>
         <div class="diary-entry-content">
             ${contentHtml}
-            ${imageHtml}
         </div>
         <div class="diary-entry-footer">
             <span class="diary-location">📍 ${city}</span>
@@ -382,21 +365,23 @@ function createDiaryEntry(diary) {
 }
 
 function createTimelineEntry(diary) {
+    // 使用默认头像，兼容旧数据
     let avatar = 'img/users/avatar-1.jpg'
-    if (diary.attributes.author === "小燃") {
+    const author = diary.attributes.author;
+    // 兼容旧数据：如果作者是"小燃"或"梦竹"，使用对应头像
+    if (author === "小燃") {
         avatar = 'img/users/xiaoran.png';
-    } else if (diary.attributes.author === "梦竹") {
+    } else if (author === "梦竹") {
         avatar = 'img/users/mengzhu.png';
     }
+    // 新数据使用用户名，统一使用默认头像（可以根据需要扩展）
 
     const mood = diary.attributes.mood || '😊'
     const diaryId = diary.id
-    const imageHtml = diary.attributes.image
-        ? "<img src='" + diary.attributes.image.attributes.url + "' style='max-width:100%; margin-top:10px;'></img>"
-        : ""
+    // 图片已通过图床直接插入 Markdown 内容，无需单独的 image 字段
     const contentText = diary.attributes.content || ''
     const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
-
+    
     const lis = document.createElement("li")
     lis.innerHTML =
         "<img class=\"tl-circ\" src=" + avatar + "></img>\n" +
@@ -410,7 +395,6 @@ function createTimelineEntry(diary) {
         "<div class=\"tl-body\">\n" +
         contentHtml +
         "</div>" +
-        imageHtml +
         "<div class=\"small text-muted\">\n" +
         "<i class=\"glyphicon glyphicon-globe\"></i> [" + diary.attributes.city + "] • " + diary.attributes.weather +
         "</div>\n" +

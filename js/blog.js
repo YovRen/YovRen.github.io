@@ -193,12 +193,22 @@ function saveBlog(data) {
     blog.set('content', data.content);
     blog.set('tags', data.tags || '');
     blog.set('time', time());
-    blog.set('author', returnCitySN['cname'][0] === "天" ? "小燃" : "梦竹");
+
+    // 使用当前登录用户作为作者（必须登录）
+    const currentUser = AV.User.current();
+    if (!currentUser) {
+        throw new Error('请先登录才能发布博客');
+    }
+    const username = currentUser.get('username') || currentUser.get('email') || '未知用户';
+    blog.set('author', username);
+    // 保存用户对象的引用
+    blog.set('user', currentUser);
+
     blog.save();
 }
 
 async function updateBlog(id, data) {
-    const blog = AV.Object.createWithoutData('Blog', id);
+    const blog = AV.Object.createWithoutData('blog', id);
     blog.set('title', data.title);
     blog.set('content', data.content);
     blog.set('tags', data.tags || '');
