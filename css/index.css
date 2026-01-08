@@ -51,8 +51,10 @@ header .title {
 header .controls {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 15px;
     flex: 0 0 auto;
+    margin-left: auto;
 }
 
 header .search-input {

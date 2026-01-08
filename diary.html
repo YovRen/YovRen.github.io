@@ -75,9 +75,9 @@
     </div>
 
     <ul class="nav">
-        <li><a href="index.html">日程</a></li>
-        <li><a href="blog.html">博客</a></li>
         <li><a href="diary.html">日记</a></li>
+        <li><a href="blog.html">博客</a></li>
+        <li><a href="index.html">日程</a></li>
     </ul>
 
     <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
@@ -85,6 +85,14 @@
     <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // 初始化 LeanCloud（必须在 auth.js 之前）
+        AV.init({
+            appId: "szRqJxj4rGr47DBsfiYqh9qA-gzGzoHsz",
+            appKey: "UCGehmC6gOKYHSKpoMLeaRFJ",
+            serverURL: "https://szrqjxj4.lc-cn-n1-shared.com"
+        });
+    </script>
     <script src="js/auth.js"></script>
     <script src="js/login-modal.js"></script>
     <script src="js/image-upload.js"></script>
