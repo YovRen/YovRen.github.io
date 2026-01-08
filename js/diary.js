@@ -1,11 +1,5 @@
 // AV.init 已在 HTML 中初始化，这里不再重复初始化
-<<<<<<< HEAD
 // 直接使用 AV.Query 和 AV.User，不声明常量避免重复声明错误
-=======
-// 使用全局 AV 对象
-const Query = AV.Query;
-const User = AV.User;
->>>>>>> c6b6709af0f74118742dad4f3efc5af4622df3ee
 
 let title, content, submit, timeline, diaryEntries, searchInput;
 let newDiaryBtn, cancelEditBtn, editingId, moodSelect, writeOverlay;
@@ -183,7 +177,7 @@ function setupDiaryEventListeners() {
 
 async function getData() {
     let data = []
-    const queryAll = new AV.Query('diary');
+    const queryAll = new AV.Query('journal');
     await queryAll.find().then((rows) => {
         for (let row of rows) {
             data.push(row);
@@ -216,7 +210,7 @@ function time() {
 }
 
 function saveData(data) {
-    const Diary = AV.Object.extend('diary');
+    const Diary = AV.Object.extend('journal');
     const diary = new Diary();
     diary.set('title', data.title);
     diary.set('content', data.content);
@@ -240,7 +234,7 @@ function saveData(data) {
 }
 
 async function updateData(id, data) {
-    const diary = AV.Object.createWithoutData('diary', id);
+    const diary = AV.Object.createWithoutData('journal', id);
     diary.set('title', data.title);
     diary.set('content', data.content);
     diary.set('mood', data.mood || '😊');
@@ -253,7 +247,7 @@ async function deleteData(id) {
         return;
     }
     if (confirm('确定要删除这篇日记吗？')) {
-        const diary = AV.Object.createWithoutData('diary', id);
+        const diary = AV.Object.createWithoutData('journal', id);
         await diary.destroy();
         await load();
     }

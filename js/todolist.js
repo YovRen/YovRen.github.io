@@ -95,8 +95,16 @@ async function getData() {
             queryAll.doesNotExist('archived')
         );
         const rows = await queryAll.find();
+        console.log('查询到待办事项数量:', rows.length);
         for (let row of rows) {
             data.push(row);
+            console.log('待办事项:', {
+                id: row.id,
+                title: row.attributes.title,
+                done: row.attributes.done,
+                quadrant: row.attributes.quadrant,
+                archived: row.attributes.archived
+            });
         }
         return data
     } catch (error) {
@@ -133,10 +141,16 @@ async function saveData(data) {
         todo.set('quadrant', data.quadrant || 1);
         todo.set('archived', data.archived || false);
         if (data.deadline) {
-            todo.set('deadline', data.deadline);
+            // 将字符串日期转换为 Date 对象
+            const deadlineDate = new Date(data.deadline);
+            todo.set('deadline', deadlineDate);
         }
         if (data.completedDate) {
-            todo.set('completedDate', data.completedDate);
+            // 将字符串日期转换为 Date 对象
+            const completedDateObj = typeof data.completedDate === 'string' 
+                ? new Date(data.completedDate) 
+                : data.completedDate;
+            todo.set('completedDate', completedDateObj);
         }
         
         // 设置ACL为所有人可读写（如果需要权限控制，可以后续修改）
@@ -156,12 +170,30 @@ async function saveData(data) {
 
 function getDeadlineInfo(deadline) {
     if (!deadline) return ''
+    
+    // 处理 Date 对象或字符串
+    let deadlineDate;
+    if (deadline instanceof Date) {
+        deadlineDate = deadline;
+    } else if (typeof deadline === 'string') {
+        deadlineDate = new Date(deadline);
+    } else if (deadline.iso) {
+        // LeanCloud Date 对象
+        deadlineDate = new Date(deadline.iso);
+    } else {
+        return '';
+    }
+    
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const deadlineDate = new Date(deadline)
     deadlineDate.setHours(0, 0, 0, 0)
     const diffTime = deadlineDate - today
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    // 格式化日期显示
+    const dateStr = deadlineDate.getFullYear() + '-' + 
+                   String(deadlineDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(deadlineDate.getDate()).padStart(2, '0');
 
     if (diffDays < 0) {
         return '<span class="deadline-overdue">⚠️ 已过期 ' + Math.abs(diffDays) + ' 天</span>'
@@ -170,21 +202,25 @@ function getDeadlineInfo(deadline) {
     } else if (diffDays <= 3) {
         return '<span class="deadline-soon">⏰ 还有 ' + diffDays + ' 天</span>'
     } else {
-        return '<span class="deadline-normal">📅 ' + deadline + '</span>'
+        return '<span class="deadline-normal">📅 ' + dateStr + '</span>'
     }
 }
 
 async function load() {
     try {
+        console.log('开始加载数据...');
         // 清空所有象限
         for (let i = 1; i <= 4; i++) {
             const quadrantEl = document.querySelector(`#quadrant-${i}`)
             if (quadrantEl) {
                 quadrantEl.innerHTML = ''
+            } else {
+                console.warn(`象限 ${i} 的元素未找到`);
             }
         }
 
         let datas = await getData()
+        console.log('获取到的数据总数:', datas.length);
         const counts = [0, 0, 0, 0] // 四个象限的计数
 
         // 按截止日期排序
@@ -197,6 +233,7 @@ async function load() {
             return 0
         })
 
+        console.log('开始处理数据，总数:', datas.length);
         for (let i = 0; i < datas.length; i++) {
             const todo = datas[i]
             // 兼容旧数据：如果没有quadrant字段，根据importance和urgency计算
@@ -220,9 +257,13 @@ async function load() {
             const deadline = todo.attributes.deadline
             const deadlineInfo = getDeadlineInfo(deadline)
 
-            if (!todo.attributes.done) {
+            // 只显示未完成且未存档的任务
+            if (!todo.attributes.done && !todo.attributes.archived) {
                 counts[quadrant - 1]++
                 renderTodo(todo, quadrant, deadlineInfo)
+                console.log('渲染任务:', todo.attributes.title, '象限:', quadrant);
+            } else {
+                console.log('跳过任务:', todo.attributes.title, 'done:', todo.attributes.done, 'archived:', todo.attributes.archived);
             }
         }
 
@@ -301,7 +342,10 @@ function bindEvents() {
                 const todo = AV.Object.createWithoutData('todolist', todoId)
                 todo.set('done', this.checked)
                 if (this.checked) {
-                    todo.set('completedDate', new Date().toISOString().split('T')[0])
+                    // 保存为 Date 对象
+                    const completedDate = new Date();
+                    completedDate.setHours(0, 0, 0, 0);
+                    todo.set('completedDate', completedDate)
                     todoItem.classList.add('checked')
                 } else {
                     todo.set('completedDate', null)
@@ -349,7 +393,10 @@ function bindEvents() {
                 const todo = AV.Object.createWithoutData('todolist', todoId)
                 todo.set('archived', true)
                 todo.set('done', true)
-                todo.set('completedDate', new Date().toISOString().split('T')[0])
+                // 保存为 Date 对象
+                const completedDate = new Date();
+                completedDate.setHours(0, 0, 0, 0);
+                todo.set('completedDate', completedDate)
                 await todo.save()
                 await load()
             } catch (error) {
@@ -388,7 +435,18 @@ async function loadHistory() {
         // 按日期分组
         const groupedByDate = {}
         archivedData.forEach(todo => {
-            const date = todo.attributes.completedDate || '未知日期'
+            let date = '未知日期';
+            const completedDate = todo.attributes.completedDate;
+            if (completedDate) {
+                // 处理 Date 对象或字符串
+                if (completedDate instanceof Date) {
+                    date = completedDate.toISOString().split('T')[0];
+                } else if (typeof completedDate === 'string') {
+                    date = completedDate.split('T')[0];
+                } else if (completedDate.iso) {
+                    date = completedDate.iso.split('T')[0];
+                }
+            }
             if (!groupedByDate[date]) {
                 groupedByDate[date] = []
             }
