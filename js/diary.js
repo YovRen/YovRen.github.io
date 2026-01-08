@@ -1,4 +1,4 @@
-const {Query, User} = AV;
+const { Query, User } = AV;
 
 AV.init({
     appId: "szRqJxj4rGr47DBsfiYqh9qA-gzGzoHsz",
@@ -23,12 +23,20 @@ let file;
 
 load()
 
+<<<<<<< HEAD
 const writeOverlay = document.querySelector("#write-overlay")
 
 // 显示/隐藏写日记表单
 if (newDiaryBtn) {
     newDiaryBtn.addEventListener("click", () => {
         writeOverlay.hidden = false
+=======
+// 显示/隐藏写日记表单
+if (newDiaryBtn) {
+    newDiaryBtn.addEventListener("click", () => {
+        write.hidden = false
+        newDiaryBtn.style.display = 'none'
+>>>>>>> e9ea9ed4479df0727cbfae2a8b81327a8bbae34e
         editingId.value = ''
         title.value = ''
         content.value = ''
@@ -42,7 +50,12 @@ if (newDiaryBtn) {
 
 if (cancelEditBtn) {
     cancelEditBtn.addEventListener("click", () => {
+<<<<<<< HEAD
         writeOverlay.hidden = true
+=======
+        write.hidden = true
+        newDiaryBtn.style.display = 'block'
+>>>>>>> e9ea9ed4479df0727cbfae2a8b81327a8bbae34e
         editingId.value = ''
         title.value = ''
         content.value = ''
@@ -50,6 +63,7 @@ if (cancelEditBtn) {
     })
 }
 
+<<<<<<< HEAD
 // 点击遮罩层关闭表单
 if (writeOverlay) {
     writeOverlay.addEventListener("click", (e) => {
@@ -63,6 +77,8 @@ if (writeOverlay) {
     })
 }
 
+=======
+>>>>>>> e9ea9ed4479df0727cbfae2a8b81327a8bbae34e
 // 搜索功能
 if (searchInput) {
     searchInput.addEventListener("input", (e) => {
@@ -107,7 +123,12 @@ submit.addEventListener("click", async event => {
         title.value = ''
         content.value = ''
         editingId.value = ''
+<<<<<<< HEAD
         writeOverlay.hidden = true
+=======
+        write.hidden = true
+        if (newDiaryBtn) newDiaryBtn.style.display = 'block'
+>>>>>>> e9ea9ed4479df0727cbfae2a8b81327a8bbae34e
         file = null
         await load()
     }
@@ -131,7 +152,7 @@ function weather() {
         url: "http://wthrcdn.etouch.cn/weather_mini",
         type: "GET",
         dataType: 'json',
-        data: {city: (returnCitySN['cname'])},
+        data: { city: (returnCitySN['cname']) },
         async: false,
         success: function (res) {
             var maxTemperature = res.data.forecast[0].high;//最高温度
@@ -215,20 +236,20 @@ function renderDiaries(datas) {
         } else if (datas[i].attributes.author === "梦竹") {
             avatar = 'img/users/mengzhu.png';
         }
-        
+
         const mood = datas[i].attributes.mood || '😊'
         const diaryId = datas[i].id
-        
+
         let lis = document.createElement("li")
-        let imageHtml = datas[i].attributes.image 
-            ? "<img src='" + datas[i].attributes.image.attributes.url + "' style='max-width:100%; margin-top:10px;'></img>" 
+        let imageHtml = datas[i].attributes.image
+            ? "<img src='" + datas[i].attributes.image.attributes.url + "' style='max-width:100%; margin-top:10px;'></img>"
             : ""
-        
+
         lis.innerHTML =
             "<img class=\"tl-circ\" src=" + avatar + "></img>\n" +
             "<div class=\"timeline-panel\">\n" +
             "<div class=\"tl-heading\">\n" +
-            "<h4>" + mood + " " + (datas[i].attributes.title || '无标题') + 
+            "<h4>" + mood + " " + (datas[i].attributes.title || '无标题') +
             " <button class='edit-btn' data-id='" + diaryId + "' style='font-size:12px; padding:2px 5px;'>编辑</button>" +
             " <button class='delete-btn' data-id='" + diaryId + "' style='font-size:12px; padding:2px 5px;'>删除</button>" +
             "</h4>\n" +
@@ -241,13 +262,13 @@ function renderDiaries(datas) {
             "<i class=\"glyphicon glyphicon-globe\"></i> [" + datas[i].attributes.city + "] • " + datas[i].attributes.weather +
             "</div>\n" +
             "</div>";
-        
+
         timeline.appendChild(lis);
     }
-    
+
     // 绑定编辑和删除按钮
     document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
+        btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             const diary = allDiaries.find(d => d.id === id)
             if (diary) {
@@ -255,14 +276,21 @@ function renderDiaries(datas) {
                 title.value = diary.attributes.title || ''
                 content.value = diary.attributes.content || ''
                 moodSelect.value = diary.attributes.mood || '😊'
+<<<<<<< HEAD
                 writeOverlay.hidden = false
                 if (cancelEditBtn) cancelEditBtn.style.display = 'inline-block'
+=======
+                write.hidden = false
+                if (newDiaryBtn) newDiaryBtn.style.display = 'none'
+                if (cancelEditBtn) cancelEditBtn.style.display = 'inline-block'
+                write.scrollIntoView({ behavior: 'smooth' })
+>>>>>>> e9ea9ed4479df0727cbfae2a8b81327a8bbae34e
             }
         })
     })
-    
+
     document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
+        btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             await deleteData(id)
         })
@@ -273,14 +301,14 @@ function updateStats(datas) {
     const totalCount = datas.length
     let totalWords = 0
     const dates = new Set()
-    
+
     datas.forEach(diary => {
         totalWords += (diary.attributes.content || '').length
         if (diary.attributes.time) {
             dates.add(diary.attributes.time.split(" ")[0])
         }
     })
-    
+
     document.querySelector("#total-count").textContent = totalCount
     document.querySelector("#total-words").textContent = totalWords
     document.querySelector("#total-days").textContent = dates.size

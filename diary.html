@@ -31,7 +31,7 @@
     </div>
 
 
-    <div class="diary-container">
+    <<<<<<< HEAD <div class="diary-container">
         <div id="writer">
             <button id="new-diary" class="btn-new-diary">✏️ 写新日记</button>
         </div>
@@ -41,59 +41,103 @@
             <p>总字数: <span id="total-words">0</span></p>
             <p>已写天数: <span id="total-days">0</span></p>
         </div>
-    </div>
+        </div>
 
-    <div class="write-form-overlay" id="write-overlay" hidden>
-        <div class="cell col-xs-12" id="write">
-            <input id="title" type="text" class="PostDiaryForm-Title form-control form-group"
-                placeholder="写个标题吧...[可空]..." autocomplete="off" maxlength="50">
+        <div class="write-form-overlay" id="write-overlay" hidden>
+            <div class="cell col-xs-12" id="write">
+                <input id="title" type="text" class="PostDiaryForm-Title form-control form-group"
+                    placeholder="写个标题吧...[可空]..." autocomplete="off" maxlength="50">
 
-            <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
-                placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
-                maxlength="8000"></textarea>
+                <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
+                    placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
+                    maxlength="8000"></textarea>
 
-            <div style="margin: 10px 0;">
-                <label>心情标签：</label>
-                <select id="mood" class="form-control" style="display: inline-block; width: auto;">
-                    <option value="😊">😊 开心</option>
-                    <option value="😄">😄 兴奋</option>
-                    <option value="😌">😌 平静</option>
-                    <option value="😔">😔 难过</option>
-                    <option value="😰">😰 焦虑</option>
-                    <option value="😴">😴 疲惫</option>
-                    <option value="🤔">🤔 思考</option>
-                    <option value="😍">😍 喜欢</option>
-                </select>
-            </div>
-
-            <div class="item">
-                <div class="addImg"></div>
-                <input id="image" type="file" class="upload_input" onchange="change(this)" />
-                <div class="preBlock">
-                    <img class="preview" id="preview" alt="" name="pic" width="200" height="200" />
+                <div style="margin: 10px 0;">
+                    <label>心情标签：</label>
+                    <select id="mood" class="form-control" style="display: inline-block; width: auto;">
+                        <option value="😊">😊 开心</option>
+                        <option value="😄">😄 兴奋</option>
+                        <option value="😌">😌 平静</option>
+                        <option value="😔">😔 难过</option>
+                        <option value="😰">😰 焦虑</option>
+                        <option value="😴">😴 疲惫</option>
+                        <option value="🤔">🤔 思考</option>
+                        <option value="😍">😍 喜欢</option>
+                    </select>
                 </div>
-                <div class="delete">×</div>
+
+                <div class="item">
+                    <div class="addImg"></div>
+                    <input id="image" type="file" class="upload_input" onchange="change(this)" />
+                    <div class="preBlock">
+                        <img class="preview" id="preview" alt="" name="pic" width="200" height="200" />
+                    </div>
+                    <div class="delete">×</div>
+                </div>
+                <div class="form-buttons">
+                    <button id="submit" class="btn">😊 提 交</button>
+                    <button id="cancel-edit" class="btn" style="display:none; margin-left:10px;">取消编辑</button>
+                </div>
+                <input type="hidden" id="editing-id" value="">
             </div>
-            <div class="form-buttons">
+            =======
+            <div class="cell col-xs-12" id="write" style="position: fixed;" hidden>
+                <input id="title" type="text" class="PostDiaryForm-Title form-control form-group"
+                    placeholder="写个标题吧...[可空]..." autocomplete="off" maxlength="50">
+
+                <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
+                    placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
+                    maxlength="8000"></textarea>
+
+                <div style="margin: 10px 0;">
+                    <label>心情标签：</label>
+                    <select id="mood" class="form-control" style="display: inline-block; width: auto;">
+                        <option value="😊">😊 开心</option>
+                        <option value="😄">😄 兴奋</option>
+                        <option value="😌">😌 平静</option>
+                        <option value="😔">😔 难过</option>
+                        <option value="😰">😰 焦虑</option>
+                        <option value="😴">😴 疲惫</option>
+                        <option value="🤔">🤔 思考</option>
+                        <option value="😍">😍 喜欢</option>
+                    </select>
+                </div>
+
+                <div class="item">
+                    <div class="addImg"></div>
+                    <input id="image" type="file" class="upload_input" onchange="change(this)" />
+                    <div class="preBlock">
+                        <img class="preview" id="preview" alt="" name="pic" width="200" height="200" />
+                    </div>
+                    <div class="delete">×</div>
+                </div>
                 <button id="submit" class="btn">😊 提 交</button>
                 <button id="cancel-edit" class="btn" style="display:none; margin-left:10px;">取消编辑</button>
+                <input type="hidden" id="editing-id" value="">
             </div>
-            <input type="hidden" id="editing-id" value="">
-        </div>
-    </div>
-    <ul class="nav">
-        <li><a href="index.html">待办事项</a></li>
-        <li><a href="blog.html">博客</a></li>
-        <li><a href="calendar.html">日历</a></li>
-    </ul>
+            <div id="writer">
+                <button id="new-diary" class="btn" style="margin: 20px;">✏️ 写新日记</button>
+            </div>
+            <div id="stats" style="margin: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+                <h4>📊 日记统计</h4>
+                <p>总日记数: <span id="total-count">0</span></p>
+                <p>总字数: <span id="total-words">0</span></p>
+                <p>已写天数: <span id="total-days">0</span></p>
+                >>>>>>> e9ea9ed4479df0727cbfae2a8b81327a8bbae34e
+            </div>
+            <ul class="nav">
+                <li><a href="index.html">待办事项</a></li>
+                <li><a href="blog.html">博客</a></li>
+                <li><a href="calendar.html">日历</a></li>
+            </ul>
 
-    <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
-    <script src="js/jquery.min.js"></script>
-    <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/diary.js"></script>
-    <script src="js/addimg.js"></script>
-    <script src="js/move.js"></script>
+            <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+            <script src="js/jquery.min.js"></script>
+            <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/diary.js"></script>
+            <script src="js/addimg.js"></script>
+            <script src="js/move.js"></script>
 
 </body>
 
