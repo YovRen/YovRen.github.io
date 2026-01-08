@@ -172,7 +172,7 @@ function setupBlogEventListeners() {
 
 async function getBlogs() {
     let data = []
-    const queryAll = new AV.Query('Blog');
+    const queryAll = new AV.Query('blog');
     await queryAll.find().then((rows) => {
         for (let row of rows) {
             data.push(row);
@@ -187,7 +187,7 @@ function time() {
 }
 
 function saveBlog(data) {
-    const Blog = AV.Object.extend('Blog');
+    const Blog = AV.Object.extend('blog');
     const blog = new Blog();
     blog.set('title', data.title);
     blog.set('content', data.content);
@@ -210,7 +210,7 @@ async function deleteBlog(id) {
         return;
     }
     if (confirm('确定要删除这篇博客吗？')) {
-        const blog = AV.Object.createWithoutData('Blog', id);
+        const blog = AV.Object.createWithoutData('blog', id);
         await blog.destroy();
         await load();
     }

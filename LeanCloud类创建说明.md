@@ -2,9 +2,10 @@
 
 ## 需要创建的类
 
-### 1. Todolist（待办事项）
+### 1. todolist（待办事项）
 
 **字段：**
+
 - `title` (String) - 待办事项标题
 - `done` (Boolean) - 是否完成，默认 false
 - `importance` (String) - 重要性：'high' 或 'low'
@@ -15,6 +16,7 @@
 - `completedDate` (Date) - 完成日期（可选）
 
 **权限设置：**
+
 - 客户端创建：允许
 - 客户端读取：所有人
 - 客户端更新：所有人
@@ -22,9 +24,10 @@
 
 ---
 
-### 2. Diary（日记）
+### 2. diary（日记）
 
 **字段：**
+
 - `title` (String) - 日记标题
 - `content` (String) - 日记内容（Markdown格式）
 - `mood` (String) - 心情标签，默认 '😊'
@@ -35,6 +38,7 @@
 - `image` (File) - 图片文件（可选）
 
 **权限设置：**
+
 - 客户端创建：允许
 - 客户端读取：所有人
 - 客户端更新：所有人
@@ -42,9 +46,10 @@
 
 ---
 
-### 3. Blog（博客）
+### 3. blog（博客）
 
 **字段：**
+
 - `title` (String) - 博客标题
 - `content` (String) - 博客内容（Markdown格式）
 - `tags` (String) - 标签（逗号分隔）
@@ -52,6 +57,7 @@
 - `author` (String) - 作者：'小燃' 或 '梦竹'
 
 **权限设置：**
+
 - 客户端创建：允许
 - 客户端读取：所有人
 - 客户端更新：所有人
@@ -59,15 +65,17 @@
 
 ---
 
-### 4. CalendarEvent（日历事件）
+### 4. calendarevent（日历事件）
 
 **字段：**
+
 - `title` (String) - 事件标题
 - `content` (String) - 事件内容（Markdown格式，可选）
 - `date` (String) - 日期，格式：YYYY-MM-DD
 - `priority` (String) - 优先级：'low', 'medium', 或 'high'
 
 **权限设置：**
+
 - 客户端创建：允许
 - 客户端读取：所有人
 - 客户端更新：所有人
@@ -98,10 +106,10 @@
 ## 注意事项
 
 1. **类名大小写敏感**：必须完全匹配代码中的类名
-   - `Todolist`（不是 `TodoList` 或 `todolist`）
-   - `Diary`（不是 `diary`）
-   - `Blog`（不是 `blog`）
-   - `CalendarEvent`（不是 `calendarevent`）
+   - `todolist`（全小写）
+   - `diary`（全小写）
+   - `blog`（全小写）
+   - `calendarevent`（全小写）
 
 2. **字段会自动创建**：如果字段不存在，LeanCloud 会在首次保存时自动创建，但建议手动创建以便设置正确的类型
 
@@ -113,9 +121,9 @@
 
 ## 快速检查清单
 
-- [ ] Todolist 类已创建
-- [ ] Diary 类已创建
-- [ ] Blog 类已创建
-- [ ] CalendarEvent 类已创建
+- [ ] todolist 类已创建
+- [ ] diary 类已创建
+- [ ] blog 类已创建
+- [ ] calendarevent 类已创建
 - [ ] 所有类的权限设置正确
 - [ ] 数据安全设置允许客户端创建（或已手动创建所有类）

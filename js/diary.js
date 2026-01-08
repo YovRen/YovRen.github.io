@@ -199,7 +199,7 @@ function setupDiaryEventListeners() {
 
 async function getData() {
     let data = []
-    const queryAll = new AV.Query('Diary');
+    const queryAll = new AV.Query('diary');
     await queryAll.find().then((rows) => {
         for (let row of rows) {
             data.push(row);
@@ -232,7 +232,7 @@ function time() {
 }
 
 function saveData(data) {
-    const Diary = AV.Object.extend('Diary');
+    const Diary = AV.Object.extend('diary');
     const diary = new Diary();
     diary.set('title', data.title);
     diary.set('content', data.content);
@@ -267,7 +267,7 @@ async function deleteData(id) {
         return;
     }
     if (confirm('确定要删除这篇日记吗？')) {
-        const diary = AV.Object.createWithoutData('Diary', id);
+        const diary = AV.Object.createWithoutData('diary', id);
         await diary.destroy();
         await load();
     }

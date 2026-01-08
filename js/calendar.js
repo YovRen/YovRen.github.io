@@ -23,7 +23,7 @@ function initEventMarkdownEditor() {
                 },
                 toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
             });
-            
+
             // 设置图片上传功能
             if (typeof setupImagePaste === 'function') {
                 setupImagePaste(eventContentEditor);
@@ -110,9 +110,9 @@ eventSubmit.addEventListener("click", async () => {
         alert('请填写标题和日期')
         return
     }
-    
+
     const contentValue = eventContentEditor ? eventContentEditor.value() : eventContent.value
-    
+
     if (eventEditingId.value) {
         await updateEvent(eventEditingId.value, {
             title: eventTitle.value,
@@ -128,7 +128,7 @@ eventSubmit.addEventListener("click", async () => {
             priority: eventPriority.value
         })
     }
-    
+
     eventOverlay.hidden = true
     resetEventForm()
     await loadEvents()
@@ -169,14 +169,14 @@ function openEventForm(dateStr = null, eventId = null) {
     if (dateStr) {
         eventDate.value = dateStr
     }
-    
+
     // 重新初始化编辑器（如果还没初始化）
     if (!eventContentEditor && document.querySelector("#event-content")) {
         setTimeout(() => {
             initEventMarkdownEditor()
         }, 100)
     }
-    
+
     if (eventId) {
         const event = events.find(e => e.id === eventId)
         if (event) {
@@ -196,25 +196,25 @@ function openEventForm(dateStr = null, eventId = null) {
         resetEventForm()
         eventFormTitle.textContent = '添加事项'
     }
-    
+
     eventOverlay.hidden = false
 }
 
 function renderCalendar() {
     const year = currentDate.getFullYear()
     const month = currentDate.getMonth()
-    
+
     if (currentMonthYear) {
         currentMonthYear.textContent = `${year}年 ${month + 1}月`
     }
-    
+
     const firstDay = new Date(year, month, 1)
     const lastDay = new Date(year, month + 1, 0)
     const daysInMonth = lastDay.getDate()
     const startingDayOfWeek = firstDay.getDay()
-    
+
     calendarGrid.innerHTML = ''
-    
+
     // 星期标题
     const weekDays = ['日', '一', '二', '三', '四', '五', '六']
     weekDays.forEach(day => {
@@ -223,25 +223,25 @@ function renderCalendar() {
         dayHeader.textContent = day
         calendarGrid.appendChild(dayHeader)
     })
-    
+
     // 空白日期
     for (let i = 0; i < startingDayOfWeek; i++) {
         const emptyDay = document.createElement("div")
         emptyDay.className = "calendar-day empty"
         calendarGrid.appendChild(emptyDay)
     }
-    
+
     // 日期格子
     const today = new Date()
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-    
+
     for (let day = 1; day <= daysInMonth; day++) {
         const dayCell = document.createElement("div")
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
         const isToday = dateStr === todayStr
-        
+
         dayCell.className = `calendar-day ${isToday ? 'today' : ''}`
-        
+
         const dayEvents = events.filter(e => {
             const eventDate = e.attributes.date
             if (!eventDate) return false
@@ -249,22 +249,22 @@ function renderCalendar() {
             const normalizedEventDate = eventDate.split('T')[0] // 处理ISO格式
             return normalizedEventDate === dateStr || eventDate === dateStr
         })
-        
+
         dayCell.innerHTML = `
             <div class="day-number">${day}</div>
             <div class="day-events">
                 ${dayEvents.map(e => {
-                    const priority = e.attributes.priority || 'medium'
-                    const priorityClass = priority === 'high' ? 'high' : priority === 'low' ? 'low' : 'medium'
-                    return `<div class="event-dot ${priorityClass}" data-event-id="${e.id}" title="${e.attributes.title}"></div>`
-                }).join('')}
+            const priority = e.attributes.priority || 'medium'
+            const priorityClass = priority === 'high' ? 'high' : priority === 'low' ? 'low' : 'medium'
+            return `<div class="event-dot ${priorityClass}" data-event-id="${e.id}" title="${e.attributes.title}"></div>`
+        }).join('')}
             </div>
         `
-        
+
         dayCell.addEventListener("click", () => {
             openEventForm(dateStr)
         })
-        
+
         dayEvents.forEach(e => {
             const eventDot = dayCell.querySelector(`[data-event-id="${e.id}"]`)
             if (eventDot) {
@@ -274,14 +274,14 @@ function renderCalendar() {
                 })
             }
         })
-        
+
         calendarGrid.appendChild(dayCell)
     }
 }
 
 async function getEvents() {
     let data = []
-    const queryAll = new AV.Query('CalendarEvent');
+    const queryAll = new AV.Query('calendarevent');
     await queryAll.find().then((rows) => {
         for (let row of rows) {
             data.push(row);
@@ -299,7 +299,7 @@ async function loadEvents() {
 }
 
 function saveEvent(data) {
-    const Event = AV.Object.extend('CalendarEvent');
+    const Event = AV.Object.extend('calendarevent');
     const event = new Event();
     event.set('title', data.title);
     event.set('content', data.content || '');
@@ -311,7 +311,7 @@ function saveEvent(data) {
 }
 
 async function updateEvent(id, data) {
-    const event = AV.Object.createWithoutData('CalendarEvent', id);
+    const event = AV.Object.createWithoutData('calendarevent', id);
     event.set('title', data.title);
     event.set('content', data.content || '');
     // 确保日期格式统一为 YYYY-MM-DD
@@ -322,6 +322,6 @@ async function updateEvent(id, data) {
 }
 
 async function deleteEvent(id) {
-    const event = AV.Object.createWithoutData('CalendarEvent', id);
+    const event = AV.Object.createWithoutData('calendarevent', id);
     await event.destroy();
 }

@@ -88,7 +88,7 @@ function setupEventListeners() {
 async function getData() {
     try {
         let data = []
-        const queryAll = new AV.Query('Todolist');
+        const queryAll = new AV.Query('todolist');
         // 兼容旧数据：如果没有archived字段，也包含进来
         queryAll.or(
             queryAll.equalTo('archived', false),
@@ -108,7 +108,7 @@ async function getData() {
 async function getArchivedData() {
     try {
         let data = []
-        const queryAll = new AV.Query('Todolist');
+        const queryAll = new AV.Query('todolist');
         queryAll.equalTo('archived', true);
         queryAll.descending('completedDate');
         const rows = await queryAll.find();
@@ -124,7 +124,7 @@ async function getArchivedData() {
 
 async function saveData(data) {
     try {
-        const Todo = AV.Object.extend('Todolist');
+        const Todo = AV.Object.extend('todolist');
         const todo = new Todo();
         todo.set('title', data.title);
         todo.set('done', data.done || false);
@@ -207,7 +207,7 @@ async function load() {
                 quadrant = getQuadrant(importance, urgency)
                 // 更新旧数据
                 try {
-                    const todoObj = AV.Object.createWithoutData('Todolist', todo.id)
+                    const todoObj = AV.Object.createWithoutData('todolist', todo.id)
                     todoObj.set('quadrant', quadrant)
                     if (!todo.attributes.importance) todoObj.set('importance', importance)
                     if (!todo.attributes.urgency) todoObj.set('urgency', urgency)
@@ -298,7 +298,7 @@ function bindEvents() {
             try {
                 const todoId = this.id.replace('todo-', '')
                 const todoItem = this.closest('.todo-item')
-                const todo = AV.Object.createWithoutData('Todolist', todoId)
+                const todo = AV.Object.createWithoutData('todolist', todoId)
                 todo.set('done', this.checked)
                 if (this.checked) {
                     todo.set('completedDate', new Date().toISOString().split('T')[0])
@@ -328,7 +328,7 @@ function bindEvents() {
             }
             try {
                 const todoId = this.closest('.todo-item').dataset.id
-                const todo = AV.Object.createWithoutData('Todolist', todoId)
+                const todo = AV.Object.createWithoutData('todolist', todoId)
                 await todo.destroy()
                 await load()
             } catch (error) {
@@ -346,7 +346,7 @@ function bindEvents() {
             }
             try {
                 const todoId = this.closest('.todo-item').dataset.id
-                const todo = AV.Object.createWithoutData('Todolist', todoId)
+                const todo = AV.Object.createWithoutData('todolist', todoId)
                 todo.set('archived', true)
                 todo.set('done', true)
                 todo.set('completedDate', new Date().toISOString().split('T')[0])
