@@ -1,4 +1,4 @@
-const {Query, User} = AV;
+const { Query, User } = AV;
 
 AV.init({
     appId: "szRqJxj4rGr47DBsfiYqh9qA-gzGzoHsz",
@@ -9,7 +9,6 @@ AV.init({
 const title = document.querySelector("#title")
 const content = document.querySelector("#content")
 const submit = document.querySelector("#submit")
-const write = document.querySelector("#write")
 const image = document.querySelector("#image")
 const timeline = document.querySelector(".timeline")
 const searchInput = document.querySelector("#search-diary")
@@ -17,13 +16,12 @@ const newDiaryBtn = document.querySelector("#new-diary")
 const cancelEditBtn = document.querySelector("#cancel-edit")
 const editingId = document.querySelector("#editing-id")
 const moodSelect = document.querySelector("#mood")
+const writeOverlay = document.querySelector("#write-overlay")
 
 let allDiaries = []
 let file;
 
 load()
-
-const writeOverlay = document.querySelector("#write-overlay")
 
 // 显示/隐藏写日记表单
 if (newDiaryBtn) {
@@ -131,7 +129,7 @@ function weather() {
         url: "http://wthrcdn.etouch.cn/weather_mini",
         type: "GET",
         dataType: 'json',
-        data: {city: (returnCitySN['cname'])},
+        data: { city: (returnCitySN['cname']) },
         async: false,
         success: function (res) {
             var maxTemperature = res.data.forecast[0].high;//最高温度
@@ -215,20 +213,20 @@ function renderDiaries(datas) {
         } else if (datas[i].attributes.author === "梦竹") {
             avatar = 'img/users/mengzhu.png';
         }
-        
+
         const mood = datas[i].attributes.mood || '😊'
         const diaryId = datas[i].id
-        
+
         let lis = document.createElement("li")
-        let imageHtml = datas[i].attributes.image 
-            ? "<img src='" + datas[i].attributes.image.attributes.url + "' style='max-width:100%; margin-top:10px;'></img>" 
+        let imageHtml = datas[i].attributes.image
+            ? "<img src='" + datas[i].attributes.image.attributes.url + "' style='max-width:100%; margin-top:10px;'></img>"
             : ""
-        
+
         lis.innerHTML =
             "<img class=\"tl-circ\" src=" + avatar + "></img>\n" +
             "<div class=\"timeline-panel\">\n" +
             "<div class=\"tl-heading\">\n" +
-            "<h4>" + mood + " " + (datas[i].attributes.title || '无标题') + 
+            "<h4>" + mood + " " + (datas[i].attributes.title || '无标题') +
             " <button class='edit-btn' data-id='" + diaryId + "' style='font-size:12px; padding:2px 5px;'>编辑</button>" +
             " <button class='delete-btn' data-id='" + diaryId + "' style='font-size:12px; padding:2px 5px;'>删除</button>" +
             "</h4>\n" +
@@ -241,13 +239,13 @@ function renderDiaries(datas) {
             "<i class=\"glyphicon glyphicon-globe\"></i> [" + datas[i].attributes.city + "] • " + datas[i].attributes.weather +
             "</div>\n" +
             "</div>";
-        
+
         timeline.appendChild(lis);
     }
-    
+
     // 绑定编辑和删除按钮
     document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
+        btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             const diary = allDiaries.find(d => d.id === id)
             if (diary) {
@@ -260,9 +258,9 @@ function renderDiaries(datas) {
             }
         })
     })
-    
+
     document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
+        btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             await deleteData(id)
         })
@@ -273,14 +271,14 @@ function updateStats(datas) {
     const totalCount = datas.length
     let totalWords = 0
     const dates = new Set()
-    
+
     datas.forEach(diary => {
         totalWords += (diary.attributes.content || '').length
         if (diary.attributes.time) {
             dates.add(diary.attributes.time.split(" ")[0])
         }
     })
-    
+
     document.querySelector("#total-count").textContent = totalCount
     document.querySelector("#total-words").textContent = totalWords
     document.querySelector("#total-days").textContent = dates.size

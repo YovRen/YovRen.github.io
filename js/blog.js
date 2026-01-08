@@ -1,4 +1,4 @@
-const {Query, User} = AV;
+const { Query, User } = AV;
 
 AV.init({
     appId: "szRqJxj4rGr47DBsfiYqh9qA-gzGzoHsz",
@@ -63,9 +63,9 @@ if (searchInput) {
                 const title = blog.attributes.title || ''
                 const content = blog.attributes.content || ''
                 const tags = blog.attributes.tags || ''
-                return title.toLowerCase().includes(keyword) || 
-                       content.toLowerCase().includes(keyword) ||
-                       tags.toLowerCase().includes(keyword)
+                return title.toLowerCase().includes(keyword) ||
+                    content.toLowerCase().includes(keyword) ||
+                    tags.toLowerCase().includes(keyword)
             })
             renderBlogs(filtered)
         }
@@ -150,23 +150,23 @@ async function load() {
 
 function renderBlogs(blogs) {
     blogList.innerHTML = ''
-    
+
     if (blogs.length === 0) {
         blogList.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">还没有博客，开始写第一篇吧！</div>'
         return
     }
-    
+
     blogs.forEach(blog => {
         const blogCard = document.createElement("div")
         blogCard.className = "blog-card"
-        
+
         const tags = blog.attributes.tags ? blog.attributes.tags.split(',').map(t => t.trim()).filter(t => t) : []
-        const tagsHtml = tags.length > 0 
+        const tagsHtml = tags.length > 0
             ? '<div class="blog-tags">' + tags.map(tag => `<span class="blog-tag">${tag}</span>`).join('') + '</div>'
             : ''
-        
+
         const contentPreview = (blog.attributes.content || '').substring(0, 200) + ((blog.attributes.content || '').length > 200 ? '...' : '')
-        
+
         blogCard.innerHTML = `
             <div class="blog-card-header">
                 <h3>${blog.attributes.title || '无标题'}</h3>
@@ -182,13 +182,13 @@ function renderBlogs(blogs) {
                 <span class="blog-author">👤 ${blog.attributes.author || ''}</span>
             </div>
         `
-        
+
         blogList.appendChild(blogCard)
     })
-    
+
     // 绑定编辑和删除按钮
     document.querySelectorAll('.edit-blog-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
+        btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             const blog = allBlogs.find(b => b.id === id)
             if (blog) {
@@ -200,9 +200,9 @@ function renderBlogs(blogs) {
             }
         })
     })
-    
+
     document.querySelectorAll('.delete-blog-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
+        btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             await deleteBlog(id)
         })
@@ -212,11 +212,11 @@ function renderBlogs(blogs) {
 function updateBlogStats(blogs) {
     const totalCount = blogs.length
     let totalWords = 0
-    
+
     blogs.forEach(blog => {
         totalWords += (blog.attributes.content || '').length
     })
-    
+
     document.querySelector("#blog-total-count").textContent = totalCount
     document.querySelector("#blog-total-words").textContent = totalWords
 }

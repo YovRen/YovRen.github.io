@@ -10,13 +10,9 @@
     <meta name="theme-color" content="plum">
     <link rel="stylesheet" href="css/index.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/index.css">
-
 </head>
 
-
 <body>
-
     <header>
         <div class="title">diary</div>
         <div class="controls">
@@ -24,12 +20,6 @@
                 style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px;">
         </div>
     </header>
-
-
-    <div class="timeline-container">
-        <ul class="timeline"></ul>
-    </div>
-
 
     <div class="diary-container">
         <div id="writer">
@@ -41,6 +31,10 @@
             <p>总字数: <span id="total-words">0</span></p>
             <p>已写天数: <span id="total-days">0</span></p>
         </div>
+    </div>
+
+    <div class="timeline-container">
+        <ul class="timeline"></ul>
     </div>
 
     <div class="write-form-overlay" id="write-overlay" hidden>
@@ -81,6 +75,7 @@
             <input type="hidden" id="editing-id" value="">
         </div>
     </div>
+
     <ul class="nav">
         <li><a href="index.html">待办事项</a></li>
         <li><a href="blog.html">博客</a></li>
@@ -94,7 +89,6 @@
     <script src="js/diary.js"></script>
     <script src="js/addimg.js"></script>
     <script src="js/move.js"></script>
-
 </body>
 
 </html>
