@@ -33,13 +33,21 @@ function initMarkdownEditor() {
         try {
             contentEditor = new EasyMDE({
                 element: document.querySelector("#content"),
-                placeholder: "写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察... 支持Markdown格式",
+                placeholder: "写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察... 支持Markdown格式，可直接粘贴图片",
                 spellChecker: false,
                 autosave: {
                     enabled: false
                 },
                 toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
             });
+            
+            // 设置图片上传功能
+            if (typeof setupImagePaste === 'function') {
+                setupImagePaste(contentEditor);
+            }
+            if (typeof setupCustomImageUpload === 'function') {
+                setupCustomImageUpload(contentEditor);
+            }
         } catch (e) {
             console.error('Failed to initialize EasyMDE:', e);
         }

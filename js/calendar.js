@@ -12,16 +12,33 @@ let eventContentEditor = null
 
 // 初始化Markdown编辑器
 function initEventMarkdownEditor() {
-    if (document.querySelector("#event-content")) {
-        eventContentEditor = new EasyMDE({
-            element: document.querySelector("#event-content"),
-            placeholder: "事项详情...支持Markdown格式",
-            spellChecker: false,
-            autosave: {
-                enabled: false
-            },
-            toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
-        });
+    if (typeof EasyMDE === 'undefined') {
+        console.warn('EasyMDE not loaded yet, retrying...');
+        setTimeout(initEventMarkdownEditor, 100);
+        return;
+    }
+    if (document.querySelector("#event-content") && !eventContentEditor) {
+        try {
+            eventContentEditor = new EasyMDE({
+                element: document.querySelector("#event-content"),
+                placeholder: "事项详情...支持Markdown格式，可直接粘贴图片",
+                spellChecker: false,
+                autosave: {
+                    enabled: false
+                },
+                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+            });
+            
+            // 设置图片上传功能
+            if (typeof setupImagePaste === 'function') {
+                setupImagePaste(eventContentEditor);
+            }
+            if (typeof setupCustomImageUpload === 'function') {
+                setupCustomImageUpload(eventContentEditor);
+            }
+        } catch (e) {
+            console.error('Failed to initialize EasyMDE:', e);
+        }
     }
 }
 
@@ -207,7 +224,13 @@ function renderCalendar() {
         
         dayCell.className = `calendar-day ${isToday ? 'today' : ''}`
         
-        const dayEvents = events.filter(e => e.attributes.date === dateStr)
+        const dayEvents = events.filter(e => {
+            const eventDate = e.attributes.date
+            if (!eventDate) return false
+            // 处理日期格式，确保匹配
+            const normalizedEventDate = eventDate.split('T')[0] // 处理ISO格式
+            return normalizedEventDate === dateStr || eventDate === dateStr
+        })
         
         dayCell.innerHTML = `
             <div class="day-number">${day}</div>
@@ -251,6 +274,10 @@ async function getEvents() {
 
 async function loadEvents() {
     events = await getEvents()
+    console.log('Loaded events:', events.length)
+    events.forEach(e => {
+        console.log('Event:', e.attributes.date, e.attributes.title)
+    })
 }
 
 function saveEvent(data) {
@@ -258,7 +285,9 @@ function saveEvent(data) {
     const event = new Event();
     event.set('title', data.title);
     event.set('content', data.content || '');
-    event.set('date', data.date);
+    // 确保日期格式统一为 YYYY-MM-DD
+    const dateStr = data.date.split('T')[0]; // 处理可能的ISO格式
+    event.set('date', dateStr);
     event.set('priority', data.priority || 'medium');
     return event.save();
 }
@@ -267,7 +296,9 @@ async function updateEvent(id, data) {
     const event = AV.Object.createWithoutData('CalendarEvent', id);
     event.set('title', data.title);
     event.set('content', data.content || '');
-    event.set('date', data.date);
+    // 确保日期格式统一为 YYYY-MM-DD
+    const dateStr = data.date.split('T')[0]; // 处理可能的ISO格式
+    event.set('date', dateStr);
     event.set('priority', data.priority || 'medium');
     await event.save();
 }

@@ -38,6 +38,15 @@ header {
     padding: 0 1rem;
 }
 
+header .title {
+    flex: 0 0 auto;
+}
+
+header .controls {
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
 .title {
     display: inline-block;
     font-size: 28px;
@@ -51,6 +60,11 @@ header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-left: auto;
+}
+
+.controls input {
+    margin: 0;
 }
 
 .theme-toggle {
@@ -281,6 +295,11 @@ ul.nav {
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 1000;
+}
+
+body {
+    padding-bottom: 60px;
 }
 
 ul.nav li {
@@ -598,13 +617,13 @@ img {
 .timeline-container {
     width: 100%;
     margin: 20px 0;
-    padding: 0;
+    padding: 0 0 80px 0;
     position: relative;
     z-index: 1;
 }
 
 .blog-main .timeline-container {
-    padding: 0 15px;
+    padding: 0 15px 80px 15px;
 }
 
 .timeline {

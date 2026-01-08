@@ -22,16 +22,33 @@ let blogContentEditor = null
 
 // 初始化Markdown编辑器
 function initBlogMarkdownEditor() {
-    if (document.querySelector("#blog-content")) {
-        blogContentEditor = new EasyMDE({
-            element: document.querySelector("#blog-content"),
-            placeholder: "开始写作吧...支持Markdown格式",
-            spellChecker: false,
-            autosave: {
-                enabled: false
-            },
-            toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
-        });
+    if (typeof EasyMDE === 'undefined') {
+        console.warn('EasyMDE not loaded yet, retrying...');
+        setTimeout(initBlogMarkdownEditor, 100);
+        return;
+    }
+    if (document.querySelector("#blog-content") && !blogContentEditor) {
+        try {
+            blogContentEditor = new EasyMDE({
+                element: document.querySelector("#blog-content"),
+                placeholder: "开始写作吧...支持Markdown格式，可直接粘贴图片",
+                spellChecker: false,
+                autosave: {
+                    enabled: false
+                },
+                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+            });
+            
+            // 设置图片上传功能
+            if (typeof setupImagePaste === 'function') {
+                setupImagePaste(blogContentEditor);
+            }
+            if (typeof setupCustomImageUpload === 'function') {
+                setupCustomImageUpload(blogContentEditor);
+            }
+        } catch (e) {
+            console.error('Failed to initialize EasyMDE:', e);
+        }
     }
 }
 
