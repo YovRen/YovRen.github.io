@@ -1,11 +1,5 @@
 // AV.init 已在 HTML 中初始化，这里不再重复初始化
-<<<<<<< HEAD
 // 直接使用 AV.Query 和 AV.User，不声明常量避免重复声明错误
-=======
-// 使用全局 AV 对象
-const Query = AV.Query;
-const User = AV.User;
->>>>>>> c6b6709af0f74118742dad4f3efc5af4622df3ee
 
 let blogTitle, blogContent, blogTags, blogSubmit, blogCancel, blogOverlay;
 let newBlogBtn, blogList, searchInput, blogEditingId;
@@ -23,13 +17,13 @@ function initBlogElements() {
     blogList = document.querySelector("#blog-list")
     searchInput = document.querySelector("#search-blog")
     blogEditingId = document.querySelector("#blog-editing-id")
-    
+
     console.log('初始化博客元素:', {
         newBlogBtn: !!newBlogBtn,
         blogOverlay: !!blogOverlay,
         blogSubmit: !!blogSubmit
     });
-    
+
     return newBlogBtn && blogOverlay && blogSubmit;
 }
 
@@ -51,7 +45,7 @@ function initBlogMarkdownEditor() {
                 },
                 toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
             });
-            
+
             // 设置图片上传功能
             if (typeof setupImagePaste === 'function') {
                 setupImagePaste(blogContentEditor);
@@ -127,9 +121,9 @@ function setupBlogEventListeners() {
                     const title = blog.attributes.title || ''
                     const content = blog.attributes.content || ''
                     const tags = blog.attributes.tags || ''
-                    return title.toLowerCase().includes(keyword) || 
-                           content.toLowerCase().includes(keyword) ||
-                           tags.toLowerCase().includes(keyword)
+                    return title.toLowerCase().includes(keyword) ||
+                        content.toLowerCase().includes(keyword) ||
+                        tags.toLowerCase().includes(keyword)
                 })
                 renderBlogs(filtered)
             }
@@ -233,19 +227,19 @@ function renderBlogs(blogs) {
         console.error('blogList not found!');
         return;
     }
-    
+
     blogList.innerHTML = ''
-    
+
     if (blogs.length === 0) {
         blogList.innerHTML = '<div class="blog-empty">还没有博客，开始写第一篇吧！</div>'
         return
     }
-    
+
     blogs.forEach(blog => {
         const blogCard = createBlogCard(blog)
         blogList.appendChild(blogCard)
     })
-    
+
     // 渲染后绑定事件
     bindBlogEvents();
 }
@@ -258,7 +252,7 @@ function createBlogCard(blog) {
     const time = blog.attributes.time || ''
     const tags = blog.attributes.tags || ''
     const tagArray = tags.split(',').filter(t => t.trim())
-    
+
     const card = document.createElement("div")
     card.className = "blog-card"
     card.innerHTML = `
@@ -281,7 +275,7 @@ function createBlogCard(blog) {
             </div>
         ` : ''}
     `
-    
+
     return card
 }
 
