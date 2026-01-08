@@ -30,21 +30,215 @@ html {
 header {
     position: relative;
     width: 100%;
-    height: 60px;
-    background-color: var(--primary);
+    min-height: 60px;
+    background: linear-gradient(135deg, var(--primary) 0%, #dda0dd 100%);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1rem;
+    padding: 0 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
 }
 
 header .title {
     flex: 0 0 auto;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 header .controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     flex: 0 0 auto;
-    margin-left: auto;
+}
+
+header .search-input {
+    padding: 8px 15px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    width: 220px;
+    transition: all 0.3s;
+    outline: none;
+}
+
+header .search-input:focus {
+    border-color: rgba(255, 255, 255, 0.8);
+    background: white;
+    width: 280px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+#login-btn, #logout-btn {
+    padding: 8px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+#login-btn:hover, #logout-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-1px);
+}
+
+#user-info {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-size: 14px;
+}
+
+#user-info .username {
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 登录弹窗样式 */
+.login-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+}
+
+.login-modal {
+    background: white;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.login-modal-header {
+    background: linear-gradient(135deg, var(--primary) 0%, #dda0dd 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.login-modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.close-modal {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    transition: all 0.2s;
+}
+
+.close-modal:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.login-modal-body {
+    padding: 25px;
+}
+
+.login-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: #999;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: bold;
+}
+
+.login-form {
+    display: none;
+}
+
+.login-form.active {
+    display: block;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(221, 160, 221, 0.1);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--primary) 0%, #dda0dd 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(221, 160, 221, 0.4);
+}
+
+.error-msg {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: 10px;
+    min-height: 20px;
 }
 
 .title {
@@ -624,6 +818,216 @@ img {
 
 .blog-main .timeline-container {
     padding: 0 15px 80px 15px;
+}
+
+/* 日记本样式 */
+.diary-page-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px 80px 20px;
+    display: flex;
+    gap: 25px;
+}
+
+.diary-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.diary-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.diary-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 16px;
+}
+
+.diary-date-section {
+    margin: 30px 0 15px 0;
+}
+
+.diary-date-label {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary);
+    padding: 8px 15px;
+    background: rgba(221, 160, 221, 0.1);
+    border-left: 4px solid var(--primary);
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.diary-entry {
+    background: linear-gradient(to bottom, #fffef7 0%, #fffef5 100%);
+    border: 1px solid #e8e8e3;
+    border-left: 4px solid #d4a574;
+    border-radius: 4px;
+    padding: 20px 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+    transition: all 0.3s;
+}
+
+.diary-entry:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.diary-entry::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: repeating-linear-gradient(
+        transparent,
+        transparent 2px,
+        rgba(212, 165, 116, 0.3) 2px,
+        rgba(212, 165, 116, 0.3) 4px
+    );
+}
+
+.diary-entry-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+.diary-mood {
+    font-size: 24px;
+}
+
+.diary-title {
+    flex: 1;
+    font-size: 18px;
+    font-weight: bold;
+    color: #5a4a3a;
+    font-family: 'KaiTi', '楷体', serif;
+}
+
+.diary-time {
+    font-size: 12px;
+    color: #999;
+    font-style: italic;
+}
+
+.diary-edit-btn, .diary-delete-btn {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.diary-edit-btn:hover, .diary-delete-btn:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.diary-entry-content {
+    color: #4a4a4a;
+    line-height: 1.8;
+    font-size: 15px;
+    margin-bottom: 15px;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+}
+
+.diary-entry-content p {
+    margin: 10px 0;
+}
+
+.diary-entry-content img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 15px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.diary-image {
+    margin: 15px 0;
+}
+
+.diary-image img {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.diary-entry-footer {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #999;
+    padding-top: 10px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+.diary-location, .diary-weather {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-new-diary {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #d4a574 0%, #c8966a 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+    transition: all 0.3s;
+    margin-bottom: 20px;
+}
+
+.btn-new-diary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(212, 165, 116, 0.4);
+}
+
+.diary-stats {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e8e8e3;
+}
+
+.diary-stats h4 {
+    margin-top: 0;
+    color: var(--primary);
+    font-size: 16px;
+}
+
+.diary-stats p {
+    margin: 8px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .diary-page-container {
+        flex-direction: column;
+    }
+    
+    .diary-sidebar {
+        width: 100%;
+    }
 }
 
 .timeline {

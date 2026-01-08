@@ -17,6 +17,9 @@ load()
 
 sear.addEventListener("keydown", async event => {
     if (event.keyCode === 13) {
+        if (typeof requireLogin === 'function' && !requireLogin()) {
+            return;
+        }
         if (sear.value !== '') {
             saveData({
                 title: sear.value,
@@ -127,6 +130,9 @@ async function load() {
     let closes = document.querySelectorAll(".close")
     for (let i = 0; i < closes.length; i++) {
         closes[i].addEventListener("click", async function () {
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
+            }
             const todo = AV.Object.createWithoutData('Todolist', this.id);
             await todo.destroy()
             await load()
@@ -136,6 +142,11 @@ async function load() {
     let inputs = document.querySelectorAll(".rightbox")
     for (let i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener("click", async function () {
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                // 恢复checkbox状态
+                this.checked = !this.checked;
+                return;
+            }
             const todo = AV.Object.createWithoutData('Todolist', this.id);
             todo.set('done', inputs[i].checked)
             await todo.save()

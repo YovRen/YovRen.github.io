@@ -63,6 +63,9 @@ load()
 
 if (newBlogBtn) {
     newBlogBtn.addEventListener("click", () => {
+        if (typeof requireLogin === 'function' && !requireLogin()) {
+            return;
+        }
         blogOverlay.hidden = false
         blogEditingId.value = ''
         blogTitle.value = ''
@@ -123,6 +126,9 @@ if (searchInput) {
 }
 
 blogSubmit.addEventListener("click", async event => {
+    if (typeof requireLogin === 'function' && !requireLogin()) {
+        return;
+    }
     const contentValue = blogContentEditor ? blogContentEditor.value() : blogContent.value
     if (blogTitle.value && contentValue) {
         if (blogEditingId.value) {
@@ -190,6 +196,9 @@ async function updateBlog(id, data) {
 }
 
 async function deleteBlog(id) {
+    if (typeof requireLogin === 'function' && !requireLogin()) {
+        return;
+    }
     if (confirm('确定要删除这篇博客吗？')) {
         const blog = AV.Object.createWithoutData('Blog', id);
         await blog.destroy();
@@ -246,6 +255,9 @@ function renderBlogs(blogs) {
     // 绑定编辑和删除按钮
     document.querySelectorAll('.edit-blog-btn').forEach(btn => {
         btn.addEventListener('click', async function () {
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
+            }
             const id = this.getAttribute('data-id')
             const blog = allBlogs.find(b => b.id === id)
             if (blog) {

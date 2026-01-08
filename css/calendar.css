@@ -4,6 +4,10 @@
     padding: 0 15px;
 }
 
+.section-card .calendar-grid {
+    margin-top: 15px;
+}
+
 .calendar-header {
     text-align: center;
     margin-bottom: 20px;

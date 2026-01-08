@@ -1,71 +1,158 @@
 <!DOCTYPE html>
-<html lang="en" class="full">
+<html lang="zh-CN" class="full">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>todolist 每日待办清单</title>
-    <meta name="description" content="轻量本地化的每日待办与日记页面，支持离线与暗色模式。">
+    <title>日程管理 - 拉普达</title>
+    <meta name="description" content="整合待办事项和日历的日程管理页面。">
     <meta name="theme-color" content="plum">
     <link rel="stylesheet" href="css/index.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/calendar.css">
 </head>
 
 <body>
     <header>
-        <div class="title">待办事项</div>
+        <div class="title">日程管理</div>
+        <div class="controls">
+            <input type="text" placeholder="🔍 搜索..." id="search-all" class="search-input">
+            <div id="user-info" style="display: none;">
+                <span class="username"></span>
+                <button id="logout-btn">登出</button>
+            </div>
+            <button id="login-btn">登录</button>
+        </div>
     </header>
 
-    <div class="container-main">
-        <div class="add-todo-section">
-            <div class="search">
-                <input type="text" placeholder="制定todo..." id="sear">
-            </div>
-            <div class="todo-options">
-                <div class="option-group">
-                    <label>优先级：</label>
-                    <select id="priority">
-                        <option value="low">低优先级</option>
-                        <option value="medium" selected>中优先级</option>
-                        <option value="high">高优先级</option>
-                    </select>
+    <div class="schedule-container">
+        <!-- 左侧：待办事项 -->
+        <div class="schedule-left">
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>📋 待办事项</h3>
                 </div>
-                <div class="option-group">
-                    <label>截止日期：</label>
-                    <input type="date" id="deadline">
+                <div class="add-todo-section">
+                    <div class="search">
+                        <input type="text" placeholder="制定todo..." id="sear">
+                    </div>
+                    <div class="todo-options">
+                        <div class="option-group">
+                            <label>优先级：</label>
+                            <select id="priority">
+                                <option value="low">低</option>
+                                <option value="medium" selected>中</option>
+                                <option value="high">高</option>
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label>截止日期：</label>
+                            <input type="date" id="deadline">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="todo-lists">
+                    <div class="dolist">
+                        <div class="list-header">
+                            <span>正在进行</span>
+                            <span class="donumber">0</span>
+                        </div>
+                        <ul class="dothings"></ul>
+                    </div>
+                    <div class="donelist">
+                        <div class="list-header">
+                            <span>已经完成</span>
+                            <span class="donenumber">0</span>
+                        </div>
+                        <ul class="donethings"></ul>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="todo-lists">
-            <div class="dolist">
-                <div class="list-header">
-                    <span>正在进行</span>
-                    <span class="donumber">0</span>
+        <!-- 右侧：日历 -->
+        <div class="schedule-right">
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>📅 日历视图</h3>
+                    <div class="calendar-controls">
+                        <button id="prev-month" class="btn-month">◀</button>
+                        <span id="current-month-year" class="month-year"></span>
+                        <button id="next-month" class="btn-month">▶</button>
+                        <button id="today-btn" class="btn-month">今天</button>
+                    </div>
                 </div>
-                <ul class="dothings"></ul>
+                <div class="calendar-grid" id="calendar-grid"></div>
             </div>
-            <div class="donelist">
-                <div class="list-header">
-                    <span>已经完成</span>
-                    <span class="donenumber">0</span>
-                </div>
-                <ul class="donethings"></ul>
+        </div>
+    </div>
+
+    <!-- 事项编辑弹窗 -->
+    <div class="write-form-overlay" id="event-overlay" hidden>
+        <div class="cell col-xs-12" id="event-write">
+            <h3 id="event-form-title">添加事项</h3>
+            <input id="event-title" type="text" class="PostDiaryForm-Title form-control form-group" 
+                placeholder="事项标题..." autocomplete="off" maxlength="100">
+
+            <div id="event-content-editor-wrapper" style="margin: 10px 0;">
+                <textarea id="event-content" rows="5" style="display: none;"></textarea>
             </div>
+
+            <div style="margin: 10px 0;">
+                <label>日期：</label>
+                <input type="date" id="event-date" class="form-control" style="display: inline-block; width: auto;">
+            </div>
+
+            <div style="margin: 10px 0;">
+                <label>优先级：</label>
+                <select id="event-priority" class="form-control" style="display: inline-block; width: auto;">
+                    <option value="low">低优先级</option>
+                    <option value="medium" selected>中优先级</option>
+                    <option value="high">高优先级</option>
+                </select>
+            </div>
+
+            <div class="form-buttons">
+                <button id="event-submit" class="btn">✅ 保存</button>
+                <button id="event-cancel" class="btn" style="margin-left:10px;">取消</button>
+                <button id="event-delete" class="btn" style="margin-left:10px; display:none; background:#ff6b6b; color:white;">删除</button>
+            </div>
+            <input type="hidden" id="event-editing-id" value="">
         </div>
     </div>
 
     <ul class="nav">
         <li><a href="diary.html">日记</a></li>
         <li><a href="blog.html">博客</a></li>
-        <li><a href="calendar.html">日历</a></li>
+        <li><a href="index.html">日程</a></li>
     </ul>
 
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.3.0/jquery.min.js"></script>
     <script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/login-modal.js"></script>
     <script src="js/todolist.js"></script>
+    <script src="js/calendar.js"></script>
+    <script>
+        // 初始化登录按钮
+        document.querySelector('#login-btn')?.addEventListener('click', showLoginModal);
+        document.querySelector('#logout-btn')?.addEventListener('click', async () => {
+            await logout();
+        });
+        
+        // 检查编辑权限
+        function requireLogin() {
+            if (!canEdit()) {
+                alert('请先登录才能进行编辑操作');
+                showLoginModal();
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 
 </html>

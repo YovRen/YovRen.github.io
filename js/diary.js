@@ -11,6 +11,7 @@ const content = document.querySelector("#content")
 const submit = document.querySelector("#submit")
 const image = document.querySelector("#image")
 const timeline = document.querySelector(".timeline")
+const diaryEntries = document.querySelector("#diary-entries")
 const searchInput = document.querySelector("#search-diary")
 const newDiaryBtn = document.querySelector("#new-diary")
 const cancelEditBtn = document.querySelector("#cancel-edit")
@@ -70,6 +71,9 @@ if (newDiaryBtn) {
     newDiaryBtn.addEventListener("click", (e) => {
         e.preventDefault()
         e.stopPropagation()
+        if (typeof requireLogin === 'function' && !requireLogin()) {
+            return;
+        }
         if (!writeOverlay) {
             console.error("writeOverlay not found")
             return
@@ -144,6 +148,9 @@ $('#image').on('change', async function () {
 });
 
 submit.addEventListener("click", async event => {
+    if (typeof requireLogin === 'function' && !requireLogin()) {
+        return;
+    }
     const contentValue = contentEditor ? contentEditor.value() : content.value
     if (contentValue !== '') {
         if (editingId.value) {
@@ -246,6 +253,9 @@ async function updateData(id, data) {
 }
 
 async function deleteData(id) {
+    if (typeof requireLogin === 'function' && !requireLogin()) {
+        return;
+    }
     if (confirm('确定要删除这篇日记吗？')) {
         const diary = AV.Object.createWithoutData('Diary', id);
         await diary.destroy();
@@ -260,6 +270,51 @@ async function load() {
 }
 
 function renderDiaries(datas) {
+    // 如果存在新的日记容器，使用新样式；否则使用时间线样式
+    if (diaryEntries) {
+        renderDiaryEntries(datas);
+    } else if (timeline) {
+        renderTimeline(datas);
+    }
+}
+
+function renderDiaryEntries(datas) {
+    diaryEntries.innerHTML = ''
+    
+    if (datas.length === 0) {
+        diaryEntries.innerHTML = '<div class="diary-empty">还没有日记，开始写第一篇吧！</div>'
+        return
+    }
+    
+    // 按日期分组
+    const groupedByDate = {}
+    datas.forEach(diary => {
+        const date = diary.attributes.time ? diary.attributes.time.split(" ")[0] : '未知日期'
+        if (!groupedByDate[date]) {
+            groupedByDate[date] = []
+        }
+        groupedByDate[date].push(diary)
+    })
+    
+    // 按日期倒序排列
+    const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a))
+    
+    sortedDates.forEach(date => {
+        // 日期标题
+        const dateSection = document.createElement("div")
+        dateSection.className = "diary-date-section"
+        dateSection.innerHTML = `<div class="diary-date-label">${date}</div>`
+        diaryEntries.appendChild(dateSection)
+        
+        // 该日期的所有日记
+        groupedByDate[date].forEach(diary => {
+            const entry = createDiaryEntry(diary)
+            diaryEntries.appendChild(entry)
+        })
+    })
+}
+
+function renderTimeline(datas) {
     timeline.innerHTML = ''
     let olddate = ""
     for (let i = datas.length - 1; i >= 0; i--) {
@@ -270,48 +325,94 @@ function renderDiaries(datas) {
             timeline.appendChild(date);
             olddate = newdate;
         }
-        let avatar = 'img/users/avatar-1.jpg'
-        if (datas[i].attributes.author === "小燃") {
-            avatar = 'img/users/xiaoran.png';
-        } else if (datas[i].attributes.author === "梦竹") {
-            avatar = 'img/users/mengzhu.png';
-        }
-
-        const mood = datas[i].attributes.mood || '😊'
-        const diaryId = datas[i].id
-
-        let lis = document.createElement("li")
-        let imageHtml = datas[i].attributes.image
-            ? "<img src='" + datas[i].attributes.image.attributes.url + "' style='max-width:100%; margin-top:10px;'></img>"
-            : ""
-
-        const contentText = datas[i].attributes.content || ''
-        const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
         
-        lis.innerHTML =
-            "<img class=\"tl-circ\" src=" + avatar + "></img>\n" +
-            "<div class=\"timeline-panel\">\n" +
-            "<div class=\"tl-heading\">\n" +
-            "<h4>" + mood + " " + (datas[i].attributes.title || '无标题') +
-            " <button class='edit-btn' data-id='" + diaryId + "' style='font-size:12px; padding:2px 5px;'>编辑</button>" +
-            " <button class='delete-btn' data-id='" + diaryId + "' style='font-size:12px; padding:2px 5px;'>删除</button>" +
-            "</h4>\n" +
-            "</div>\n" +
-            "<div class=\"tl-body\">\n" +
-            contentHtml +
-            "</div>" +
-            imageHtml +
-            "<div class=\"small text-muted\">\n" +
-            "<i class=\"glyphicon glyphicon-globe\"></i> [" + datas[i].attributes.city + "] • " + datas[i].attributes.weather +
-            "</div>\n" +
-            "</div>";
+        const entry = createTimelineEntry(datas[i])
+        timeline.appendChild(entry);
+    }
+}
 
-        timeline.appendChild(lis);
+function createDiaryEntry(diary) {
+    const mood = diary.attributes.mood || '😊'
+    const diaryId = diary.id
+    const title = diary.attributes.title || ''
+    const contentText = diary.attributes.content || ''
+    const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
+    const time = diary.attributes.time || ''
+    const city = diary.attributes.city || '未知'
+    const weather = diary.attributes.weather || '未知'
+    const imageHtml = diary.attributes.image
+        ? `<div class="diary-image"><img src="${diary.attributes.image.attributes.url}" alt="日记图片"></div>`
+        : ''
+    
+    const entry = document.createElement("div")
+    entry.className = "diary-entry"
+    entry.innerHTML = `
+        <div class="diary-entry-header">
+            <span class="diary-mood">${mood}</span>
+            <span class="diary-title">${title || '无标题'}</span>
+            <span class="diary-time">${time.split(' ')[1] || ''}</span>
+            ${canEdit() ? `
+                <button class="diary-edit-btn" data-id="${diaryId}">✏️</button>
+                <button class="diary-delete-btn" data-id="${diaryId}">🗑️</button>
+            ` : ''}
+        </div>
+        <div class="diary-entry-content">
+            ${contentHtml}
+            ${imageHtml}
+        </div>
+        <div class="diary-entry-footer">
+            <span class="diary-location">📍 ${city}</span>
+            <span class="diary-weather">☀️ ${weather}</span>
+        </div>
+    `
+    
+    return entry
+}
+
+function createTimelineEntry(diary) {
+    let avatar = 'img/users/avatar-1.jpg'
+    if (diary.attributes.author === "小燃") {
+        avatar = 'img/users/xiaoran.png';
+    } else if (diary.attributes.author === "梦竹") {
+        avatar = 'img/users/mengzhu.png';
     }
 
-    // 绑定编辑和删除按钮
-    document.querySelectorAll('.edit-btn').forEach(btn => {
+    const mood = diary.attributes.mood || '😊'
+    const diaryId = diary.id
+    const imageHtml = diary.attributes.image
+        ? "<img src='" + diary.attributes.image.attributes.url + "' style='max-width:100%; margin-top:10px;'></img>"
+        : ""
+    const contentText = diary.attributes.content || ''
+    const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
+    
+    const lis = document.createElement("li")
+    lis.innerHTML =
+        "<img class=\"tl-circ\" src=" + avatar + "></img>\n" +
+        "<div class=\"timeline-panel\">\n" +
+        "<div class=\"tl-heading\">\n" +
+        "<h4>" + mood + " " + (diary.attributes.title || '无标题') +
+        (canEdit() ? ` <button class='edit-btn' data-id='${diaryId}' style='font-size:12px; padding:2px 5px;'>编辑</button>` : '') +
+        (canEdit() ? ` <button class='delete-btn' data-id='${diaryId}' style='font-size:12px; padding:2px 5px;'>删除</button>` : '') +
+        "</h4>\n" +
+        "</div>\n" +
+        "<div class=\"tl-body\">\n" +
+        contentHtml +
+        "</div>" +
+        imageHtml +
+        "<div class=\"small text-muted\">\n" +
+        "<i class=\"glyphicon glyphicon-globe\"></i> [" + diary.attributes.city + "] • " + diary.attributes.weather +
+        "</div>\n" +
+        "</div>";
+    
+    return lis
+}
+
+    // 绑定编辑和删除按钮（新样式）
+    document.querySelectorAll('.diary-edit-btn, .edit-btn').forEach(btn => {
         btn.addEventListener('click', async function () {
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
+            }
             const id = this.getAttribute('data-id')
             const diary = allDiaries.find(d => d.id === id)
             if (diary) {
@@ -329,7 +430,7 @@ function renderDiaries(datas) {
         })
     })
 
-    document.querySelectorAll('.delete-btn').forEach(btn => {
+    document.querySelectorAll('.diary-delete-btn, .delete-btn').forEach(btn => {
         btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             await deleteData(id)

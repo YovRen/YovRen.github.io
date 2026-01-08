@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>写新日记 - 拉普达</title>
+    <title>日记 - 拉普达</title>
     <meta name="description" content="记录日记与时间线的本地页面，支持暗色模式切换与离线缓存建议。">
     <meta name="theme-color" content="plum">
     <link rel="stylesheet" href="css/index.css">
@@ -18,15 +18,19 @@
     <header>
         <div class="title">日记</div>
         <div class="controls">
-            <input type="text" placeholder="搜索日记..." id="search-diary"
-                style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px;">
+            <input type="text" placeholder="🔍 搜索日记..." id="search-diary" class="search-input">
+            <div id="user-info" style="display: none;">
+                <span class="username"></span>
+                <button id="logout-btn">登出</button>
+            </div>
+            <button id="login-btn">登录</button>
         </div>
     </header>
 
-    <div class="blog-container">
-        <div class="blog-sidebar">
-            <button id="new-diary" class="btn-new-blog">✏️ 写新日记</button>
-            <div class="blog-stats">
+    <div class="diary-page-container">
+        <div class="diary-sidebar">
+            <button id="new-diary" class="btn-new-diary">✏️ 写新日记</button>
+            <div class="diary-stats">
                 <h4>📊 日记统计</h4>
                 <p>总日记数: <span id="total-count">0</span></p>
                 <p>总字数: <span id="total-words">0</span></p>
@@ -34,10 +38,8 @@
             </div>
         </div>
 
-        <div class="blog-main">
-            <div class="timeline-container">
-                <ul class="timeline"></ul>
-            </div>
+        <div class="diary-main">
+            <div id="diary-entries"></div>
         </div>
     </div>
 
@@ -64,14 +66,6 @@
                 </select>
             </div>
 
-            <div class="item">
-                <div class="addImg"></div>
-                <input id="image" type="file" class="upload_input" onchange="change(this)" />
-                <div class="preBlock">
-                    <img class="preview" id="preview" alt="" name="pic" width="200" height="200" />
-                </div>
-                <div class="delete">×</div>
-            </div>
             <div class="form-buttons">
                 <button id="submit" class="btn">😊 提 交</button>
                 <button id="cancel-edit" class="btn" style="display:none; margin-left:10px;">取消编辑</button>
@@ -81,9 +75,9 @@
     </div>
 
     <ul class="nav">
-        <li><a href="index.html">待办事项</a></li>
+        <li><a href="index.html">日程</a></li>
         <li><a href="blog.html">博客</a></li>
-        <li><a href="calendar.html">日历</a></li>
+        <li><a href="diary.html">日记</a></li>
     </ul>
 
     <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
@@ -91,10 +85,29 @@
     <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/login-modal.js"></script>
     <script src="js/image-upload.js"></script>
     <script src="js/diary.js"></script>
     <script src="js/addimg.js"></script>
     <script src="js/move.js"></script>
+    <script>
+        // 初始化登录按钮
+        document.querySelector('#login-btn')?.addEventListener('click', showLoginModal);
+        document.querySelector('#logout-btn')?.addEventListener('click', async () => {
+            await logout();
+        });
+        
+        // 检查编辑权限
+        function requireLogin() {
+            if (!canEdit()) {
+                alert('请先登录才能进行编辑操作');
+                showLoginModal();
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 
 </html>

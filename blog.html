@@ -18,8 +18,12 @@
     <header>
         <div class="title">博客</div>
         <div class="controls">
-            <input type="text" placeholder="搜索博客..." id="search-blog"
-                style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px;">
+            <input type="text" placeholder="🔍 搜索博客..." id="search-blog" class="search-input">
+            <div id="user-info" style="display: none;">
+                <span class="username"></span>
+                <button id="logout-btn">登出</button>
+            </div>
+            <button id="login-btn">登录</button>
         </div>
     </header>
 
@@ -71,8 +75,27 @@
     <script src="js/jquery.min.js"></script>
     <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/login-modal.js"></script>
     <script src="js/image-upload.js"></script>
     <script src="js/blog.js"></script>
+    <script>
+        // 初始化登录按钮
+        document.querySelector('#login-btn')?.addEventListener('click', showLoginModal);
+        document.querySelector('#logout-btn')?.addEventListener('click', async () => {
+            await logout();
+        });
+        
+        // 检查编辑权限
+        function requireLogin() {
+            if (!canEdit()) {
+                alert('请先登录才能进行编辑操作');
+                showLoginModal();
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 
 </html>

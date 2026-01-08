@@ -50,7 +50,7 @@ if (document.readyState === 'loading') {
 }
 
 const calendarGrid = document.querySelector("#calendar-grid")
-const currentMonthYear = document.querySelector("#current-month-year")
+const currentMonthYear = document.querySelector("#current-month-year") || document.querySelector(".month-year")
 const prevMonthBtn = document.querySelector("#prev-month")
 const nextMonthBtn = document.querySelector("#next-month")
 const todayBtn = document.querySelector("#today-btn")
@@ -65,8 +65,20 @@ const eventDelete = document.querySelector("#event-delete")
 const eventEditingId = document.querySelector("#event-editing-id")
 const eventFormTitle = document.querySelector("#event-form-title")
 
-loadEvents()
-renderCalendar()
+// 延迟初始化，确保DOM已加载
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (document.querySelector("#calendar-grid")) {
+            loadEvents();
+            renderCalendar();
+        }
+    });
+} else {
+    if (document.querySelector("#calendar-grid")) {
+        loadEvents();
+        renderCalendar();
+    }
+}
 
 prevMonthBtn.addEventListener("click", () => {
     currentDate.setMonth(currentDate.getMonth() - 1)
@@ -96,6 +108,9 @@ eventOverlay.addEventListener("click", (e) => {
 })
 
 eventSubmit.addEventListener("click", async () => {
+    if (typeof requireLogin === 'function' && !requireLogin()) {
+        return;
+    }
     if (!eventTitle.value || !eventDate.value) {
         alert('请填写标题和日期')
         return
@@ -126,6 +141,9 @@ eventSubmit.addEventListener("click", async () => {
 })
 
 eventDelete.addEventListener("click", async () => {
+    if (typeof requireLogin === 'function' && !requireLogin()) {
+        return;
+    }
     if (confirm('确定要删除这个事项吗？')) {
         await deleteEvent(eventEditingId.value)
         eventOverlay.hidden = true
@@ -150,6 +168,9 @@ function resetEventForm() {
 }
 
 function openEventForm(dateStr = null, eventId = null) {
+    if (typeof requireLogin === 'function' && !requireLogin()) {
+        return;
+    }
     if (dateStr) {
         eventDate.value = dateStr
     }
@@ -188,7 +209,9 @@ function renderCalendar() {
     const year = currentDate.getFullYear()
     const month = currentDate.getMonth()
     
-    currentMonthYear.textContent = `${year}年 ${month + 1}月`
+    if (currentMonthYear) {
+        currentMonthYear.textContent = `${year}年 ${month + 1}月`
+    }
     
     const firstDay = new Date(year, month, 1)
     const lastDay = new Date(year, month + 1, 0)
