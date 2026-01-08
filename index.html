@@ -6,11 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>日程管理 - 拉普达</title>
-    <meta name="description" content="整合待办事项和日历的日程管理页面。">
+    <meta name="description" content="四象限待办事项管理页面。">
     <meta name="theme-color" content="plum">
     <link rel="stylesheet" href="css/index.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/calendar.css">
 </head>
 
 <body>
@@ -26,100 +25,92 @@
         </div>
     </header>
 
-    <div class="schedule-container">
-        <!-- 左侧：待办事项 -->
-        <div class="schedule-left">
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>📋 待办事项</h3>
-                </div>
-                <div class="add-todo-section">
-                    <div class="search">
-                        <input type="text" placeholder="制定todo..." id="sear">
-                    </div>
-                    <div class="todo-options">
-                        <div class="option-group">
-                            <label>优先级：</label>
-                            <select id="priority">
-                                <option value="low">低</option>
-                                <option value="medium" selected>中</option>
-                                <option value="high">高</option>
-                            </select>
-                        </div>
-                        <div class="option-group">
-                            <label>截止日期：</label>
-                            <input type="date" id="deadline">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="todo-lists">
-                    <div class="dolist">
-                        <div class="list-header">
-                            <span>正在进行</span>
-                            <span class="donumber">0</span>
-                        </div>
-                        <ul class="dothings"></ul>
-                    </div>
-                    <div class="donelist">
-                        <div class="list-header">
-                            <span>已经完成</span>
-                            <span class="donenumber">0</span>
-                        </div>
-                        <ul class="donethings"></ul>
-                    </div>
-                </div>
+    <div class="schedule-main-container">
+        <!-- 左侧：历史记录目录 -->
+        <div class="history-sidebar">
+            <div class="history-header">
+                <h3>📚 历史记录</h3>
+                <button id="toggle-history" class="toggle-btn">收起</button>
+            </div>
+            <div class="history-list" id="history-list">
+                <div class="history-loading">加载中...</div>
             </div>
         </div>
 
-        <!-- 右侧：日历 -->
-        <div class="schedule-right">
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>📅 日历视图</h3>
-                    <div class="calendar-controls">
-                        <button id="prev-month" class="btn-month">◀</button>
-                        <span id="current-month-year" class="month-year"></span>
-                        <button id="next-month" class="btn-month">▶</button>
-                        <button id="today-btn" class="btn-month">今天</button>
+        <!-- 右侧：四象限待办列表 -->
+        <div class="quadrant-container">
+            <!-- 添加待办表单 -->
+            <div class="add-todo-form">
+                <input type="text" placeholder="📝 添加待办事项..." id="todo-input" class="todo-input">
+                <div class="todo-form-options">
+                    <div class="option-group">
+                        <label>重要性：</label>
+                        <select id="importance">
+                            <option value="high">重要</option>
+                            <option value="low">不重要</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>紧急度：</label>
+                        <select id="urgency">
+                            <option value="high">紧急</option>
+                            <option value="low">不紧急</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>截止日期：</label>
+                        <input type="date" id="deadline">
+                    </div>
+                    <button id="add-todo-btn" class="btn-add">添加</button>
+                </div>
+            </div>
+
+            <!-- 四象限网格 -->
+            <div class="quadrant-grid">
+                <!-- 第一象限：重要且紧急 -->
+                <div class="quadrant quadrant-1">
+                    <div class="quadrant-header">
+                        <h3>🔥 重要且紧急</h3>
+                        <span class="quadrant-count" id="q1-count">0</span>
+                    </div>
+                    <div class="quadrant-content" id="quadrant-1">
+                        <div class="empty-quadrant">暂无任务</div>
                     </div>
                 </div>
-                <div class="calendar-grid" id="calendar-grid"></div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 事项编辑弹窗 -->
-    <div class="write-form-overlay" id="event-overlay" hidden>
-        <div class="cell col-xs-12" id="event-write">
-            <h3 id="event-form-title">添加事项</h3>
-            <input id="event-title" type="text" class="PostDiaryForm-Title form-control form-group" 
-                placeholder="事项标题..." autocomplete="off" maxlength="100">
+                <!-- 第二象限：重要但不紧急 -->
+                <div class="quadrant quadrant-2">
+                    <div class="quadrant-header">
+                        <h3>⭐ 重要但不紧急</h3>
+                        <span class="quadrant-count" id="q2-count">0</span>
+                    </div>
+                    <div class="quadrant-content" id="quadrant-2">
+                        <div class="empty-quadrant">暂无任务</div>
+                    </div>
+                </div>
 
-            <div id="event-content-editor-wrapper" style="margin: 10px 0;">
-                <textarea id="event-content" rows="5" style="display: none;"></textarea>
-            </div>
+                <!-- 第三象限：紧急但不重要 -->
+                <div class="quadrant quadrant-3">
+                    <div class="quadrant-header">
+                        <h3>⚡ 紧急但不重要</h3>
+                        <span class="quadrant-count" id="q3-count">0</span>
+                    </div>
+                    <div class="quadrant-content" id="quadrant-3">
+                        <div class="empty-quadrant">暂无任务</div>
+                    </div>
+                </div>
 
-            <div style="margin: 10px 0;">
-                <label>日期：</label>
-                <input type="date" id="event-date" class="form-control" style="display: inline-block; width: auto;">
+                <!-- 第四象限：不重要也不紧急 -->
+                <div class="quadrant quadrant-4">
+                    <div class="quadrant-header">
+                        <h3>📌 不重要也不紧急</h3>
+                        <span class="quadrant-count" id="q4-count">0</span>
+                    </div>
+                    <div class="quadrant-content" id="quadrant-4">
+                        <div class="empty-quadrant">暂无任务</div>
+                    </div>
+                </div>
             </div>
-
-            <div style="margin: 10px 0;">
-                <label>优先级：</label>
-                <select id="event-priority" class="form-control" style="display: inline-block; width: auto;">
-                    <option value="low">低优先级</option>
-                    <option value="medium" selected>中优先级</option>
-                    <option value="high">高优先级</option>
-                </select>
-            </div>
-
-            <div class="form-buttons">
-                <button id="event-submit" class="btn">✅ 保存</button>
-                <button id="event-cancel" class="btn" style="margin-left:10px;">取消</button>
-                <button id="event-delete" class="btn" style="margin-left:10px; display:none; background:#ff6b6b; color:white;">删除</button>
-            </div>
-            <input type="hidden" id="event-editing-id" value="">
         </div>
     </div>
 
@@ -143,7 +134,6 @@
     <script src="js/auth.js"></script>
     <script src="js/login-modal.js"></script>
     <script src="js/todolist.js"></script>
-    <script src="js/calendar.js"></script>
     <script>
         // 初始化登录按钮
         document.querySelector('#login-btn')?.addEventListener('click', showLoginModal);
@@ -160,6 +150,19 @@
             }
             return true;
         }
+
+        // 历史记录侧边栏切换
+        document.querySelector('#toggle-history')?.addEventListener('click', function() {
+            const sidebar = document.querySelector('.history-sidebar');
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            if (isCollapsed) {
+                sidebar.classList.remove('collapsed');
+                this.textContent = '收起';
+            } else {
+                sidebar.classList.add('collapsed');
+                this.textContent = '展开';
+            }
+        });
     </script>
 </body>
 

@@ -498,6 +498,497 @@ body {
     padding-bottom: 60px;
 }
 
+/* 四象限待办列表样式 */
+.schedule-main-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1600px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* 历史记录侧边栏 */
+.history-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    transition: width 0.3s ease;
+}
+
+.history-sidebar.collapsed {
+    width: 60px;
+    padding: 20px 10px;
+}
+
+.history-sidebar.collapsed .history-header h3,
+.history-sidebar.collapsed .history-list {
+    display: none;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+}
+
+.history-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--primary);
+}
+
+.toggle-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+    background: #dda0dd;
+}
+
+.history-list {
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+}
+
+.history-loading,
+.history-empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 20px;
+    font-size: 14px;
+}
+
+.history-date-group {
+    margin-bottom: 20px;
+}
+
+.history-date-header {
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-size: 14px;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.history-todos {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.history-todo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.history-todo-item:hover {
+    background: #e9ecef;
+    transform: translateX(3px);
+}
+
+.history-todo-title {
+    flex: 1;
+    color: var(--text-color);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.history-todo-quadrant {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* 四象限容器 */
+.quadrant-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.add-todo-form {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.todo-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.todo-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(221, 160, 221, 0.1);
+}
+
+.todo-form-options {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.option-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.option-group label {
+    font-size: 14px;
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+.option-group select,
+.option-group input[type="date"] {
+    padding: 6px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
+.btn-add {
+    padding: 8px 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-left: auto;
+}
+
+.btn-add:hover {
+    background: #dda0dd;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 四象限网格 */
+.quadrant-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.quadrant {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.quadrant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid;
+}
+
+.quadrant-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.quadrant-count {
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* 第一象限：重要且紧急 */
+.quadrant-1 {
+    border-top: 4px solid #ff6b6b;
+}
+
+.quadrant-1 .quadrant-header {
+    border-bottom-color: #ff6b6b;
+}
+
+.quadrant-1 .quadrant-header h3 {
+    color: #ff6b6b;
+}
+
+.quadrant-1 .quadrant-count {
+    background: #ff6b6b;
+}
+
+/* 第二象限：重要但不紧急 */
+.quadrant-2 {
+    border-top: 4px solid #51cf66;
+}
+
+.quadrant-2 .quadrant-header {
+    border-bottom-color: #51cf66;
+}
+
+.quadrant-2 .quadrant-header h3 {
+    color: #51cf66;
+}
+
+.quadrant-2 .quadrant-count {
+    background: #51cf66;
+}
+
+/* 第三象限：紧急但不重要 */
+.quadrant-3 {
+    border-top: 4px solid #ffa500;
+}
+
+.quadrant-3 .quadrant-header {
+    border-bottom-color: #ffa500;
+}
+
+.quadrant-3 .quadrant-header h3 {
+    color: #ffa500;
+}
+
+.quadrant-3 .quadrant-count {
+    background: #ffa500;
+}
+
+/* 第四象限：不重要也不紧急 */
+.quadrant-4 {
+    border-top: 4px solid #868e96;
+}
+
+.quadrant-4 .quadrant-header {
+    border-bottom-color: #868e96;
+}
+
+.quadrant-4 .quadrant-header h3 {
+    color: #868e96;
+}
+
+.quadrant-4 .quadrant-count {
+    background: #868e96;
+}
+
+.quadrant-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: calc(100vh - 400px);
+}
+
+.empty-quadrant {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 20px;
+    font-size: 14px;
+}
+
+/* 待办事项项 */
+.todo-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.todo-item:hover {
+    background: #e9ecef;
+    transform: translateX(3px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quadrant-1 .todo-item {
+    border-left-color: #ff6b6b;
+}
+
+.quadrant-2 .todo-item {
+    border-left-color: #51cf66;
+}
+
+.quadrant-3 .todo-item {
+    border-left-color: #ffa500;
+}
+
+.quadrant-4 .todo-item {
+    border-left-color: #868e96;
+}
+
+.todo-checkbox {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.todo-check {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+.todo-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.todo-title {
+    font-size: 15px;
+    color: var(--text-color);
+    line-height: 1.5;
+    word-break: break-word;
+    margin-bottom: 4px;
+}
+
+.todo-item.checked .todo-title {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.todo-deadline {
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.deadline-overdue {
+    color: #ff6b6b !important;
+    font-weight: 500;
+}
+
+.deadline-today {
+    color: #ff6b6b !important;
+    font-weight: 500;
+}
+
+.deadline-soon {
+    color: #ffa500 !important;
+}
+
+.deadline-normal {
+    color: #666 !important;
+}
+
+.todo-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.btn-archive,
+.btn-delete {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.btn-archive:hover {
+    background: #e3f2fd;
+    opacity: 1;
+}
+
+.btn-delete:hover {
+    background: #ffebee;
+    opacity: 1;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .schedule-main-container {
+        flex-direction: column;
+    }
+
+    .history-sidebar {
+        width: 100%;
+        max-height: 300px;
+    }
+
+    .history-sidebar.collapsed {
+        width: 100%;
+        max-height: 60px;
+    }
+}
+
+@media (max-width: 768px) {
+    .quadrant-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .todo-form-options {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .option-group {
+        width: 100%;
+    }
+
+    .option-group select,
+    .option-group input[type="date"] {
+        flex: 1;
+    }
+
+    .btn-add {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .schedule-main-container {
+        padding: 0 10px;
+    }
+}
+
 ul.nav li {
     background-color: plum;
     float: left;
