@@ -88,12 +88,12 @@ function setupEventListeners() {
 async function getData() {
     try {
         let data = []
-        const queryAll = new AV.Query('todolist');
         // 兼容旧数据：如果没有archived字段，也包含进来
-        queryAll.or(
-            queryAll.equalTo('archived', false),
-            queryAll.doesNotExist('archived')
-        );
+        const query1 = new AV.Query('todolist');
+        query1.equalTo('archived', false);
+        const query2 = new AV.Query('todolist');
+        query2.doesNotExist('archived');
+        const queryAll = AV.Query.or(query1, query2);
         const rows = await queryAll.find();
         console.log('查询到待办事项数量:', rows.length);
         for (let row of rows) {
