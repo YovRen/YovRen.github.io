@@ -3,22 +3,34 @@
 const Query = AV.Query;
 const User = AV.User;
 
-const title = document.querySelector("#title")
-const content = document.querySelector("#content")
-const submit = document.querySelector("#submit")
-const image = document.querySelector("#image")
-const timeline = document.querySelector(".timeline")
-const diaryEntries = document.querySelector("#diary-entries")
-const searchInput = document.querySelector("#search-diary")
-const newDiaryBtn = document.querySelector("#new-diary")
-const cancelEditBtn = document.querySelector("#cancel-edit")
-const editingId = document.querySelector("#editing-id")
-const moodSelect = document.querySelector("#mood")
-const writeOverlay = document.querySelector("#write-overlay")
-
+let title, content, submit, image, timeline, diaryEntries, searchInput;
+let newDiaryBtn, cancelEditBtn, editingId, moodSelect, writeOverlay;
 let allDiaries = []
 let file;
 let contentEditor = null;
+
+function initDiaryElements() {
+    title = document.querySelector("#title")
+    content = document.querySelector("#content")
+    submit = document.querySelector("#submit")
+    image = document.querySelector("#image")
+    timeline = document.querySelector(".timeline")
+    diaryEntries = document.querySelector("#diary-entries")
+    searchInput = document.querySelector("#search-diary")
+    newDiaryBtn = document.querySelector("#new-diary")
+    cancelEditBtn = document.querySelector("#cancel-edit")
+    editingId = document.querySelector("#editing-id")
+    moodSelect = document.querySelector("#mood")
+    writeOverlay = document.querySelector("#write-overlay")
+
+    console.log('初始化日记元素:', {
+        newDiaryBtn: !!newDiaryBtn,
+        writeOverlay: !!writeOverlay,
+        submit: !!submit
+    });
+
+    return newDiaryBtn && writeOverlay && submit;
+}
 
 // 初始化Markdown编辑器
 function initMarkdownEditor() {
@@ -27,10 +39,10 @@ function initMarkdownEditor() {
         setTimeout(initMarkdownEditor, 100);
         return;
     }
-    if (document.querySelector("#content") && !contentEditor) {
+    if (content && !contentEditor) {
         try {
             contentEditor = new EasyMDE({
-                element: document.querySelector("#content"),
+                element: content,
                 placeholder: "写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察... 支持Markdown格式，可直接粘贴图片",
                 spellChecker: false,
                 autosave: {
@@ -38,7 +50,7 @@ function initMarkdownEditor() {
                 },
                 toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
             });
-            
+
             // 设置图片上传功能
             if (typeof setupImagePaste === 'function') {
                 setupImagePaste(contentEditor);
@@ -52,131 +64,134 @@ function initMarkdownEditor() {
     }
 }
 
-// 等待DOM和EasyMDE加载完成后初始化
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(initMarkdownEditor, 100);
-    });
-} else {
-    setTimeout(initMarkdownEditor, 100);
-}
-
-load()
-
-// 显示/隐藏写日记表单
-if (newDiaryBtn) {
-    newDiaryBtn.addEventListener("click", (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        if (typeof requireLogin === 'function' && !requireLogin()) {
-            return;
-        }
-        if (!writeOverlay) {
-            console.error("writeOverlay not found")
-            return
-        }
-        writeOverlay.hidden = false
-        editingId.value = ''
-        title.value = ''
-        if (contentEditor) {
-            contentEditor.value('')
-        } else {
-            content.value = ''
-        }
-        moodSelect.value = '😊'
-        file = null
-        if (document.querySelector("#preview")) {
-            document.querySelector("#preview").src = ''
-        }
-        // 重新初始化编辑器（如果还没初始化）
-        if (!contentEditor && document.querySelector("#content")) {
-            setTimeout(() => {
-                initMarkdownEditor()
-            }, 100)
-        }
-    })
-}
-
-if (cancelEditBtn) {
-    cancelEditBtn.addEventListener("click", () => {
-        writeOverlay.hidden = true
-        editingId.value = ''
-        title.value = ''
-        content.value = ''
-        file = null
-    })
-}
-
-// 点击遮罩层关闭表单
-if (writeOverlay) {
-    writeOverlay.addEventListener("click", (e) => {
-        if (e.target === writeOverlay) {
-            writeOverlay.hidden = true
-            editingId.value = ''
-            title.value = ''
-            content.value = ''
+// 绑定事件监听器
+function setupDiaryEventListeners() {
+    // 显示/隐藏写日记表单
+    if (newDiaryBtn) {
+        newDiaryBtn.addEventListener("click", (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            console.log('点击写日记按钮');
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
+            }
+            if (!writeOverlay) {
+                console.error("writeOverlay not found")
+                return
+            }
+            writeOverlay.hidden = false
+            if (editingId) editingId.value = ''
+            if (title) title.value = ''
+            if (contentEditor) {
+                contentEditor.value('')
+            } else if (content) {
+                content.value = ''
+            }
+            if (moodSelect) moodSelect.value = '😊'
             file = null
-        }
-    })
+            if (document.querySelector("#preview")) {
+                document.querySelector("#preview").src = ''
+            }
+            // 重新初始化编辑器（如果还没初始化）
+            if (!contentEditor && content) {
+                setTimeout(() => {
+                    initMarkdownEditor()
+                }, 100)
+            }
+        })
+    } else {
+        console.error('newDiaryBtn not found!');
+    }
+
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener("click", () => {
+            if (writeOverlay) writeOverlay.hidden = true
+            if (editingId) editingId.value = ''
+            if (title) title.value = ''
+            if (content) content.value = ''
+            file = null
+        })
+    }
+
+    // 点击遮罩层关闭表单
+    if (writeOverlay) {
+        writeOverlay.addEventListener("click", (e) => {
+            if (e.target === writeOverlay) {
+                writeOverlay.hidden = true
+                if (editingId) editingId.value = ''
+                if (title) title.value = ''
+                if (content) content.value = ''
+                file = null
+            }
+        })
+    }
+
+    // 搜索功能
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            const keyword = e.target.value.toLowerCase()
+            if (keyword === '') {
+                renderDiaries(allDiaries)
+            } else {
+                const filtered = allDiaries.filter(diary => {
+                    const title = diary.attributes.title || ''
+                    const content = diary.attributes.content || ''
+                    return title.toLowerCase().includes(keyword) || content.toLowerCase().includes(keyword)
+                })
+                renderDiaries(filtered)
+            }
+        })
+    }
+
+    // 图片上传
+    if (image && typeof $ !== 'undefined') {
+        $(image).on('change', async function () {
+            const localFile = this.files[0];
+            if (localFile) {
+                file = new AV.File($(this).val(), localFile);
+            }
+        });
+    }
+
+    // 提交表单
+    if (submit) {
+        submit.addEventListener("click", async event => {
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
+            }
+            const contentValue = contentEditor ? contentEditor.value() : (content ? content.value : '')
+            if (contentValue !== '') {
+                if (editingId && editingId.value) {
+                    // 编辑模式
+                    await updateData(editingId.value, {
+                        title: title ? title.value : '',
+                        content: contentValue,
+                        mood: moodSelect ? moodSelect.value : '😊'
+                    })
+                } else {
+                    // 新建模式
+                    saveData({
+                        title: title ? title.value : '',
+                        content: contentValue,
+                        mood: moodSelect ? moodSelect.value : '😊'
+                    })
+                }
+                if (title) title.value = ''
+                if (contentEditor) {
+                    contentEditor.value('')
+                } else if (content) {
+                    content.value = ''
+                }
+                if (editingId) editingId.value = ''
+                if (writeOverlay) writeOverlay.hidden = true
+                file = null
+                await load()
+            }
+        })
+    } else {
+        console.error('submit button not found!');
+    }
 }
-
-// 搜索功能
-if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-        const keyword = e.target.value.toLowerCase()
-        if (keyword === '') {
-            renderDiaries(allDiaries)
-        } else {
-            const filtered = allDiaries.filter(diary => {
-                const title = diary.attributes.title || ''
-                const content = diary.attributes.content || ''
-                return title.toLowerCase().includes(keyword) || content.toLowerCase().includes(keyword)
-            })
-            renderDiaries(filtered)
-        }
-    })
-}
-
-$('#image').on('change', async function () {
-    const localFile = this.files[0];
-    if (localFile) {
-        file = new AV.File($(this).val(), localFile);
-    }
-});
-
-submit.addEventListener("click", async event => {
-    if (typeof requireLogin === 'function' && !requireLogin()) {
-        return;
-    }
-    const contentValue = contentEditor ? contentEditor.value() : content.value
-    if (contentValue !== '') {
-        if (editingId.value) {
-            // 编辑模式
-            await updateData(editingId.value, {
-                title: title.value,
-                content: contentValue,
-                mood: moodSelect.value
-            })
-        } else {
-            // 新建模式
-            saveData({
-                title: title.value,
-                content: contentValue,
-                mood: moodSelect.value
-            })
-        }
-        title.value = ''
-        if (contentEditor) {
-            contentEditor.value('')
-        } else {
-            content.value = ''
-        }
-        editingId.value = ''
-        writeOverlay.hidden = true
-        file = null
-        await load()
-    }
-})
 
 async function getData() {
     let data = []
@@ -193,17 +208,11 @@ function weather() {
     let ret = "未知";
     jQuery.support.cors = true;
     $.ajax({
-        url: "http://wthrcdn.etouch.cn/weather_mini",
+        url: "https://api.seniverse.com/v3/weather/now.json?key=S8qLqLqLqLqLqLqL&location=ip&language=zh-Hans&unit=c",
         type: "GET",
-        dataType: 'json',
-        data: { city: (returnCitySN['cname']) },
-        async: false,
-        success: function (res) {
-            var maxTemperature = res.data.forecast[0].high;//最高温度
-            var minTemperature = res.data.forecast[0].low;//最低温度
-            var weather = minTemperature.split(' ')[1] + '~' + maxTemperature.split(' ')[1];
-            var type = res.data.forecast[0].type;//天气状态
-            ret = weather + ' ' + type;
+        dataType: "jsonp",
+        success: function (data) {
+            ret = data.results[0].now.text;
         },
         error: function (err) {
             ret = "未知";
@@ -279,12 +288,12 @@ function renderDiaries(datas) {
 
 function renderDiaryEntries(datas) {
     diaryEntries.innerHTML = ''
-    
+
     if (datas.length === 0) {
         diaryEntries.innerHTML = '<div class="diary-empty">还没有日记，开始写第一篇吧！</div>'
         return
     }
-    
+
     // 按日期分组
     const groupedByDate = {}
     datas.forEach(diary => {
@@ -294,17 +303,17 @@ function renderDiaryEntries(datas) {
         }
         groupedByDate[date].push(diary)
     })
-    
+
     // 按日期倒序排列
     const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a))
-    
+
     sortedDates.forEach(date => {
         // 日期标题
         const dateSection = document.createElement("div")
         dateSection.className = "diary-date-section"
         dateSection.innerHTML = `<div class="diary-date-label">${date}</div>`
         diaryEntries.appendChild(dateSection)
-        
+
         // 该日期的所有日记
         groupedByDate[date].forEach(diary => {
             const entry = createDiaryEntry(diary)
@@ -324,7 +333,7 @@ function renderTimeline(datas) {
             timeline.appendChild(date);
             olddate = newdate;
         }
-        
+
         const entry = createTimelineEntry(datas[i])
         timeline.appendChild(entry);
     }
@@ -342,7 +351,7 @@ function createDiaryEntry(diary) {
     const imageHtml = diary.attributes.image
         ? `<div class="diary-image"><img src="${diary.attributes.image.attributes.url}" alt="日记图片"></div>`
         : ''
-    
+
     const entry = document.createElement("div")
     entry.className = "diary-entry"
     entry.innerHTML = `
@@ -364,7 +373,7 @@ function createDiaryEntry(diary) {
             <span class="diary-weather">☀️ ${weather}</span>
         </div>
     `
-    
+
     return entry
 }
 
@@ -383,7 +392,7 @@ function createTimelineEntry(diary) {
         : ""
     const contentText = diary.attributes.content || ''
     const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
-    
+
     const lis = document.createElement("li")
     lis.innerHTML =
         "<img class=\"tl-circ\" src=" + avatar + "></img>\n" +
@@ -402,7 +411,7 @@ function createTimelineEntry(diary) {
         "<i class=\"glyphicon glyphicon-globe\"></i> [" + diary.attributes.city + "] • " + diary.attributes.weather +
         "</div>\n" +
         "</div>";
-    
+
     return lis
 }
 
@@ -417,15 +426,15 @@ function bindDiaryEvents() {
             const id = this.getAttribute('data-id')
             const diary = allDiaries.find(d => d.id === id)
             if (diary) {
-                editingId.value = id
-                title.value = diary.attributes.title || ''
+                if (editingId) editingId.value = id
+                if (title) title.value = diary.attributes.title || ''
                 if (contentEditor) {
                     contentEditor.value(diary.attributes.content || '')
-                } else {
+                } else if (content) {
                     content.value = diary.attributes.content || ''
                 }
-                moodSelect.value = diary.attributes.mood || '😊'
-                writeOverlay.hidden = false
+                if (moodSelect) moodSelect.value = diary.attributes.mood || '😊'
+                if (writeOverlay) writeOverlay.hidden = false
                 if (cancelEditBtn) cancelEditBtn.style.display = 'inline-block'
             }
         })
@@ -451,7 +460,31 @@ function updateStats(datas) {
         }
     })
 
-    document.querySelector("#total-count").textContent = totalCount
-    document.querySelector("#total-words").textContent = totalWords
-    document.querySelector("#total-days").textContent = dates.size
+    const totalCountEl = document.querySelector("#total-count")
+    const totalWordsEl = document.querySelector("#total-words")
+    const totalDaysEl = document.querySelector("#total-days")
+    if (totalCountEl) totalCountEl.textContent = totalCount
+    if (totalWordsEl) totalWordsEl.textContent = totalWords
+    if (totalDaysEl) totalDaysEl.textContent = dates.size
+}
+
+// 初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (initDiaryElements()) {
+            setupDiaryEventListeners();
+            setTimeout(initMarkdownEditor, 100);
+            load();
+        } else {
+            console.error('日记页面元素初始化失败');
+        }
+    });
+} else {
+    if (initDiaryElements()) {
+        setupDiaryEventListeners();
+        setTimeout(initMarkdownEditor, 100);
+        load();
+    } else {
+        console.error('日记页面元素初始化失败');
+    }
 }
