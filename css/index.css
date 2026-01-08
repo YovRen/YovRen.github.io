@@ -596,11 +596,15 @@ img {
 }
 
 .timeline-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 15px;
+    width: 100%;
+    margin: 20px 0;
+    padding: 0;
     position: relative;
     z-index: 1;
+}
+
+.blog-main .timeline-container {
+    padding: 0 15px;
 }
 
 .timeline {

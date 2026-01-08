@@ -10,31 +10,35 @@
     <meta name="theme-color" content="plum">
     <link rel="stylesheet" href="css/index.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 </head>
 
 <body>
     <header>
-        <div class="title">diary</div>
+        <div class="title">日记</div>
         <div class="controls">
             <input type="text" placeholder="搜索日记..." id="search-diary"
                 style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px;">
         </div>
     </header>
 
-    <div class="diary-container">
-        <div id="writer">
-            <button id="new-diary" class="btn-new-diary">✏️ 写新日记</button>
+    <div class="blog-container">
+        <div class="blog-sidebar">
+            <button id="new-diary" class="btn-new-blog">✏️ 写新日记</button>
+            <div class="blog-stats">
+                <h4>📊 日记统计</h4>
+                <p>总日记数: <span id="total-count">0</span></p>
+                <p>总字数: <span id="total-words">0</span></p>
+                <p>已写天数: <span id="total-days">0</span></p>
+            </div>
         </div>
-        <div id="stats" class="stats-box">
-            <h4>📊 日记统计</h4>
-            <p>总日记数: <span id="total-count">0</span></p>
-            <p>总字数: <span id="total-words">0</span></p>
-            <p>已写天数: <span id="total-days">0</span></p>
-        </div>
-    </div>
 
-    <div class="timeline-container">
-        <ul class="timeline"></ul>
+        <div class="blog-main">
+            <div class="timeline-container">
+                <ul class="timeline"></ul>
+            </div>
+        </div>
     </div>
 
     <div class="write-form-overlay" id="write-overlay" hidden>
@@ -42,9 +46,9 @@
             <input id="title" type="text" class="PostDiaryForm-Title form-control form-group"
                 placeholder="写个标题吧...[可空]..." autocomplete="off" maxlength="50">
 
-            <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
-                placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
-                maxlength="8000"></textarea>
+            <div id="content-editor-wrapper" style="margin: 10px 0;">
+                <textarea id="content" rows="10" style="display: none;"></textarea>
+            </div>
 
             <div style="margin: 10px 0;">
                 <label>心情标签：</label>
@@ -86,6 +90,7 @@
     <script src="js/jquery.min.js"></script>
     <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="js/diary.js"></script>
     <script src="js/addimg.js"></script>
     <script src="js/move.js"></script>

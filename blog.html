@@ -10,6 +10,8 @@
     <meta name="theme-color" content="plum">
     <link rel="stylesheet" href="css/index.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 </head>
 
 <body>
@@ -41,8 +43,9 @@
             <input id="blog-title" type="text" class="PostDiaryForm-Title form-control form-group" placeholder="博客标题..."
                 autocomplete="off" maxlength="100">
 
-            <textarea id="blog-content" rows="15" class="PostDiaryForm-Content form-control form-group"
-                placeholder="开始写作吧...支持Markdown格式..." maxlength="50000"></textarea>
+            <div id="blog-content-editor-wrapper" style="margin: 10px 0;">
+                <textarea id="blog-content" rows="15" style="display: none;"></textarea>
+            </div>
 
             <div style="margin: 10px 0;">
                 <label>标签（用逗号分隔）：</label>
@@ -63,6 +66,7 @@
         <li><a href="calendar.html">日历</a></li>
     </ul>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
     <script src="js/jquery.min.js"></script>
     <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>

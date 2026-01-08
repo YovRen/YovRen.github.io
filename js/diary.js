@@ -20,20 +20,70 @@ const writeOverlay = document.querySelector("#write-overlay")
 
 let allDiaries = []
 let file;
+let contentEditor = null;
+
+// 初始化Markdown编辑器
+function initMarkdownEditor() {
+    if (typeof EasyMDE === 'undefined') {
+        console.warn('EasyMDE not loaded yet, retrying...');
+        setTimeout(initMarkdownEditor, 100);
+        return;
+    }
+    if (document.querySelector("#content") && !contentEditor) {
+        try {
+            contentEditor = new EasyMDE({
+                element: document.querySelector("#content"),
+                placeholder: "写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察... 支持Markdown格式",
+                spellChecker: false,
+                autosave: {
+                    enabled: false
+                },
+                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+            });
+        } catch (e) {
+            console.error('Failed to initialize EasyMDE:', e);
+        }
+    }
+}
+
+// 等待DOM和EasyMDE加载完成后初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initMarkdownEditor, 100);
+    });
+} else {
+    setTimeout(initMarkdownEditor, 100);
+}
 
 load()
 
 // 显示/隐藏写日记表单
 if (newDiaryBtn) {
-    newDiaryBtn.addEventListener("click", () => {
+    newDiaryBtn.addEventListener("click", (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (!writeOverlay) {
+            console.error("writeOverlay not found")
+            return
+        }
         writeOverlay.hidden = false
         editingId.value = ''
         title.value = ''
-        content.value = ''
+        if (contentEditor) {
+            contentEditor.value('')
+        } else {
+            content.value = ''
+        }
         moodSelect.value = '😊'
         file = null
         if (document.querySelector("#preview")) {
             document.querySelector("#preview").src = ''
+        }
+        // 重新初始化编辑器（如果还没初始化）
+        if (!contentEditor && document.querySelector("#content")) {
+            setTimeout(() => {
+                initMarkdownEditor()
+            }, 100)
         }
     })
 }
@@ -86,24 +136,29 @@ $('#image').on('change', async function () {
 });
 
 submit.addEventListener("click", async event => {
-    if (content.value !== '') {
+    const contentValue = contentEditor ? contentEditor.value() : content.value
+    if (contentValue !== '') {
         if (editingId.value) {
             // 编辑模式
             await updateData(editingId.value, {
                 title: title.value,
-                content: content.value,
+                content: contentValue,
                 mood: moodSelect.value
             })
         } else {
             // 新建模式
             saveData({
                 title: title.value,
-                content: content.value,
+                content: contentValue,
                 mood: moodSelect.value
             })
         }
         title.value = ''
-        content.value = ''
+        if (contentEditor) {
+            contentEditor.value('')
+        } else {
+            content.value = ''
+        }
         editingId.value = ''
         writeOverlay.hidden = true
         file = null
@@ -222,6 +277,9 @@ function renderDiaries(datas) {
             ? "<img src='" + datas[i].attributes.image.attributes.url + "' style='max-width:100%; margin-top:10px;'></img>"
             : ""
 
+        const contentText = datas[i].attributes.content || ''
+        const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
+        
         lis.innerHTML =
             "<img class=\"tl-circ\" src=" + avatar + "></img>\n" +
             "<div class=\"timeline-panel\">\n" +
@@ -232,7 +290,7 @@ function renderDiaries(datas) {
             "</h4>\n" +
             "</div>\n" +
             "<div class=\"tl-body\">\n" +
-            "<span style='font-size:19px'>" + datas[i].attributes.content[0] + "</span>" + datas[i].attributes.content.substr(1) +
+            contentHtml +
             "</div>" +
             imageHtml +
             "<div class=\"small text-muted\">\n" +
@@ -251,7 +309,11 @@ function renderDiaries(datas) {
             if (diary) {
                 editingId.value = id
                 title.value = diary.attributes.title || ''
-                content.value = diary.attributes.content || ''
+                if (contentEditor) {
+                    contentEditor.value(diary.attributes.content || '')
+                } else {
+                    content.value = diary.attributes.content || ''
+                }
                 moodSelect.value = diary.attributes.mood || '😊'
                 writeOverlay.hidden = false
                 if (cancelEditBtn) cancelEditBtn.style.display = 'inline-block'

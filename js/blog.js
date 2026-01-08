@@ -18,6 +18,29 @@ const searchInput = document.querySelector("#search-blog")
 const blogEditingId = document.querySelector("#blog-editing-id")
 
 let allBlogs = []
+let blogContentEditor = null
+
+// 初始化Markdown编辑器
+function initBlogMarkdownEditor() {
+    if (document.querySelector("#blog-content")) {
+        blogContentEditor = new EasyMDE({
+            element: document.querySelector("#blog-content"),
+            placeholder: "开始写作吧...支持Markdown格式",
+            spellChecker: false,
+            autosave: {
+                enabled: false
+            },
+            toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+        });
+    }
+}
+
+// 等待DOM加载完成后初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlogMarkdownEditor);
+} else {
+    initBlogMarkdownEditor();
+}
 
 load()
 
@@ -26,8 +49,18 @@ if (newBlogBtn) {
         blogOverlay.hidden = false
         blogEditingId.value = ''
         blogTitle.value = ''
-        blogContent.value = ''
+        if (blogContentEditor) {
+            blogContentEditor.value('')
+        } else {
+            blogContent.value = ''
+        }
         blogTags.value = ''
+        // 重新初始化编辑器（如果还没初始化）
+        if (!blogContentEditor && document.querySelector("#blog-content")) {
+            setTimeout(() => {
+                initBlogMarkdownEditor()
+            }, 100)
+        }
     })
 }
 
@@ -73,22 +106,27 @@ if (searchInput) {
 }
 
 blogSubmit.addEventListener("click", async event => {
-    if (blogTitle.value && blogContent.value) {
+    const contentValue = blogContentEditor ? blogContentEditor.value() : blogContent.value
+    if (blogTitle.value && contentValue) {
         if (blogEditingId.value) {
             await updateBlog(blogEditingId.value, {
                 title: blogTitle.value,
-                content: blogContent.value,
+                content: contentValue,
                 tags: blogTags.value
             })
         } else {
             saveBlog({
                 title: blogTitle.value,
-                content: blogContent.value,
+                content: contentValue,
                 tags: blogTags.value
             })
         }
         blogTitle.value = ''
-        blogContent.value = ''
+        if (blogContentEditor) {
+            blogContentEditor.value('')
+        } else {
+            blogContent.value = ''
+        }
         blogTags.value = ''
         blogEditingId.value = ''
         blogOverlay.hidden = true
@@ -165,7 +203,9 @@ function renderBlogs(blogs) {
             ? '<div class="blog-tags">' + tags.map(tag => `<span class="blog-tag">${tag}</span>`).join('') + '</div>'
             : ''
 
-        const contentPreview = (blog.attributes.content || '').substring(0, 200) + ((blog.attributes.content || '').length > 200 ? '...' : '')
+        const contentText = blog.attributes.content || ''
+        const contentPreview = contentText.substring(0, 200) + (contentText.length > 200 ? '...' : '')
+        const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentPreview) : contentPreview.replace(/\n/g, '<br>')
 
         blogCard.innerHTML = `
             <div class="blog-card-header">
@@ -176,7 +216,7 @@ function renderBlogs(blogs) {
                 </div>
             </div>
             ${tagsHtml}
-            <div class="blog-card-content">${contentPreview.replace(/\n/g, '<br>')}</div>
+            <div class="blog-card-content">${contentHtml}</div>
             <div class="blog-card-footer">
                 <span class="blog-time">📅 ${blog.attributes.time || ''}</span>
                 <span class="blog-author">👤 ${blog.attributes.author || ''}</span>
@@ -194,7 +234,11 @@ function renderBlogs(blogs) {
             if (blog) {
                 blogEditingId.value = id
                 blogTitle.value = blog.attributes.title || ''
-                blogContent.value = blog.attributes.content || ''
+                if (blogContentEditor) {
+                    blogContentEditor.value(blog.attributes.content || '')
+                } else {
+                    blogContent.value = blog.attributes.content || ''
+                }
                 blogTags.value = blog.attributes.tags || ''
                 blogOverlay.hidden = false
             }

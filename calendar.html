@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="css/index.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 </head>
 
 <body>
@@ -36,8 +38,9 @@
             <input id="event-title" type="text" class="PostDiaryForm-Title form-control form-group" 
                 placeholder="事项标题..." autocomplete="off" maxlength="100">
 
-            <textarea id="event-content" rows="5" class="PostDiaryForm-Content form-control form-group"
-                placeholder="事项详情..." maxlength="1000"></textarea>
+            <div id="event-content-editor-wrapper" style="margin: 10px 0;">
+                <textarea id="event-content" rows="5" style="display: none;"></textarea>
+            </div>
 
             <div style="margin: 10px 0;">
                 <label>日期：</label>

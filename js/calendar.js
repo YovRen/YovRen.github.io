@@ -8,6 +8,29 @@ AV.init({
 
 let currentDate = new Date()
 let events = []
+let eventContentEditor = null
+
+// 初始化Markdown编辑器
+function initEventMarkdownEditor() {
+    if (document.querySelector("#event-content")) {
+        eventContentEditor = new EasyMDE({
+            element: document.querySelector("#event-content"),
+            placeholder: "事项详情...支持Markdown格式",
+            spellChecker: false,
+            autosave: {
+                enabled: false
+            },
+            toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+        });
+    }
+}
+
+// 等待DOM加载完成后初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEventMarkdownEditor);
+} else {
+    initEventMarkdownEditor();
+}
 
 const calendarGrid = document.querySelector("#calendar-grid")
 const currentMonthYear = document.querySelector("#current-month-year")
@@ -61,17 +84,19 @@ eventSubmit.addEventListener("click", async () => {
         return
     }
     
+    const contentValue = eventContentEditor ? eventContentEditor.value() : eventContent.value
+    
     if (eventEditingId.value) {
         await updateEvent(eventEditingId.value, {
             title: eventTitle.value,
-            content: eventContent.value,
+            content: contentValue,
             date: eventDate.value,
             priority: eventPriority.value
         })
     } else {
         await saveEvent({
             title: eventTitle.value,
-            content: eventContent.value,
+            content: contentValue,
             date: eventDate.value,
             priority: eventPriority.value
         })
@@ -95,7 +120,11 @@ eventDelete.addEventListener("click", async () => {
 
 function resetEventForm() {
     eventTitle.value = ''
-    eventContent.value = ''
+    if (eventContentEditor) {
+        eventContentEditor.value('')
+    } else {
+        eventContent.value = ''
+    }
     eventDate.value = ''
     eventPriority.value = 'medium'
     eventEditingId.value = ''
@@ -108,12 +137,23 @@ function openEventForm(dateStr = null, eventId = null) {
         eventDate.value = dateStr
     }
     
+    // 重新初始化编辑器（如果还没初始化）
+    if (!eventContentEditor && document.querySelector("#event-content")) {
+        setTimeout(() => {
+            initEventMarkdownEditor()
+        }, 100)
+    }
+    
     if (eventId) {
         const event = events.find(e => e.id === eventId)
         if (event) {
             eventEditingId.value = eventId
             eventTitle.value = event.attributes.title || ''
-            eventContent.value = event.attributes.content || ''
+            if (eventContentEditor) {
+                eventContentEditor.value(event.attributes.content || '')
+            } else {
+                eventContent.value = event.attributes.content || ''
+            }
             eventDate.value = event.attributes.date || ''
             eventPriority.value = event.attributes.priority || 'medium'
             eventDelete.style.display = 'inline-block'
