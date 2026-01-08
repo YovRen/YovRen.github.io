@@ -20,7 +20,8 @@
     <header>
         <div class="title">diary</div>
         <div class="controls">
-            <button id="theme-toggle" class="theme-toggle" aria-pressed="false" aria-label="切换主题">🌙</button>
+            <input type="text" placeholder="搜索日记..." id="search-diary"
+                style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px;">
         </div>
     </header>
 
@@ -38,6 +39,20 @@
             placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
             maxlength="8000"></textarea>
 
+        <div style="margin: 10px 0;">
+            <label>心情标签：</label>
+            <select id="mood" class="form-control" style="display: inline-block; width: auto;">
+                <option value="😊">😊 开心</option>
+                <option value="😄">😄 兴奋</option>
+                <option value="😌">😌 平静</option>
+                <option value="😔">😔 难过</option>
+                <option value="😰">😰 焦虑</option>
+                <option value="😴">😴 疲惫</option>
+                <option value="🤔">🤔 思考</option>
+                <option value="😍">😍 喜欢</option>
+            </select>
+        </div>
+
         <div class="item">
             <div class="addImg"></div>
             <input id="image" type="file" class="upload_input" onchange="change(this)" />
@@ -47,8 +62,17 @@
             <div class="delete">×</div>
         </div>
         <button id="submit" class="btn">😊 提 交</button>
+        <button id="cancel-edit" class="btn" style="display:none; margin-left:10px;">取消编辑</button>
+        <input type="hidden" id="editing-id" value="">
     </div>
     <div id="writer">
+        <button id="new-diary" class="btn" style="margin: 20px;">✏️ 写新日记</button>
+    </div>
+    <div id="stats" style="margin: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+        <h4>📊 日记统计</h4>
+        <p>总日记数: <span id="total-count">0</span></p>
+        <p>总字数: <span id="total-words">0</span></p>
+        <p>已写天数: <span id="total-days">0</span></p>
     </div>
     <ul class="nav">
         <li><a href="index.html">待办事项</a></li>

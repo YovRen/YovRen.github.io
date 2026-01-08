@@ -20,8 +20,15 @@
     <header>
         <div class="title">todolist</div>
         <div class="controls">
-            <div class="search"><input type="text" placeholder="制定todo" id="sear"></div>
-            <button id="theme-toggle" class="theme-toggle" aria-pressed="false" aria-label="切换主题">🌙</button>
+            <div class="search">
+                <input type="text" placeholder="制定todo" id="sear">
+                <select id="priority" style="margin-left: 10px; padding: 5px;">
+                    <option value="low">低优先级</option>
+                    <option value="medium" selected>中优先级</option>
+                    <option value="high">高优先级</option>
+                </select>
+                <input type="date" id="deadline" style="margin-left: 10px; padding: 5px;">
+            </div>
         </div>
     </header>
 
@@ -50,7 +57,6 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.3.0/jquery.min.js"></script>
     <script src="//code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="js/theme.js"></script>
     <script src="js/todolist.js"></script>
 </body>
 
