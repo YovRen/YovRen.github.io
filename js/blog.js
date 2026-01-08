@@ -1,21 +1,31 @@
 // AV.init 已在 HTML 中初始化，这里不再重复初始化
-// 使用全局 AV 对象
-const Query = AV.Query;
-const User = AV.User;
+// 直接使用 AV.Query 和 AV.User，不声明常量避免重复声明错误
 
-const blogTitle = document.querySelector("#blog-title")
-const blogContent = document.querySelector("#blog-content")
-const blogTags = document.querySelector("#blog-tags")
-const blogSubmit = document.querySelector("#blog-submit")
-const blogCancel = document.querySelector("#blog-cancel")
-const blogOverlay = document.querySelector("#blog-overlay")
-const newBlogBtn = document.querySelector("#new-blog")
-const blogList = document.querySelector("#blog-list")
-const searchInput = document.querySelector("#search-blog")
-const blogEditingId = document.querySelector("#blog-editing-id")
-
+let blogTitle, blogContent, blogTags, blogSubmit, blogCancel, blogOverlay;
+let newBlogBtn, blogList, searchInput, blogEditingId;
 let allBlogs = []
 let blogContentEditor = null
+
+function initBlogElements() {
+    blogTitle = document.querySelector("#blog-title")
+    blogContent = document.querySelector("#blog-content")
+    blogTags = document.querySelector("#blog-tags")
+    blogSubmit = document.querySelector("#blog-submit")
+    blogCancel = document.querySelector("#blog-cancel")
+    blogOverlay = document.querySelector("#blog-overlay")
+    newBlogBtn = document.querySelector("#new-blog")
+    blogList = document.querySelector("#blog-list")
+    searchInput = document.querySelector("#search-blog")
+    blogEditingId = document.querySelector("#blog-editing-id")
+    
+    console.log('初始化博客元素:', {
+        newBlogBtn: !!newBlogBtn,
+        blogOverlay: !!blogOverlay,
+        blogSubmit: !!blogSubmit
+    });
+    
+    return newBlogBtn && blogOverlay && blogSubmit;
+}
 
 // 初始化Markdown编辑器
 function initBlogMarkdownEditor() {
@@ -24,10 +34,10 @@ function initBlogMarkdownEditor() {
         setTimeout(initBlogMarkdownEditor, 100);
         return;
     }
-    if (document.querySelector("#blog-content") && !blogContentEditor) {
+    if (blogContent && !blogContentEditor) {
         try {
             blogContentEditor = new EasyMDE({
-                element: document.querySelector("#blog-content"),
+                element: blogContent,
                 placeholder: "开始写作吧...支持Markdown格式，可直接粘贴图片",
                 spellChecker: false,
                 autosave: {
@@ -49,117 +59,120 @@ function initBlogMarkdownEditor() {
     }
 }
 
-// 等待DOM加载完成后初始化
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initBlogMarkdownEditor);
-} else {
-    initBlogMarkdownEditor();
-}
-
-load()
-
-if (newBlogBtn) {
-    newBlogBtn.addEventListener("click", () => {
-        if (typeof requireLogin === 'function' && !requireLogin()) {
-            return;
-        }
-        blogOverlay.hidden = false
-        blogEditingId.value = ''
-        blogTitle.value = ''
-        if (blogContentEditor) {
-            blogContentEditor.value('')
-        } else {
-            blogContent.value = ''
-        }
-        blogTags.value = ''
-        // 重新初始化编辑器（如果还没初始化）
-        if (!blogContentEditor && document.querySelector("#blog-content")) {
-            setTimeout(() => {
-                initBlogMarkdownEditor()
-            }, 100)
-        }
-    })
-}
-
-if (blogCancel) {
-    blogCancel.addEventListener("click", () => {
-        blogOverlay.hidden = true
-        blogEditingId.value = ''
-        blogTitle.value = ''
-        blogContent.value = ''
-        blogTags.value = ''
-    })
-}
-
-if (blogOverlay) {
-    blogOverlay.addEventListener("click", (e) => {
-        if (e.target === blogOverlay) {
-            blogOverlay.hidden = true
-            blogEditingId.value = ''
-            blogTitle.value = ''
-            blogContent.value = ''
-            blogTags.value = ''
-        }
-    })
-}
-
-if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-        const keyword = e.target.value.toLowerCase()
-        if (keyword === '') {
-            renderBlogs(allBlogs)
-        } else {
-            const filtered = allBlogs.filter(blog => {
-                const title = blog.attributes.title || ''
-                const content = blog.attributes.content || ''
-                const tags = blog.attributes.tags || ''
-                return title.toLowerCase().includes(keyword) ||
-                    content.toLowerCase().includes(keyword) ||
-                    tags.toLowerCase().includes(keyword)
-            })
-            renderBlogs(filtered)
-        }
-    })
-}
-
-blogSubmit.addEventListener("click", async event => {
-    if (typeof requireLogin === 'function' && !requireLogin()) {
-        return;
-    }
-    const contentValue = blogContentEditor ? blogContentEditor.value() : blogContent.value
-    if (blogTitle.value && contentValue) {
-        if (blogEditingId.value) {
-            await updateBlog(blogEditingId.value, {
-                title: blogTitle.value,
-                content: contentValue,
-                tags: blogTags.value
-            })
-        } else {
-            saveBlog({
-                title: blogTitle.value,
-                content: contentValue,
-                tags: blogTags.value
-            })
-        }
-        blogTitle.value = ''
-        if (blogContentEditor) {
-            blogContentEditor.value('')
-        } else {
-            blogContent.value = ''
-        }
-        blogTags.value = ''
-        blogEditingId.value = ''
-        blogOverlay.hidden = true
-        await load()
+// 绑定事件监听器
+function setupBlogEventListeners() {
+    if (newBlogBtn) {
+        newBlogBtn.addEventListener("click", () => {
+            console.log('点击写博客按钮');
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
+            }
+            if (blogOverlay) blogOverlay.hidden = false
+            if (blogEditingId) blogEditingId.value = ''
+            if (blogTitle) blogTitle.value = ''
+            if (blogContentEditor) {
+                blogContentEditor.value('')
+            } else if (blogContent) {
+                blogContent.value = ''
+            }
+            if (blogTags) blogTags.value = ''
+            // 重新初始化编辑器（如果还没初始化）
+            if (!blogContentEditor && blogContent) {
+                setTimeout(() => {
+                    initBlogMarkdownEditor()
+                }, 100)
+            }
+        })
     } else {
-        alert('请填写标题和内容')
+        console.error('newBlogBtn not found!');
     }
-})
+
+    if (blogCancel) {
+        blogCancel.addEventListener("click", () => {
+            if (blogOverlay) blogOverlay.hidden = true
+            if (blogEditingId) blogEditingId.value = ''
+            if (blogTitle) blogTitle.value = ''
+            if (blogContent) blogContent.value = ''
+            if (blogTags) blogTags.value = ''
+        })
+    }
+
+    // 点击遮罩层关闭表单
+    if (blogOverlay) {
+        blogOverlay.addEventListener("click", (e) => {
+            if (e.target === blogOverlay) {
+                blogOverlay.hidden = true
+                if (blogEditingId) blogEditingId.value = ''
+                if (blogTitle) blogTitle.value = ''
+                if (blogContent) blogContent.value = ''
+                if (blogTags) blogTags.value = ''
+            }
+        })
+    }
+
+    // 搜索功能
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            const keyword = e.target.value.toLowerCase()
+            if (keyword === '') {
+                renderBlogs(allBlogs)
+            } else {
+                const filtered = allBlogs.filter(blog => {
+                    const title = blog.attributes.title || ''
+                    const content = blog.attributes.content || ''
+                    const tags = blog.attributes.tags || ''
+                    return title.toLowerCase().includes(keyword) || 
+                           content.toLowerCase().includes(keyword) ||
+                           tags.toLowerCase().includes(keyword)
+                })
+                renderBlogs(filtered)
+            }
+        })
+    }
+
+    // 提交表单
+    if (blogSubmit) {
+        blogSubmit.addEventListener("click", async event => {
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
+            }
+            const contentValue = blogContentEditor ? blogContentEditor.value() : (blogContent ? blogContent.value : '')
+            if (contentValue !== '') {
+                if (blogEditingId && blogEditingId.value) {
+                    // 编辑模式
+                    await updateBlog(blogEditingId.value, {
+                        title: blogTitle ? blogTitle.value : '',
+                        content: contentValue,
+                        tags: blogTags ? blogTags.value : ''
+                    })
+                } else {
+                    // 新建模式
+                    saveBlog({
+                        title: blogTitle ? blogTitle.value : '',
+                        content: contentValue,
+                        tags: blogTags ? blogTags.value : ''
+                    })
+                }
+                if (blogTitle) blogTitle.value = ''
+                if (blogContentEditor) {
+                    blogContentEditor.value('')
+                } else if (blogContent) {
+                    blogContent.value = ''
+                }
+                if (blogTags) blogTags.value = ''
+                if (blogEditingId) blogEditingId.value = ''
+                if (blogOverlay) blogOverlay.hidden = true
+                await load()
+            }
+        })
+    } else {
+        console.error('blogSubmit button not found!');
+    }
+}
 
 async function getBlogs() {
     let data = []
     const queryAll = new AV.Query('Blog');
-    queryAll.descending('createdAt');
     await queryAll.find().then((rows) => {
         for (let row of rows) {
             data.push(row);
@@ -210,47 +223,65 @@ async function load() {
 }
 
 function renderBlogs(blogs) {
+    if (!blogList) {
+        console.error('blogList not found!');
+        return;
+    }
+    
     blogList.innerHTML = ''
-
+    
     if (blogs.length === 0) {
-        blogList.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">还没有博客，开始写第一篇吧！</div>'
+        blogList.innerHTML = '<div class="blog-empty">还没有博客，开始写第一篇吧！</div>'
         return
     }
-
+    
     blogs.forEach(blog => {
-        const blogCard = document.createElement("div")
-        blogCard.className = "blog-card"
-
-        const tags = blog.attributes.tags ? blog.attributes.tags.split(',').map(t => t.trim()).filter(t => t) : []
-        const tagsHtml = tags.length > 0
-            ? '<div class="blog-tags">' + tags.map(tag => `<span class="blog-tag">${tag}</span>`).join('') + '</div>'
-            : ''
-
-        const contentText = blog.attributes.content || ''
-        const contentPreview = contentText.substring(0, 200) + (contentText.length > 200 ? '...' : '')
-        const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentPreview) : contentPreview.replace(/\n/g, '<br>')
-
-        blogCard.innerHTML = `
-            <div class="blog-card-header">
-                <h3>${blog.attributes.title || '无标题'}</h3>
-                <div class="blog-actions">
-                    <button class="edit-blog-btn" data-id="${blog.id}">编辑</button>
-                    <button class="delete-blog-btn" data-id="${blog.id}">删除</button>
-                </div>
-            </div>
-            ${tagsHtml}
-            <div class="blog-card-content">${contentHtml}</div>
-            <div class="blog-card-footer">
-                <span class="blog-time">📅 ${blog.attributes.time || ''}</span>
-                <span class="blog-author">👤 ${blog.attributes.author || ''}</span>
-            </div>
-        `
-
+        const blogCard = createBlogCard(blog)
         blogList.appendChild(blogCard)
     })
+    
+    // 渲染后绑定事件
+    bindBlogEvents();
+}
 
-    // 绑定编辑和删除按钮
-    document.querySelectorAll('.edit-blog-btn').forEach(btn => {
+function createBlogCard(blog) {
+    const blogId = blog.id
+    const title = blog.attributes.title || '无标题'
+    const contentText = blog.attributes.content || ''
+    const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
+    const time = blog.attributes.time || ''
+    const tags = blog.attributes.tags || ''
+    const tagArray = tags.split(',').filter(t => t.trim())
+    
+    const card = document.createElement("div")
+    card.className = "blog-card"
+    card.innerHTML = `
+        <div class="blog-card-header">
+            <h3 class="blog-card-title">${title}</h3>
+            <div class="blog-card-meta">
+                <span class="blog-time">${time}</span>
+                ${canEdit() ? `
+                    <button class="blog-edit-btn" data-id="${blogId}">✏️ 编辑</button>
+                    <button class="blog-delete-btn" data-id="${blogId}">🗑️ 删除</button>
+                ` : ''}
+            </div>
+        </div>
+        <div class="blog-card-content">
+            ${contentHtml}
+        </div>
+        ${tagArray.length > 0 ? `
+            <div class="blog-tags">
+                ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
+            </div>
+        ` : ''}
+    `
+    
+    return card
+}
+
+// 绑定编辑和删除按钮
+function bindBlogEvents() {
+    document.querySelectorAll('.blog-edit-btn').forEach(btn => {
         btn.addEventListener('click', async function () {
             if (typeof requireLogin === 'function' && !requireLogin()) {
                 return;
@@ -258,20 +289,21 @@ function renderBlogs(blogs) {
             const id = this.getAttribute('data-id')
             const blog = allBlogs.find(b => b.id === id)
             if (blog) {
-                blogEditingId.value = id
-                blogTitle.value = blog.attributes.title || ''
+                if (blogEditingId) blogEditingId.value = id
+                if (blogTitle) blogTitle.value = blog.attributes.title || ''
                 if (blogContentEditor) {
                     blogContentEditor.value(blog.attributes.content || '')
-                } else {
+                } else if (blogContent) {
                     blogContent.value = blog.attributes.content || ''
                 }
-                blogTags.value = blog.attributes.tags || ''
-                blogOverlay.hidden = false
+                if (blogTags) blogTags.value = blog.attributes.tags || ''
+                if (blogOverlay) blogOverlay.hidden = false
+                if (blogCancel) blogCancel.style.display = 'inline-block'
             }
         })
     })
 
-    document.querySelectorAll('.delete-blog-btn').forEach(btn => {
+    document.querySelectorAll('.blog-delete-btn').forEach(btn => {
         btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             await deleteBlog(id)
@@ -282,11 +314,40 @@ function renderBlogs(blogs) {
 function updateBlogStats(blogs) {
     const totalCount = blogs.length
     let totalWords = 0
+    const dates = new Set()
 
     blogs.forEach(blog => {
         totalWords += (blog.attributes.content || '').length
+        if (blog.attributes.time) {
+            dates.add(blog.attributes.time.split(" ")[0])
+        }
     })
 
-    document.querySelector("#blog-total-count").textContent = totalCount
-    document.querySelector("#blog-total-words").textContent = totalWords
+    const totalCountEl = document.querySelector("#blog-total-count")
+    const totalWordsEl = document.querySelector("#blog-total-words")
+    const totalDaysEl = document.querySelector("#blog-total-days")
+    if (totalCountEl) totalCountEl.textContent = totalCount
+    if (totalWordsEl) totalWordsEl.textContent = totalWords
+    if (totalDaysEl) totalDaysEl.textContent = dates.size
+}
+
+// 初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (initBlogElements()) {
+            setupBlogEventListeners();
+            setTimeout(initBlogMarkdownEditor, 100);
+            load();
+        } else {
+            console.error('博客页面元素初始化失败');
+        }
+    });
+} else {
+    if (initBlogElements()) {
+        setupBlogEventListeners();
+        setTimeout(initBlogMarkdownEditor, 100);
+        load();
+    } else {
+        console.error('博客页面元素初始化失败');
+    }
 }

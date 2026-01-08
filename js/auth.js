@@ -1,7 +1,5 @@
 // 认证系统
-// 使用全局 AV 对象
-const Query = AV.Query;
-const User = AV.User;
+// 直接使用 AV.Query 和 AV.User，不声明常量避免重复声明错误
 
 let currentUser = null;
 

@@ -1,7 +1,5 @@
 // AV.init 已在 HTML 中初始化，这里不再重复初始化
-// 使用全局 AV 对象
-const Query = AV.Query;
-const User = AV.User;
+// 直接使用 AV.Query 和 AV.User，不声明常量避免重复声明错误
 
 // 等待DOM加载完成
 let todoInput, importance, urgency, deadline, addTodoBtn, searchInput;
@@ -86,12 +84,6 @@ function setupEventListeners() {
         })
     }
 }
-
-// 搜索功能
-searchInput?.addEventListener("input", (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    filterTodos(searchTerm);
-})
 
 async function getData() {
     try {

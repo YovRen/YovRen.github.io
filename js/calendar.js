@@ -1,7 +1,5 @@
 // AV.init 已在 HTML 中初始化，这里不再重复初始化
-// 使用全局 AV 对象
-const Query = AV.Query;
-const User = AV.User;
+// 直接使用 AV.Query 和 AV.User，不声明常量避免重复声明错误
 
 let currentDate = new Date()
 let events = []
