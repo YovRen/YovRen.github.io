@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日历 - 拉普达</title>
+    <meta name="description" content="日历视图，安排和管理事项。">
+    <meta name="theme-color" content="plum">
+    <link rel="stylesheet" href="css/index.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/calendar.css">
+</head>
+
+<body>
+    <header>
+        <div class="title">日历</div>
+        <div class="controls">
+            <button id="prev-month" class="btn-month">◀ 上月</button>
+            <button id="next-month" class="btn-month">下月 ▶</button>
+            <button id="today-btn" class="btn-month">今天</button>
+        </div>
+    </header>
+
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <h2 id="current-month-year"></h2>
+        </div>
+        <div class="calendar-grid" id="calendar-grid"></div>
+    </div>
+
+    <div class="write-form-overlay" id="event-overlay" hidden>
+        <div class="cell col-xs-12" id="event-write">
+            <h3 id="event-form-title">添加事项</h3>
+            <input id="event-title" type="text" class="PostDiaryForm-Title form-control form-group" 
+                placeholder="事项标题..." autocomplete="off" maxlength="100">
+
+            <textarea id="event-content" rows="5" class="PostDiaryForm-Content form-control form-group"
+                placeholder="事项详情..." maxlength="1000"></textarea>
+
+            <div style="margin: 10px 0;">
+                <label>日期：</label>
+                <input type="date" id="event-date" class="form-control" style="display: inline-block; width: auto;">
+            </div>
+
+            <div style="margin: 10px 0;">
+                <label>优先级：</label>
+                <select id="event-priority" class="form-control" style="display: inline-block; width: auto;">
+                    <option value="low">低优先级</option>
+                    <option value="medium" selected>中优先级</option>
+                    <option value="high">高优先级</option>
+                </select>
+            </div>
+
+            <div class="form-buttons">
+                <button id="event-submit" class="btn">✅ 保存</button>
+                <button id="event-cancel" class="btn" style="margin-left:10px;">取消</button>
+                <button id="event-delete" class="btn" style="margin-left:10px; display:none; background:#ff6b6b; color:white;">删除</button>
+            </div>
+            <input type="hidden" id="event-editing-id" value="">
+        </div>
+    </div>
+
+    <ul class="nav">
+        <li><a href="index.html">待办事项</a></li>
+        <li><a href="diary.html">日记</a></li>
+        <li><a href="blog.html">博客</a></li>
+    </ul>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/calendar.js"></script>
+</body>
+
+</html>

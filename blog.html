@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客 - 拉普达</title>
+    <meta name="description" content="个人博客，记录生活与思考。">
+    <meta name="theme-color" content="plum">
+    <link rel="stylesheet" href="css/index.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="title">博客</div>
+        <div class="controls">
+            <input type="text" placeholder="搜索博客..." id="search-blog"
+                style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px;">
+        </div>
+    </header>
+
+    <div class="blog-container">
+        <div class="blog-sidebar">
+            <button id="new-blog" class="btn-new-blog">✍️ 写新博客</button>
+            <div class="blog-stats">
+                <h4>📊 博客统计</h4>
+                <p>总文章数: <span id="blog-total-count">0</span></p>
+                <p>总字数: <span id="blog-total-words">0</span></p>
+            </div>
+        </div>
+
+        <div class="blog-main">
+            <div id="blog-list"></div>
+        </div>
+    </div>
+
+    <div class="write-form-overlay" id="blog-overlay" hidden>
+        <div class="cell col-xs-12" id="blog-write">
+            <input id="blog-title" type="text" class="PostDiaryForm-Title form-control form-group" 
+                placeholder="博客标题..." autocomplete="off" maxlength="100">
+
+            <textarea id="blog-content" rows="15" class="PostDiaryForm-Content form-control form-group"
+                placeholder="开始写作吧...支持Markdown格式..." maxlength="50000"></textarea>
+
+            <div style="margin: 10px 0;">
+                <label>标签（用逗号分隔）：</label>
+                <input type="text" id="blog-tags" class="form-control" placeholder="例如: 技术,生活,思考">
+            </div>
+
+            <div class="form-buttons">
+                <button id="blog-submit" class="btn">📝 发布</button>
+                <button id="blog-cancel" class="btn" style="margin-left:10px;">取消</button>
+            </div>
+            <input type="hidden" id="blog-editing-id" value="">
+        </div>
+    </div>
+
+    <ul class="nav">
+        <li><a href="index.html">待办事项</a></li>
+        <li><a href="diary.html">日记</a></li>
+        <li><a href="calendar.html">日历</a></li>
+    </ul>
+
+    <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/blog.js"></script>
+</body>
+
+</html>

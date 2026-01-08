@@ -20,39 +20,71 @@
     <header>
         <div class="title">diary</div>
         <div class="controls">
-            <button id="theme-toggle" class="theme-toggle" aria-pressed="false" aria-label="切换主题">🌙</button>
+            <input type="text" placeholder="搜索日记..." id="search-diary"
+                style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px;">
         </div>
     </header>
 
 
-    <div class="col-xs-12">
+    <div class="timeline-container">
         <ul class="timeline"></ul>
     </div>
 
 
-    <div class="cell col-xs-12" id="write" style="position: fixed;" hidden>
-        <input id="title" type="text" class="PostDiaryForm-Title form-control form-group" placeholder="写个标题吧...[可空]..."
-            autocomplete="off" maxlength="50">
-
-        <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
-            placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
-            maxlength="8000"></textarea>
-
-        <div class="item">
-            <div class="addImg"></div>
-            <input id="image" type="file" class="upload_input" onchange="change(this)" />
-            <div class="preBlock">
-                <img class="preview" id="preview" alt="" name="pic" width="200" height="200" />
-            </div>
-            <div class="delete">×</div>
+    <div class="diary-container">
+        <div id="writer">
+            <button id="new-diary" class="btn-new-diary">✏️ 写新日记</button>
         </div>
-        <button id="submit" class="btn">😊 提 交</button>
+        <div id="stats" class="stats-box">
+            <h4>📊 日记统计</h4>
+            <p>总日记数: <span id="total-count">0</span></p>
+            <p>总字数: <span id="total-words">0</span></p>
+            <p>已写天数: <span id="total-days">0</span></p>
+        </div>
     </div>
-    <div id="writer">
+
+    <div class="write-form-overlay" id="write-overlay" hidden>
+        <div class="cell col-xs-12" id="write">
+            <input id="title" type="text" class="PostDiaryForm-Title form-control form-group"
+                placeholder="写个标题吧...[可空]..." autocomplete="off" maxlength="50">
+
+            <textarea id="content" rows="5" class="PostDiaryForm-Content form-control form-group"
+                placeholder="写点儿什么呢？生活、工作、学习、恋爱、心情、吐槽、观察、语文、数学、英语... 一句话，留住一段时光 ...😄 😊 😃 😉 😍 😘 😚 😳 😁 😌 😜 😝 😒 😏 😓 😔 😞 😖 😥 😰 😨 😣 ..."
+                maxlength="8000"></textarea>
+
+            <div style="margin: 10px 0;">
+                <label>心情标签：</label>
+                <select id="mood" class="form-control" style="display: inline-block; width: auto;">
+                    <option value="😊">😊 开心</option>
+                    <option value="😄">😄 兴奋</option>
+                    <option value="😌">😌 平静</option>
+                    <option value="😔">😔 难过</option>
+                    <option value="😰">😰 焦虑</option>
+                    <option value="😴">😴 疲惫</option>
+                    <option value="🤔">🤔 思考</option>
+                    <option value="😍">😍 喜欢</option>
+                </select>
+            </div>
+
+            <div class="item">
+                <div class="addImg"></div>
+                <input id="image" type="file" class="upload_input" onchange="change(this)" />
+                <div class="preBlock">
+                    <img class="preview" id="preview" alt="" name="pic" width="200" height="200" />
+                </div>
+                <div class="delete">×</div>
+            </div>
+            <div class="form-buttons">
+                <button id="submit" class="btn">😊 提 交</button>
+                <button id="cancel-edit" class="btn" style="display:none; margin-left:10px;">取消编辑</button>
+            </div>
+            <input type="hidden" id="editing-id" value="">
+        </div>
     </div>
     <ul class="nav">
         <li><a href="index.html">待办事项</a></li>
-        <li><a href="#news">新闻</a></li>
+        <li><a href="blog.html">博客</a></li>
+        <li><a href="calendar.html">日历</a></li>
     </ul>
 
     <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
