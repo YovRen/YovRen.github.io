@@ -55,7 +55,6 @@ function saveData(data) {
     todo.save()
 }
 
-
 function getPriorityBadge(priority) {
     const badges = {
         'high': '<span style="color: red; font-weight: bold;">🔴 高</span>',
@@ -114,20 +113,12 @@ async function load() {
 
         if (datas[i].attributes.done) {
             let lis = document.createElement("li")
-<<<<<<< HEAD
             lis.innerHTML = "<span class='front'></span><input type='checkbox' checked='checked' class='rightbox'  id=" + datas[i].id + "><p class='word' id=" + datas[i].id + ">" + datas[i].attributes.title + " <span style='margin-left:8px;'>" + priorityBadge + "</span></p><span class='close' id=" + datas[i].id + "></span>"
-=======
-            lis.innerHTML = "<span class='front'></span><input type='checkbox' checked='checked' class='rightbox'  id=" + datas[i].id + "><p class='word' id=" + datas[i].id + ">" + datas[i].attributes.title + " " + priorityBadge + "</p><span class='close' id=" + datas[i].id + "></span>"
->>>>>>> e9ea9ed4479df0727cbfae2a8b81327a8bbae34e
             donethings.appendChild(lis)
             donecount++
         } else {
             let lis = document.createElement("li")
-<<<<<<< HEAD
             lis.innerHTML = "<span class='front'></span><input type='checkbox' id=" + datas[i].id + " class='rightbox'><p class='word' id=" + datas[i].id + ">" + datas[i].attributes.title + " <span style='margin-left:8px;'>" + priorityBadge + "</span>" + (deadlineInfo ? " <span style='margin-left:8px;'>" + deadlineInfo + "</span>" : "") + "</p><span class='close' id=" + datas[i].id + " ></span>"
-=======
-            lis.innerHTML = "<span class='front'></span><input type='checkbox' id=" + datas[i].id + " class='rightbox'><p class='word' id=" + datas[i].id + ">" + datas[i].attributes.title + " " + priorityBadge + (deadlineInfo ? " " + deadlineInfo : "") + "</p><span class='close' id=" + datas[i].id + " ></span>"
->>>>>>> e9ea9ed4479df0727cbfae2a8b81327a8bbae34e
             dothings.appendChild(lis)
             docount++
         }
