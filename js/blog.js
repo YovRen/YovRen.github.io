@@ -1,10 +1,7 @@
-const { Query, User } = AV;
-
-AV.init({
-    appId: "szRqJxj4rGr47DBsfiYqh9qA-gzGzoHsz",
-    appKey: "UCGehmC6gOKYHSKpoMLeaRFJ",
-    serverURL: "https://szrqjxj4.lc-cn-n1-shared.com"
-});
+// AV.init 已在 HTML 中初始化，这里不再重复初始化
+// 使用全局 AV 对象
+const Query = AV.Query;
+const User = AV.User;
 
 const blogTitle = document.querySelector("#blog-title")
 const blogContent = document.querySelector("#blog-content")

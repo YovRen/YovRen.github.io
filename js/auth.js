@@ -1,5 +1,7 @@
 // 认证系统
-const { Query, User } = AV;
+// 使用全局 AV 对象
+const Query = AV.Query;
+const User = AV.User;
 
 let currentUser = null;
 
