@@ -448,6 +448,7 @@ async function load() {
     updateBlogStats(allBlogs)
     renderCategories(allBlogs)
     renderArchives(allBlogs)
+    loadTagsCloud()
     loadNotes()
     updateViewTitle('全部博客', `共 ${allBlogs.length} 篇文章`)
 }
@@ -552,7 +553,6 @@ function createBlogCard(blog) {
                 <span class="blog-meta-category">📁 分类于 ${category}</span>
             </div>
             <div class="blog-card-summary">
-                <div class="blog-summary-label">摘要：</div>
                 <div class="blog-summary-text">${summary || '暂无摘要'}</div>
             </div>
             <div class="blog-card-actions">
@@ -640,52 +640,188 @@ function bindBlogEvents() {
         })
     })
     
-    // 阅读全文按钮
+    // 阅读全文按钮 - 打开新页面显示文章
     document.querySelectorAll('.blog-read-more').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.stopPropagation()
             const id = this.getAttribute('data-id')
-            const card = this.closest('.blog-card')
-            
-            // 切换预览和完整内容
-            if (card.classList.contains('expanded')) {
-                card.classList.remove('expanded')
-                this.textContent = '阅读全文»'
-            } else {
-                card.classList.add('expanded')
-                this.textContent = '收起'
-                
-                // 展开后渲染LaTeX和Mermaid
-                setTimeout(() => {
-                    const contentEl = card.querySelector('.blog-card-content');
-                    if (contentEl) {
-                        // 渲染LaTeX
-                        if (typeof renderMathInElement !== 'undefined') {
-                            renderMathInElement(contentEl, {
-                                delimiters: [
-                                    {left: "$$", right: "$$", display: true},
-                                    {left: "$", right: "$", display: false},
-                                    {left: "\\[", right: "\\]", display: true},
-                                    {left: "\\(", right: "\\)", display: false}
-                                ]
-                            });
-                        }
-                        
-                        // 渲染Mermaid图表
-                        if (typeof mermaid !== 'undefined') {
-                            mermaid.initialize({ startOnLoad: false, theme: 'default' });
-                            contentEl.querySelectorAll('.mermaid').forEach((el) => {
-                                if (!el.hasAttribute('data-processed')) {
-                                    mermaid.run({ nodes: [el] });
-                                    el.setAttribute('data-processed', 'true');
-                                }
-                            });
-                        }
-                    }
-                }, 100);
-            }
+            showBlogDetail(id)
         })
     })
+}
+
+// 显示文章详情页
+function showBlogDetail(blogId) {
+    const blog = allBlogs.find(b => b.id === blogId)
+    if (!blog) return
+    
+    // 隐藏博客列表，显示详情页
+    const blogList = document.querySelector('#blog-list')
+    const detailPage = document.querySelector('#blog-detail-page')
+    const detailContent = document.querySelector('#blog-detail-content')
+    
+    if (!blogList || !detailPage || !detailContent) return
+    
+    blogList.style.display = 'none'
+    detailPage.style.display = 'block'
+    
+    const title = blog.attributes.title || '无标题'
+    const contentText = blog.attributes.content || ''
+    const time = blog.attributes.time || ''
+    const category = blog.attributes.category || '未分类'
+    const tags = blog.attributes.tags || ''
+    const tagArray = tags.split(',').filter(t => t.trim())
+    const author = blog.attributes.author || '未知用户'
+    
+    // 处理内容
+    let processedContent = contentText
+    if (typeof mermaid !== 'undefined') {
+        processedContent = processedContent.replace(/```mermaid\n([\s\S]*?)\n```/g, function(match, code) {
+            const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+            return '\n<div class="mermaid" id="' + id + '">' + code.trim() + '</div>\n';
+        });
+    }
+    
+    let contentHtml = typeof marked !== 'undefined' ? marked.parse(processedContent) : processedContent.replace(/\n/g, '<br>')
+    
+    // 生成目录
+    const toc = generateTOC(contentHtml)
+    
+    // 渲染详情页内容
+    detailContent.innerHTML = `
+        <div class="blog-detail-header">
+            <h1 class="blog-detail-title">${title}</h1>
+            <div class="blog-detail-meta">
+                <span>📅 发表于 ${time}</span>
+                <span>|</span>
+                <span>📁 分类于 ${category}</span>
+                ${author ? `<span>|</span><span>👤 ${author}</span>` : ''}
+            </div>
+            ${tagArray.length > 0 ? `
+                <div class="blog-detail-tags">
+                    ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
+                </div>
+            ` : ''}
+            ${canEdit() ? `
+                <div class="blog-detail-actions">
+                    <button class="blog-edit-btn" data-id="${blogId}">✏️ 编辑</button>
+                    <button class="blog-delete-btn" data-id="${blogId}">🗑️ 删除</button>
+                </div>
+            ` : ''}
+        </div>
+        <div class="blog-detail-body">
+            ${contentHtml}
+        </div>
+        <div class="blog-detail-footer">
+            <button id="back-to-list" class="btn">← 返回列表</button>
+        </div>
+    `
+    
+    // 渲染目录
+    const tocList = document.querySelector('#toc-list')
+    if (tocList) {
+        tocList.innerHTML = toc
+    }
+    
+    // 绑定返回按钮
+    const backBtn = document.querySelector('#back-to-list')
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            blogList.style.display = 'block'
+            detailPage.style.display = 'none'
+        })
+    }
+    
+    // 重新绑定编辑和删除按钮
+    bindBlogEvents()
+    
+    // 渲染LaTeX和Mermaid
+    setTimeout(() => {
+        const bodyEl = detailContent.querySelector('.blog-detail-body')
+        if (bodyEl) {
+            // 为标题添加ID，用于目录锚点
+            bodyEl.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((heading, index) => {
+                const id = 'heading-' + index
+                heading.id = id
+            })
+            
+            // 渲染LaTeX
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(bodyEl, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                        {left: "\\[", right: "\\]", display: true},
+                        {left: "\\(", right: "\\)", display: false}
+                    ]
+                });
+            }
+            
+            // 渲染Mermaid图表
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({ startOnLoad: false, theme: 'default' });
+                bodyEl.querySelectorAll('.mermaid').forEach((el) => {
+                    if (!el.hasAttribute('data-processed')) {
+                        mermaid.run({ nodes: [el] });
+                        el.setAttribute('data-processed', 'true');
+                    }
+                });
+            }
+        }
+        
+        // 绑定目录点击事件
+        if (tocList) {
+            tocList.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault()
+                    const targetId = this.getAttribute('href').substring(1)
+                    const targetEl = document.getElementById(targetId)
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                })
+            })
+        }
+    }, 100)
+}
+
+// 生成目录
+function generateTOC(html) {
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = html
+    const headings = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6')
+    
+    if (headings.length === 0) {
+        return '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无目录</div>'
+    }
+    
+    let tocHtml = '<ul class="toc-list">'
+    let currentLevel = 0
+    
+    headings.forEach((heading, index) => {
+        const level = parseInt(heading.tagName.charAt(1))
+        const id = 'heading-' + index
+        const text = heading.textContent.trim()
+        
+        if (level > currentLevel) {
+            tocHtml += '<ul>'
+        } else if (level < currentLevel) {
+            for (let i = 0; i < currentLevel - level; i++) {
+                tocHtml += '</ul>'
+            }
+        }
+        
+        tocHtml += `<li><a href="#${id}" class="toc-link toc-level-${level}">${text}</a></li>`
+        currentLevel = level
+    })
+    
+    // 关闭剩余的ul标签
+    for (let i = 0; i < currentLevel; i++) {
+        tocHtml += '</ul>'
+    }
+    
+    tocHtml += '</ul>'
+    return tocHtml
 }
 
 function updateBlogStats(blogs) {
