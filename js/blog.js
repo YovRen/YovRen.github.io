@@ -228,7 +228,16 @@ function setupBlogEventListeners() {
 
 async function getBlogs() {
     let data = []
+    const currentUser = AV.User.current()
+    
+    if (!currentUser) {
+        // 未登录时返回空数组，或者可以显示公开博客
+        return data
+    }
+    
+    // 只查询当前用户的博客
     const queryAll = new AV.Query('blog');
+    queryAll.equalTo('user', currentUser);
     await queryAll.find().then((rows) => {
         for (let row of rows) {
             data.push(row);

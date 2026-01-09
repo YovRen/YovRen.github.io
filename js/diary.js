@@ -207,12 +207,54 @@ function setupDiaryEventListeners() {
 
 async function getData() {
     let data = []
-    const queryAll = new AV.Query('journal');
-    await queryAll.find().then((rows) => {
-        for (let row of rows) {
-            data.push(row);
+    const currentUser = AV.User.current()
+    
+    if (!currentUser) {
+        // 未登录时只显示公开的日记（如果有公开字段的话）
+        const queryAll = new AV.Query('journal');
+        await queryAll.find().then((rows) => {
+            for (let row of rows) {
+                data.push(row);
+            }
+        });
+        return data
+    }
+    
+    // 获取好友ID列表
+    const friendIds = [currentUser.id] // 包含自己
+    try {
+        const Friend = AV.Object.extend('friend')
+        const friendQuery = new AV.Query(Friend)
+        friendQuery.equalTo('user', currentUser)
+        const friendResults = await friendQuery.find()
+        
+        for (let friend of friendResults) {
+            const friendId = friend.get('friendId')
+            if (friendId) {
+                friendIds.push(friendId)
+            }
         }
-    });
+    } catch (error) {
+        console.error('获取好友列表失败:', error)
+    }
+    
+    // 查询自己和好友的日记
+    const queries = friendIds.map(friendId => {
+        const query = new AV.Query('journal')
+        const friendUser = AV.Object.createWithoutData('_User', friendId)
+        query.equalTo('user', friendUser)
+        return query
+    })
+    
+    if (queries.length > 0) {
+        const queryAll = AV.Query.or(...queries)
+        await queryAll.find().then((rows) => {
+            for (let row of rows) {
+                data.push(row);
+            }
+        });
+    }
+    
     return data
 }
 

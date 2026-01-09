@@ -88,11 +88,21 @@ function setupEventListeners() {
 async function getData() {
     try {
         let data = []
+        const currentUser = AV.User.current()
+        
+        if (!currentUser) {
+            // 未登录时返回空数组
+            return data
+        }
+        
+        // 只查询当前用户的待办事项
         // 兼容旧数据：如果没有archived字段，也包含进来
         const query1 = new AV.Query('todolist');
         query1.equalTo('archived', false);
+        query1.equalTo('user', currentUser);
         const query2 = new AV.Query('todolist');
         query2.doesNotExist('archived');
+        query2.equalTo('user', currentUser);
         const queryAll = AV.Query.or(query1, query2);
         const rows = await queryAll.find();
         console.log('查询到待办事项数量:', rows.length);
@@ -116,8 +126,15 @@ async function getData() {
 async function getArchivedData() {
     try {
         let data = []
+        const currentUser = AV.User.current()
+        
+        if (!currentUser) {
+            return data
+        }
+        
         const queryAll = new AV.Query('todolist');
         queryAll.equalTo('archived', true);
+        queryAll.equalTo('user', currentUser);
         queryAll.descending('completedDate');
         const rows = await queryAll.find();
         for (let row of rows) {
@@ -132,6 +149,11 @@ async function getArchivedData() {
 
 async function saveData(data) {
     try {
+        const currentUser = AV.User.current();
+        if (!currentUser) {
+            throw new Error('请先登录');
+        }
+        
         const Todo = AV.Object.extend('todolist');
         const todo = new Todo();
         todo.set('title', data.title);
@@ -140,6 +162,7 @@ async function saveData(data) {
         todo.set('urgency', data.urgency || 'high');
         todo.set('quadrant', data.quadrant || 1);
         todo.set('archived', data.archived || false);
+        todo.set('user', currentUser);
         if (data.deadline) {
             // 将字符串日期转换为 Date 对象
             const deadlineDate = new Date(data.deadline);
