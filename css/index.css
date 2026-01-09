@@ -30,13 +30,13 @@ html {
 header {
     position: relative;
     width: 100%;
-    min-height: 60px;
+    min-height: 70px;
     background: linear-gradient(135deg, var(--primary) 0%, #dda0dd 100%);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 0 3rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
     z-index: 100;
 }
 
@@ -1075,34 +1075,36 @@ div.avatar img {
 }
 
 .blog-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 15px;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 40px;
     display: flex;
-    gap: 20px;
+    gap: 40px;
 }
 
 .blog-sidebar {
-    width: 250px;
+    width: 300px;
     flex-shrink: 0;
 }
 
 .blog-main {
     flex: 1;
+    min-width: 0;
 }
 
 .btn-new-blog {
     width: 100%;
-    padding: 12px 24px;
+    padding: 16px 28px;
     background: linear-gradient(135deg, var(--primary), #dda0dd);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    transition: all 0.3s;
 }
 
 .btn-new-blog:hover {
@@ -1111,81 +1113,189 @@ div.avatar img {
 }
 
 .blog-stats {
-    padding: 20px;
+    padding: 30px 25px;
     background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .blog-stats h4 {
     margin-top: 0;
+    margin-bottom: 20px;
     color: var(--primary);
+    font-size: 18px;
+}
+
+.blog-stats p {
+    margin: 12px 0;
+    font-size: 15px;
+    line-height: 1.8;
 }
 
 .blog-card {
     background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 35px 40px;
+    margin-bottom: 35px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .blog-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .blog-card-header {
     display: flex;
     justify-content: space-between;
     align-items: start;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .blog-card-header h3 {
     margin: 0;
     color: var(--primary);
     flex: 1;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.4;
+    padding-right: 20px;
 }
 
-.blog-actions {
+.blog-card-meta {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
 }
 
-.blog-actions button {
-    padding: 4px 12px;
+.blog-time {
+    color: var(--muted);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.blog-edit-btn,
+.blog-delete-btn {
+    padding: 8px 16px;
     border: 1px solid #ddd;
     background: white;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
 
-.blog-actions button:hover {
-    background: #f5f5f5;
+.blog-edit-btn:hover {
+    background: #f0f0f0;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.blog-delete-btn:hover {
+    background: #fff5f5;
+    border-color: #ff6b6b;
+    color: #ff6b6b;
 }
 
 .blog-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 15px;
 }
 
 .blog-tag {
-    padding: 4px 10px;
-    background: rgba(221, 160, 221, 0.2);
+    padding: 6px 14px;
+    background: rgba(221, 160, 221, 0.15);
     color: var(--primary);
-    border-radius: 12px;
-    font-size: 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    border: 1px solid rgba(221, 160, 221, 0.3);
+    transition: all 0.2s;
+}
+
+.blog-tag:hover {
+    background: rgba(221, 160, 221, 0.25);
+    transform: translateY(-1px);
 }
 
 .blog-card-content {
     color: var(--text-color);
-    line-height: 1.6;
-    margin-bottom: 15px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.blog-card-content p {
+    margin: 15px 0;
+}
+
+.blog-card-content h1,
+.blog-card-content h2,
+.blog-card-content h3,
+.blog-card-content h4 {
+    margin: 25px 0 15px 0;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.blog-card-content h1 {
+    font-size: 28px;
+}
+
+.blog-card-content h2 {
+    font-size: 24px;
+}
+
+.blog-card-content h3 {
+    font-size: 20px;
+}
+
+.blog-card-content ul,
+.blog-card-content ol {
+    margin: 15px 0;
+    padding-left: 30px;
+}
+
+.blog-card-content li {
+    margin: 8px 0;
+    line-height: 1.7;
+}
+
+.blog-card-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.blog-card-content code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.blog-card-content pre {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 20px 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.blog-card-content pre code {
+    background: none;
+    padding: 0;
 }
 
 .blog-card-footer {
@@ -1195,13 +1305,47 @@ div.avatar img {
     color: var(--muted);
 }
 
+.blog-empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+@media (max-width: 1024px) {
+    .blog-container {
+        max-width: 100%;
+        padding: 0 30px;
+        gap: 30px;
+    }
+    
+    .blog-sidebar {
+        width: 280px;
+    }
+}
+
 @media (max-width: 768px) {
     .blog-container {
         flex-direction: column;
+        padding: 0 20px;
+        margin: 20px auto;
+        gap: 25px;
     }
 
     .blog-sidebar {
         width: 100%;
+    }
+    
+    .blog-card {
+        padding: 25px 20px;
+        margin-bottom: 25px;
+    }
+    
+    .blog-card-header h3 {
+        font-size: 20px;
     }
 }
 
@@ -1828,4 +1972,85 @@ div.balloon {
     height: 50px;
     border-radius: 10px;
     background-image: url("../img/logo-dark.jpg")
+}
+
+/* EasyMDE 编辑器样式修复 */
+.editor-toolbar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 8px 4px !important;
+    border-bottom: 1px solid #ddd !important;
+    background: #fafafa !important;
+    min-height: 40px !important;
+    overflow: visible !important;
+}
+
+.editor-toolbar button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    margin: 2px !important;
+    padding: 0 !important;
+    border: 1px solid transparent !important;
+    border-radius: 4px !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.editor-toolbar button:hover {
+    background: #e8e8e8 !important;
+    border-color: #ccc !important;
+}
+
+.editor-toolbar button.active {
+    background: #e0e0e0 !important;
+    border-color: #999 !important;
+}
+
+.editor-toolbar i.separator {
+    display: inline-block !important;
+    width: 1px !important;
+    height: 20px !important;
+    margin: 0 4px !important;
+    background: #ddd !important;
+    vertical-align: middle !important;
+}
+
+/* 确保预览按钮可见 */
+.editor-toolbar button.preview,
+.editor-toolbar button[title="预览"],
+.editor-toolbar button[title="Preview"] {
+    z-index: 10 !important;
+    position: relative !important;
+}
+
+/* 编辑器容器样式 */
+#blog-content-editor-wrapper,
+#content-editor-wrapper {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+}
+
+.editor-toolbar.fullscreen {
+    z-index: 10001 !important;
+}
+
+/* 确保工具栏在弹窗中正确显示 */
+.write-form-overlay .editor-toolbar {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.cell .editor-toolbar {
+    width: 100% !important;
+    max-width: 100% !important;
 }
