@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量上传 Journal 数据 - 拉普达</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .upload-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #4a90e2;
+            background: rgba(74, 144, 226, 0.1);
+        }
+        .upload-area.dragover {
+            border-color: #4a90e2;
+            background: rgba(74, 144, 226, 0.2);
+        }
+        .preview-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        .preview-table th,
+        .preview-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .preview-table th {
+            background: rgba(74, 144, 226, 0.2);
+            font-weight: bold;
+        }
+        .preview-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .status-message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .status-success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+        .status-error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+        .status-info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90e2, #764ba2);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-upload {
+            background: linear-gradient(135deg, #4a90e2, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+        .btn-upload:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .field-mapping {
+            margin: 20px 0;
+        }
+        .field-mapping select {
+            margin: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="snowflakes" id="snowflakes"></div>
+    <div class="disney-castle"></div>
+    <header>
+        <div class="header-content">
+            <div class="title">批量上传 Journal 数据</div>
+            <div class="controls">
+                <div id="user-info" style="display: none;">
+                    <span class="username"></span>
+                    <button id="logout-btn">登出</button>
+                </div>
+                <button id="login-btn">登录</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="upload-container">
+        <div class="status-message status-info">
+            <strong>使用说明：</strong>
+            <ul style="text-align: left; margin: 10px 0;">
+                <li>支持 CSV 和 Excel (.xlsx) 格式文件</li>
+                <li>CSV 文件第一行应为列名（如：title, content, mood, city, weather, time, author）</li>
+                <li>Excel 文件第一行应为列名</li>
+                <li>必填字段：title, content, time</li>
+                <li>可选字段：mood（默认😊）, city, weather, author（默认当前登录用户名）</li>
+                <li>请先登录后再上传数据</li>
+            </ul>
+        </div>
+
+        <div class="upload-area" id="upload-area">
+            <h3>📁 拖拽文件到此处或点击选择文件</h3>
+            <p>支持 CSV 和 Excel (.xlsx) 格式</p>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display: none;">
+            <button class="btn-upload" onclick="document.getElementById('file-input').click()">选择文件</button>
+        </div>
+
+        <div id="field-mapping" class="field-mapping" style="display: none;">
+            <h4>字段映射（请选择表格列对应的字段）</h4>
+            <div id="mapping-container"></div>
+        </div>
+
+        <div id="preview-section" style="display: none;">
+            <h3>数据预览（前 5 条）</h3>
+            <div style="overflow-x: auto;">
+                <table class="preview-table" id="preview-table"></table>
+            </div>
+            <div style="margin: 20px 0;">
+                <p>共 <strong id="total-count">0</strong> 条数据待上传</p>
+                <button class="btn-upload" id="start-upload-btn">开始上传</button>
+                <button class="btn-upload" id="cancel-btn" style="background: #ccc;">取消</button>
+            </div>
+        </div>
+
+        <div id="upload-progress" style="display: none;">
+            <h3>上传进度</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%;">0%</div>
+            </div>
+            <div id="upload-status"></div>
+        </div>
+
+        <div id="result-section" style="display: none;">
+            <h3>上传结果</h3>
+            <div id="result-message"></div>
+        </div>
+    </div>
+
+    <ul class="nav">
+        <li><a href="blog.html">博客</a></li>
+        <li><a href="index.html">日程</a></li>
+        <li><a href="diary.html">朋友圈</a></li>
+    </ul>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="https://code.bdstatic.com/npm/leancloud-storage@4.12.0/dist/av-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        // 初始化 LeanCloud
+        AV.init({
+            appId: "szRqJxj4rGr47DBsfiYqh9qA-gzGzoHsz",
+            appKey: "UCGehmC6gOKYHSKpoMLeaRFJ",
+            serverURL: "https://szrqjxj4.lc-cn-n1-shared.com"
+        });
+    </script>
+    <script src="js/auth.js"></script>
+    <script src="js/login-modal.js"></script>
+    <script src="js/snowflakes.js"></script>
+
+    <script>
+        let parsedData = [];
+        let headers = [];
+        let fieldMapping = {};
+
+        // 初始化登录按钮
+        document.querySelector('#login-btn')?.addEventListener('click', showLoginModal);
+        document.querySelector('#logout-btn')?.addEventListener('click', async () => {
+            await logout();
+        });
+
+        // 文件选择
+        const fileInput = document.getElementById('file-input');
+        const uploadArea = document.getElementById('upload-area');
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            const fileName = file.name.toLowerCase();
+            if (fileName.endsWith('.csv')) {
+                parseCSV(file);
+            } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                parseExcel(file);
+            } else {
+                alert('不支持的文件格式，请上传 CSV 或 Excel 文件');
+            }
+        }
+
+        function parseCSV(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(line => line.trim());
+                
+                if (lines.length === 0) {
+                    alert('文件为空');
+                    return;
+                }
+
+                // 解析 CSV（简单处理，支持引号）
+                headers = parseCSVLine(lines[0]);
+                parsedData = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = parseCSVLine(lines[i]);
+                    if (values.length === headers.length) {
+                        const row = {};
+                        headers.forEach((header, index) => {
+                            row[header] = values[index] || '';
+                        });
+                        parsedData.push(row);
+                    }
+                }
+
+                showPreview();
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function parseExcel(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                    if (jsonData.length === 0) {
+                        alert('文件为空');
+                        return;
+                    }
+
+                    headers = jsonData[0].map(h => String(h || '').trim());
+                    parsedData = [];
+
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = {};
+                        headers.forEach((header, index) => {
+                            row[header] = String(jsonData[i][index] || '').trim();
+                        });
+                        // 只添加非空行
+                        if (Object.values(row).some(v => v)) {
+                            parsedData.push(row);
+                        }
+                    }
+
+                    showPreview();
+                } catch (error) {
+                    console.error('解析 Excel 失败:', error);
+                    alert('解析 Excel 文件失败: ' + error.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function showPreview() {
+            if (parsedData.length === 0) {
+                alert('没有找到有效数据');
+                return;
+            }
+
+            // 创建字段映射
+            createFieldMapping();
+
+            // 显示预览
+            const previewTable = document.getElementById('preview-table');
+            const previewSection = document.getElementById('preview-section');
+            const totalCount = document.getElementById('total-count');
+
+            // 创建表头
+            const requiredFields = ['title', 'content', 'time'];
+            const optionalFields = ['mood', 'city', 'weather', 'author'];
+            const allFields = [...requiredFields, ...optionalFields];
+
+            let headerRow = '<tr><th>行号</th>';
+            allFields.forEach(field => {
+                headerRow += `<th>${field}${requiredFields.includes(field) ? ' *' : ''}</th>`;
+            });
+            headerRow += '</tr>';
+            previewTable.innerHTML = headerRow;
+
+            // 显示前 5 条数据
+            const previewCount = Math.min(5, parsedData.length);
+            for (let i = 0; i < previewCount; i++) {
+                let row = `<tr><td>${i + 1}</td>`;
+                allFields.forEach(field => {
+                    const mappedHeader = fieldMapping[field] || '';
+                    const value = parsedData[i][mappedHeader] || '';
+                    row += `<td>${value.substring(0, 50)}${value.length > 50 ? '...' : ''}</td>`;
+                });
+                row += '</tr>';
+                previewTable.innerHTML += row;
+            }
+
+            totalCount.textContent = parsedData.length;
+            previewSection.style.display = 'block';
+        }
+
+        function createFieldMapping() {
+            const mappingContainer = document.getElementById('mapping-container');
+            const fieldMappingDiv = document.getElementById('field-mapping');
+            
+            const requiredFields = ['title', 'content', 'time'];
+            const optionalFields = ['mood', 'city', 'weather', 'author'];
+            const allFields = [...requiredFields, ...optionalFields];
+
+            let html = '';
+            allFields.forEach(field => {
+                html += `<div style="margin: 10px 0;">
+                    <label>${field}${requiredFields.includes(field) ? ' <span style="color: red;">*</span>' : ''}:</label>
+                    <select id="map-${field}" class="form-control" style="display: inline-block; width: 200px; margin-left: 10px;">
+                        <option value="">-- 请选择 --</option>
+                        ${headers.map(h => `<option value="${h}" ${h.toLowerCase() === field ? 'selected' : ''}>${h}</option>`).join('')}
+                    </select>
+                </div>`;
+            });
+
+            mappingContainer.innerHTML = html;
+            fieldMappingDiv.style.display = 'block';
+
+            // 自动映射（如果列名匹配）
+            allFields.forEach(field => {
+                const select = document.getElementById(`map-${field}`);
+                const matchingHeader = headers.find(h => 
+                    h.toLowerCase().trim() === field.toLowerCase() ||
+                    h.toLowerCase().trim().includes(field.toLowerCase())
+                );
+                if (matchingHeader) {
+                    select.value = matchingHeader;
+                }
+                select.addEventListener('change', updateFieldMapping);
+            });
+
+            updateFieldMapping();
+        }
+
+        function updateFieldMapping() {
+            const requiredFields = ['title', 'content', 'time'];
+            const optionalFields = ['mood', 'city', 'weather', 'author'];
+            const allFields = [...requiredFields, ...optionalFields];
+
+            allFields.forEach(field => {
+                const select = document.getElementById(`map-${field}`);
+                if (select && select.value) {
+                    fieldMapping[field] = select.value;
+                }
+            });
+        }
+
+        // 开始上传
+        document.getElementById('start-upload-btn').addEventListener('click', async () => {
+            if (!canEdit()) {
+                alert('请先登录');
+                showLoginModal();
+                return;
+            }
+
+            // 验证必填字段映射
+            const requiredFields = ['title', 'content', 'time'];
+            const missingFields = requiredFields.filter(field => !fieldMapping[field]);
+            
+            if (missingFields.length > 0) {
+                alert(`请先映射必填字段: ${missingFields.join(', ')}`);
+                return;
+            }
+
+            await startUpload();
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            if (confirm('确定要取消吗？')) {
+                location.reload();
+            }
+        });
+
+        async function startUpload() {
+            const currentUser = AV.User.current();
+            if (!currentUser) {
+                alert('请先登录');
+                showLoginModal();
+                return;
+            }
+
+            const progressFill = document.getElementById('progress-fill');
+            const uploadProgress = document.getElementById('upload-progress');
+            const uploadStatus = document.getElementById('upload-status');
+            const resultSection = document.getElementById('result-section');
+            const resultMessage = document.getElementById('result-message');
+
+            uploadProgress.style.display = 'block';
+            resultSection.style.display = 'none';
+
+            let successCount = 0;
+            let errorCount = 0;
+            const errors = [];
+
+            const total = parsedData.length;
+            const batchSize = 10; // 每批上传 10 条
+
+            for (let i = 0; i < parsedData.length; i += batchSize) {
+                const batch = parsedData.slice(i, i + batchSize);
+                
+                // 批量创建
+                const promises = batch.map(async (row, index) => {
+                    try {
+                        const Journal = AV.Object.extend('journal');
+                        const journal = new Journal();
+
+                        // 设置必填字段
+                        journal.set('title', row[fieldMapping['title']] || '无标题');
+                        journal.set('content', row[fieldMapping['content']] || '');
+                        journal.set('time', row[fieldMapping['time']] || new Date().toLocaleString('zh-CN'));
+
+                        // 设置可选字段
+                        if (fieldMapping['mood'] && row[fieldMapping['mood']]) {
+                            journal.set('mood', row[fieldMapping['mood']]);
+                        } else {
+                            journal.set('mood', '😊');
+                        }
+
+                        if (fieldMapping['city'] && row[fieldMapping['city']]) {
+                            journal.set('city', row[fieldMapping['city']]);
+                        }
+
+                        if (fieldMapping['weather'] && row[fieldMapping['weather']]) {
+                            journal.set('weather', row[fieldMapping['weather']]);
+                        }
+
+                        if (fieldMapping['author'] && row[fieldMapping['author']]) {
+                            journal.set('author', row[fieldMapping['author']]);
+                        } else {
+                            const username = currentUser.get('username') || currentUser.get('email') || '未知用户';
+                            journal.set('author', username);
+                        }
+
+                        // 设置用户关联
+                        journal.set('user', currentUser);
+
+                        // 设置 ACL 权限
+                        const acl = new AV.ACL();
+                        acl.setPublicReadAccess(true);
+                        acl.setPublicWriteAccess(true);
+                        journal.setACL(acl);
+
+                        await journal.save();
+                        successCount++;
+                    } catch (error) {
+                        errorCount++;
+                        errors.push({
+                            row: i + index + 1,
+                            error: error.message || '未知错误'
+                        });
+                        console.error(`第 ${i + index + 1} 行上传失败:`, error);
+                    }
+                });
+
+                await Promise.all(promises);
+
+                // 更新进度
+                const progress = Math.round(((i + batch.length) / total) * 100);
+                progressFill.style.width = progress + '%';
+                progressFill.textContent = progress + '%';
+                uploadStatus.innerHTML = `
+                    <div class="status-message status-info">
+                        已处理: ${Math.min(i + batch.length, total)} / ${total}<br>
+                        成功: ${successCount} | 失败: ${errorCount}
+                    </div>
+                `;
+            }
+
+            // 显示结果
+            uploadProgress.style.display = 'none';
+            resultSection.style.display = 'block';
+
+            let resultHtml = `
+                <div class="status-message ${errorCount === 0 ? 'status-success' : 'status-error'}">
+                    <h4>上传完成！</h4>
+                    <p>总计: ${total} 条</p>
+                    <p>成功: ${successCount} 条</p>
+                    <p>失败: ${errorCount} 条</p>
+                </div>
+            `;
+
+            if (errors.length > 0) {
+                resultHtml += '<h4>错误详情：</h4><ul>';
+                errors.slice(0, 10).forEach(err => {
+                    resultHtml += `<li>第 ${err.row} 行: ${err.error}</li>`;
+                });
+                if (errors.length > 10) {
+                    resultHtml += `<li>... 还有 ${errors.length - 10} 个错误</li>`;
+                }
+                resultHtml += '</ul>';
+            }
+
+            resultMessage.innerHTML = resultHtml;
+
+            // 3秒后可以重新上传
+            setTimeout(() => {
+                document.getElementById('start-upload-btn').disabled = false;
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
