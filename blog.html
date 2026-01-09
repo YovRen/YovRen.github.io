@@ -40,16 +40,6 @@
         <div class="blog-sidebar">
             <button id="new-blog" class="btn-new-blog">✍️ 写新博客</button>
 
-            <div class="blog-navigation">
-                <div class="nav-section">
-                    <h4 class="nav-title">📚 导航</h4>
-                    <div class="nav-buttons">
-                        <button class="nav-btn active" data-filter="all">全部</button>
-                        <button class="nav-btn" data-filter="category">分类</button>
-                        <button class="nav-btn" data-filter="archive">归档</button>
-                    </div>
-                </div>
-            </div>
 
             <div class="blog-stats">
                 <h4>📊 博客统计</h4>
@@ -138,22 +128,18 @@
                 </div>
             </div>
 
-            <div class="blog-navigation" style="margin-top: 20px;">
-                <div class="nav-section">
-                    <h4 class="nav-title">🏷️ 标签云</h4>
+            <div class="blog-tags-cloud-card">
+                <h4>🏷️ 标签云</h4>
+                <div class="blog-tags-cloud" id="blog-tags-cloud">
+                    <div class="tags-loading">加载中...</div>
                 </div>
-            </div>
-            <div class="blog-tags-cloud" id="blog-tags-cloud">
-                <div class="tags-loading">加载中...</div>
             </div>
 
-            <div class="blog-navigation" style="margin-top: 25px;">
-                <div class="nav-section">
-                    <h4 class="nav-title">🔥 热门文章</h4>
+            <div class="blog-popular-card">
+                <h4>🔥 热门文章</h4>
+                <div class="blog-popular" id="blog-popular">
+                    <div class="popular-loading">加载中...</div>
                 </div>
-            </div>
-            <div class="blog-popular" id="blog-popular">
-                <div class="popular-loading">加载中...</div>
             </div>
         </div>
     </div>

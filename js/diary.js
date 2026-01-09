@@ -445,50 +445,58 @@ async function loadCarousel() {
     }
 }
 
-// 渲染轮播图（扑克牌叠排样式）
+// 渲染轮播图（上下叠加的扑克牌样式，像蜘蛛纸牌）
 let carouselSpeed = 2000 // 默认速度（毫秒）
 let carouselHovered = false
 let carouselAutoPlayInterval = null
+let carouselStartY = 0
+let carouselCurrentY = 0
+let carouselIsDragging = false
 
 function renderCarousel() {
     const carouselWrapper = document.querySelector('#carousel-wrapper')
     if (!carouselWrapper || carouselImages.length === 0) return
     
-    // 扑克牌叠排样式
+    // 上下叠加的扑克牌样式
     carouselWrapper.innerHTML = `
-        <div class="carousel-stack" style="position: relative; width: 100%; height: 300px;">
+        <div class="carousel-stack" style="position: relative; width: 100%; height: 300px; overflow: hidden; cursor: grab;">
             ${carouselImages.map((img, index) => {
                 const zIndex = carouselImages.length - index
-                const offset = index * 8 // 每张图片偏移8px
+                const offsetY = index * 15 // 每张图片向下偏移15px
                 return `
                     <div class="carousel-card" 
                          data-index="${index}"
                          style="position: absolute; 
-                                top: ${offset}px; 
-                                left: ${offset}px; 
-                                right: ${offset}px;
-                                bottom: ${offset}px;
+                                top: ${offsetY}px; 
+                                left: 0;
+                                right: 0;
+                                width: 100%;
+                                height: calc(100% - ${offsetY}px);
                                 z-index: ${zIndex};
                                 border-radius: 12px;
                                 overflow: hidden;
-                                cursor: ${img.link ? 'pointer' : 'default'};
-                                transition: all 0.3s;
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                        <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #f5f5f5; display: block;">
+                                cursor: ${img.link ? 'pointer' : 'grab'};
+                                transition: transform 0.3s, top 0.3s;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                                user-select: none;
+                                touch-action: pan-y;">
+                        <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #f5f5f5; display: block; pointer-events: none;">
                         ${img.title ? `<div class="carousel-item-title">${img.title}</div>` : ''}
                         ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 100;">×</button>` : ''}
                     </div>
                 `
             }).join('')}
-            ${carouselImages.length > 1 ? `
-                <div class="carousel-speed-control" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 8px; z-index: 1000;">
-                    <span>速度:</span>
-                    <input type="range" id="carousel-speed-slider" min="500" max="5000" step="500" value="${carouselSpeed}" style="width: 80px;">
-                    <span id="carousel-speed-value">${carouselSpeed/1000}秒</span>
-                </div>
-            ` : ''}
         </div>
+        ${carouselImages.length > 1 ? `
+            <div class="carousel-speed-control" style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 15px; font-size: 10px; display: flex; align-items: center; gap: 6px; z-index: 1000;">
+                <span>速度:</span>
+                <input type="range" id="carousel-speed-slider" min="500" max="5000" step="500" value="${carouselSpeed}" style="width: 60px; height: 4px;">
+                <span id="carousel-speed-value" style="min-width: 30px;">${carouselSpeed/1000}秒</span>
+            </div>
+        ` : ''}
     `
+    
+    const stack = carouselWrapper.querySelector('.carousel-stack')
     
     // 绑定删除按钮和点击事件
     carouselWrapper.querySelectorAll('.carousel-card').forEach((item, index) => {
@@ -505,21 +513,87 @@ function renderCarousel() {
         }
         
         if (img.link) {
-            item.addEventListener('click', () => {
-                window.open(img.link, '_blank')
+            item.addEventListener('click', (e) => {
+                if (!carouselIsDragging) {
+                    window.open(img.link, '_blank')
+                }
             })
         }
         
+        // 拖拽滑动功能
+        let startY = 0
+        let currentY = 0
+        let isDragging = false
+        
+        item.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('carousel-delete-btn')) return
+            isDragging = true
+            carouselIsDragging = true
+            startY = e.clientY
+            item.style.cursor = 'grabbing'
+            item.style.transition = 'none'
+        })
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return
+            currentY = e.clientY - startY
+            const maxOffset = 200
+            const clampedY = Math.max(-maxOffset, Math.min(maxOffset, currentY))
+            item.style.transform = `translateY(${clampedY}px)`
+        })
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false
+                carouselIsDragging = false
+                item.style.cursor = img.link ? 'pointer' : 'grab'
+                item.style.transition = 'transform 0.3s, top 0.3s'
+                
+                // 如果拖拽超过阈值，切换到下一张
+                if (Math.abs(currentY) > 50) {
+                    if (currentY > 0) {
+                        // 向下拖拽，显示下一张
+                        const nextIndex = (index + 1) % carouselImages.length
+                        const nextCard = carouselWrapper.querySelector(`.carousel-card[data-index="${nextIndex}"]`)
+                        if (nextCard) {
+                            nextCard.style.zIndex = 1000
+                            nextCard.style.top = '0px'
+                        }
+                    } else {
+                        // 向上拖拽，显示上一张
+                        const prevIndex = (index - 1 + carouselImages.length) % carouselImages.length
+                        const prevCard = carouselWrapper.querySelector(`.carousel-card[data-index="${prevIndex}"]`)
+                        if (prevCard) {
+                            prevCard.style.zIndex = 1000
+                            prevCard.style.top = '0px'
+                        }
+                    }
+                    
+                    setTimeout(() => {
+                        renderCarousel()
+                    }, 300)
+                } else {
+                    // 回弹
+                    item.style.transform = ''
+                }
+                currentY = 0
+            }
+        })
+        
         // Hover效果：将当前图片提到最前
         item.addEventListener('mouseenter', () => {
-            item.style.transform = 'translateY(-10px) scale(1.02)'
-            item.style.zIndex = 1000
+            if (!isDragging) {
+                item.style.zIndex = 1000
+                item.style.transform = 'translateY(-5px)'
+            }
         })
         
         item.addEventListener('mouseleave', () => {
-            const originalIndex = parseInt(item.dataset.index)
-            item.style.transform = ''
-            item.style.zIndex = carouselImages.length - originalIndex
+            if (!isDragging) {
+                const originalIndex = parseInt(item.dataset.index)
+                item.style.zIndex = carouselImages.length - originalIndex
+                item.style.transform = ''
+            }
         })
     })
     
@@ -537,9 +611,6 @@ function renderCarousel() {
     }
     
     // 自动轮播（hover时暂停）
-    startCarouselAutoPlay()
-    
-    const stack = carouselWrapper.querySelector('.carousel-stack')
     if (stack) {
         stack.addEventListener('mouseenter', () => {
             carouselHovered = true
@@ -550,6 +621,8 @@ function renderCarousel() {
             startCarouselAutoPlay()
         })
     }
+    
+    startCarouselAutoPlay()
 }
 
 function startCarouselAutoPlay() {
@@ -559,11 +632,11 @@ function startCarouselAutoPlay() {
     carouselAutoPlayInterval = setInterval(() => {
         if (carouselHovered) return
         
-        // 将第一张图片移到最后
+        // 将第一张图片移到最后（向上滑出）
         const firstCard = document.querySelector('.carousel-card[data-index="0"]')
         if (firstCard) {
             firstCard.style.transition = 'all 0.5s'
-            firstCard.style.transform = 'translateX(-100%)'
+            firstCard.style.transform = 'translateY(-100%)'
             firstCard.style.opacity = '0'
             
             setTimeout(() => {
