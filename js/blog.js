@@ -655,14 +655,28 @@ function showBlogDetail(blogId) {
     const blog = allBlogs.find(b => b.id === blogId)
     if (!blog) return
     
-    // 隐藏博客列表，显示详情页
+    // 隐藏博客列表、左侧边栏，显示详情页，右侧显示目录
     const blogList = document.querySelector('#blog-list')
     const detailPage = document.querySelector('#blog-detail-page')
     const detailContent = document.querySelector('#blog-detail-content')
+    const blogSidebar = document.querySelector('.blog-sidebar')
+    const blogSidebarRight = document.querySelector('.blog-sidebar-right')
+    const blogViewHeader = document.querySelector('.blog-view-header')
+    const blogNotesSection = document.querySelector('#blog-notes-section')
+    const blogTocSection = document.querySelector('#blog-toc-section')
     
     if (!blogList || !detailPage || !detailContent) return
     
-    blogList.style.display = 'none'
+    // 隐藏列表页元素
+    if (blogList) blogList.style.display = 'none'
+    if (blogSidebar) blogSidebar.style.display = 'none'
+    if (blogViewHeader) blogViewHeader.style.display = 'none'
+    
+    // 切换右侧：隐藏便签，显示目录
+    if (blogNotesSection) blogNotesSection.style.display = 'none'
+    if (blogTocSection) blogTocSection.style.display = 'block'
+    
+    // 显示详情页
     detailPage.style.display = 'block'
     
     const title = blog.attributes.title || '无标题'
@@ -687,33 +701,34 @@ function showBlogDetail(blogId) {
     // 生成目录
     const toc = generateTOC(contentHtml)
     
-    // 渲染详情页内容
+    // 渲染详情页内容（使用博客卡片样式，保持白底格式）
     detailContent.innerHTML = `
-        <div class="blog-detail-header">
-            <h1 class="blog-detail-title">${title}</h1>
-            <div class="blog-detail-meta">
-                <span>📅 发表于 ${time}</span>
-                <span>|</span>
-                <span>📁 分类于 ${category}</span>
-                ${author ? `<span>|</span><span>👤 ${author}</span>` : ''}
+        <div class="blog-card" style="margin-bottom: 0;">
+            <div class="blog-card-header">
+                <div class="blog-header-left">
+                    <span class="blog-title" style="font-size: 28px;">${title}</span>
+                </div>
+                <div class="blog-header-right">
+                    <span class="blog-author">👤 ${author}</span>
+                    <span class="blog-time">${time || ''}</span>
+                    ${canEdit() ? `
+                        <button class="blog-edit-btn" data-id="${blogId}">✏️</button>
+                        <button class="blog-delete-btn" data-id="${blogId}">🗑️</button>
+                    ` : ''}
+                </div>
             </div>
-            ${tagArray.length > 0 ? `
-                <div class="blog-detail-tags">
-                    ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
-                </div>
-            ` : ''}
-            ${canEdit() ? `
-                <div class="blog-detail-actions">
-                    <button class="blog-edit-btn" data-id="${blogId}">✏️ 编辑</button>
-                    <button class="blog-delete-btn" data-id="${blogId}">🗑️ 删除</button>
-                </div>
-            ` : ''}
-        </div>
-        <div class="blog-detail-body">
-            ${contentHtml}
-        </div>
-        <div class="blog-detail-footer">
-            <button id="back-to-list" class="btn">← 返回列表</button>
+            <div class="blog-card-content">
+                ${contentHtml}
+            </div>
+            <div class="blog-card-footer">
+                ${category ? `<span class="blog-category">📁 ${category}</span>` : ''}
+                ${tagArray.length > 0 ? `
+                    <div class="blog-tags">
+                        ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
+                    </div>
+                ` : ''}
+                <button id="back-to-list" class="btn" style="margin-left: auto;">← 返回列表</button>
+            </div>
         </div>
     `
     
@@ -727,7 +742,16 @@ function showBlogDetail(blogId) {
     const backBtn = document.querySelector('#back-to-list')
     if (backBtn) {
         backBtn.addEventListener('click', () => {
-            blogList.style.display = 'block'
+            // 恢复列表页元素
+            if (blogList) blogList.style.display = 'block'
+            if (blogSidebar) blogSidebar.style.display = 'block'
+            if (blogViewHeader) blogViewHeader.style.display = 'block'
+            
+            // 切换右侧：显示便签，隐藏目录
+            if (blogNotesSection) blogNotesSection.style.display = 'block'
+            if (blogTocSection) blogTocSection.style.display = 'none'
+            
+            // 隐藏详情页
             detailPage.style.display = 'none'
         })
     }
@@ -737,17 +761,17 @@ function showBlogDetail(blogId) {
     
     // 渲染LaTeX和Mermaid
     setTimeout(() => {
-        const bodyEl = detailContent.querySelector('.blog-detail-body')
-        if (bodyEl) {
+        const contentEl = detailContent.querySelector('.blog-card-content')
+        if (contentEl) {
             // 为标题添加ID，用于目录锚点
-            bodyEl.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((heading, index) => {
+            contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((heading, index) => {
                 const id = 'heading-' + index
                 heading.id = id
             })
             
             // 渲染LaTeX
             if (typeof renderMathInElement !== 'undefined') {
-                renderMathInElement(bodyEl, {
+                renderMathInElement(contentEl, {
                     delimiters: [
                         {left: "$$", right: "$$", display: true},
                         {left: "$", right: "$", display: false},
@@ -760,7 +784,7 @@ function showBlogDetail(blogId) {
             // 渲染Mermaid图表
             if (typeof mermaid !== 'undefined') {
                 mermaid.initialize({ startOnLoad: false, theme: 'default' });
-                bodyEl.querySelectorAll('.mermaid').forEach((el) => {
+                contentEl.querySelectorAll('.mermaid').forEach((el) => {
                     if (!el.hasAttribute('data-processed')) {
                         mermaid.run({ nodes: [el] });
                         el.setAttribute('data-processed', 'true');

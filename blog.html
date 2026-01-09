@@ -86,26 +86,27 @@
             
             <!-- 文章详情页 -->
             <div id="blog-detail-page" style="display: none;">
-                <div class="blog-detail-container">
-                    <div class="blog-detail-main">
-                        <div id="blog-detail-content"></div>
-                    </div>
-                    <div class="blog-detail-sidebar">
-                        <div class="blog-toc" id="blog-toc">
-                            <h4>📑 目录</h4>
-                            <div id="toc-list"></div>
-                        </div>
-                    </div>
+                <div class="blog-detail-content-wrapper">
+                    <div id="blog-detail-content"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 右侧：便签 -->
+        <!-- 右侧：便签/目录 -->
         <div class="blog-sidebar-right">
-            <button id="new-note" class="btn-new-blog" style="width: 100%; margin-bottom: 12px;">📝 添加便签</button>
-
-            <div class="blog-notes-list" id="blog-notes-list">
-                <div class="notes-loading">加载中...</div>
+            <div id="blog-notes-section">
+                <button id="new-note" class="btn-new-blog" style="width: 100%; margin-bottom: 12px;">📝 添加便签</button>
+                <div class="blog-notes-list" id="blog-notes-list">
+                    <div class="notes-loading">加载中...</div>
+                </div>
+            </div>
+            
+            <!-- 文章目录（详情页时显示） -->
+            <div id="blog-toc-section" style="display: none;">
+                <div class="blog-toc" id="blog-toc">
+                    <h4>📑 目录</h4>
+                    <div id="toc-list"></div>
+                </div>
             </div>
         </div>
     </div>

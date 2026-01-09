@@ -3817,25 +3817,12 @@ div.balloon {
 }
 
 /* 文章详情页样式 */
-.blog-detail-container {
-    display: flex;
-    gap: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
+.blog-detail-content-wrapper {
+    width: 100%;
 }
 
-.blog-detail-main {
-    flex: 1;
-    min-width: 0;
-}
-
-.blog-detail-sidebar {
-    width: 250px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 80px;
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
+#blog-detail-page {
+    width: 100%;
 }
 
 .blog-toc {
