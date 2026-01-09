@@ -1086,6 +1086,55 @@ async function addFriend(friendUsername) {
     }
 }
 
+// 显示添加好友弹窗
+function showAddFriendModal() {
+    const modal = document.createElement('div')
+    modal.className = 'add-important-day-modal-overlay'
+    modal.style.display = 'flex'
+    modal.innerHTML = `
+        <div class="add-important-day-modal" style="max-width: 400px;">
+            <h3>添加好友</h3>
+            <div class="modal-form">
+                <label>好友用户名：</label>
+                <input type="text" id="friend-username-input" class="form-control" placeholder="请输入好友的用户名">
+            </div>
+            <div class="modal-buttons">
+                <button id="save-friend-btn" class="btn-add">确认</button>
+                <button id="cancel-friend-btn" class="btn">取消</button>
+            </div>
+        </div>
+    `
+    document.body.appendChild(modal)
+    
+    // 确认按钮
+    modal.querySelector('#save-friend-btn').addEventListener('click', async () => {
+        const friendUsername = modal.querySelector('#friend-username-input').value.trim()
+        if (!friendUsername) {
+            alert('请输入好友的用户名')
+            return
+        }
+        document.body.removeChild(modal)
+        await addFriend(friendUsername)
+    })
+    
+    // 取消按钮
+    modal.querySelector('#cancel-friend-btn').addEventListener('click', () => {
+        document.body.removeChild(modal)
+    })
+    
+    // 点击遮罩关闭
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal)
+        }
+    })
+    
+    // 聚焦输入框
+    setTimeout(() => {
+        modal.querySelector('#friend-username-input').focus()
+    }, 100)
+}
+
 // 删除好友
 async function removeFriend(friendId) {
     try {
