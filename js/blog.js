@@ -432,12 +432,12 @@ function bindBlogEvents() {
             const fullContent = card.querySelector('.blog-card-full-content')
             const readMoreBtn = this
             
-            if (fullContent.style.display === 'none') {
+            if (!summary || !fullContent) return
+            
+            if (fullContent.style.display === 'none' || fullContent.style.display === '') {
                 // 显示完整内容
-                const contentHtml = fullContent.getAttribute('data-content')
                 summary.style.display = 'none'
                 fullContent.style.display = 'block'
-                fullContent.innerHTML = contentHtml
                 readMoreBtn.textContent = '收起 ↑'
             } else {
                 // 收起内容

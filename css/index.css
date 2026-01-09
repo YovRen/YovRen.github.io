@@ -4,17 +4,22 @@
 }
 
 :root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --accent: #f59e0b;
+    --primary: #ff6b9d;
+    --primary-dark: #ff4d7a;
+    --primary-light: #ff8fb3;
+    --secondary: #c77dff;
+    --accent: #ffd93d;
+    --accent-pink: #ffb3d9;
+    --accent-blue: #a8d8ff;
     --bg-overlay: rgba(255, 255, 255, 0.95);
-    --text-color: #1f2937;
-    --muted: #6b7280;
+    --text-color: #2d3748;
+    --muted: #718096;
     --card-bg: #ffffff;
-    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --bg-pattern: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    --bg-gradient-alt: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    --bg-pattern: radial-gradient(circle at 20% 30%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(199, 125, 255, 0.2) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(255, 217, 61, 0.15) 0%, transparent 50%);
 }
 
 
@@ -22,12 +27,20 @@ body,
 html {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #ffeef7 0%, #fff0f5 25%, #f0e6ff 50%, #e6f3ff 75%, #ffeef7 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
     background-attachment: fixed;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     color: var(--text-color);
     font-size: 1rem;
     position: relative;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 body::before {
@@ -40,6 +53,12 @@ body::before {
     background: var(--bg-pattern);
     pointer-events: none;
     z-index: 0;
+    animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
 }
 
 body > * {
@@ -53,8 +72,25 @@ header {
     width: 100%;
     min-height: 70px;
     background: var(--bg-gradient);
-    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3), 0 0 40px rgba(199, 125, 255, 0.2);
     z-index: 100;
+    border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+header::before {
+    content: '✨';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    opacity: 0.6;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0.3; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.8; transform: translateX(-50%) scale(1.2); }
 }
 
 .header-content {
@@ -1128,15 +1164,16 @@ div.avatar img {
     background: var(--bg-gradient);
     color: white;
     border: none;
-    border-radius: 14px;
+    border-radius: 25px;
     font-size: 17px;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4), 0 0 15px rgba(199, 125, 255, 0.3);
     margin-bottom: 0;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-new-blog::before {
@@ -1155,8 +1192,14 @@ div.avatar img {
 }
 
 .btn-new-blog:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(255, 107, 157, 0.5), 0 0 25px rgba(199, 125, 255, 0.4);
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(-4px) scale(1.05); }
+    50% { transform: translateY(-8px) scale(1.08); }
 }
 
 /* 博客导航 */
@@ -1209,17 +1252,37 @@ div.avatar img {
     background: var(--bg-gradient);
     color: white;
     border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4), 0 0 10px rgba(199, 125, 255, 0.3);
+    transform: scale(1.05);
 }
 
 .blog-stats,
 .blog-categories,
 .blog-archives {
     padding: 25px 22px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border: 2px solid rgba(221, 160, 221, 0.15);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 250, 0.95) 100%);
+    border-radius: 25px;
+    box-shadow: 0 6px 25px rgba(255, 107, 157, 0.15), 0 0 15px rgba(199, 125, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border: 3px solid rgba(255, 182, 193, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.blog-stats::before,
+.blog-categories::before,
+.blog-archives::before {
+    content: '🌸';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    opacity: 0.2;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(10deg); }
 }
 
 .blog-stats h4,
@@ -1256,26 +1319,26 @@ div.avatar img {
     align-items: center;
     padding: 14px 18px;
     margin-bottom: 10px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.05));
-    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15), rgba(199, 125, 255, 0.1));
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 2px solid transparent;
+    border: 2px solid rgba(255, 107, 157, 0.2);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.1);
 }
 
 .category-item::before,
 .archive-item::before {
-    content: '';
+    content: '✨';
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 3px;
-    height: 100%;
-    background: var(--bg-gradient);
-    transform: scaleY(0);
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    font-size: 14px;
     transition: transform 0.3s;
+    opacity: 0;
 }
 
 .category-item:hover::before,
@@ -1285,10 +1348,16 @@ div.avatar img {
 
 .category-item:hover,
 .archive-item:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08));
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.25), rgba(199, 125, 255, 0.2));
     border-color: var(--primary);
-    transform: translateX(8px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    transform: translateX(8px) scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.3), 0 0 10px rgba(199, 125, 255, 0.2);
+}
+
+.category-item:hover::before,
+.archive-item:hover::before {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
 }
 
 .category-name,
@@ -1347,15 +1416,30 @@ div.avatar img {
 }
 
 .blog-card {
-    background: rgba(255, 255, 255, 0.98);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 250, 0.95) 100%);
     padding: 45px 50px;
     margin-bottom: 40px;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: 30px;
+    box-shadow: 0 8px 30px rgba(255, 107, 157, 0.15), 0 0 20px rgba(199, 125, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 2px solid rgba(221, 160, 221, 0.1);
+    border: 3px solid rgba(255, 182, 193, 0.3);
     position: relative;
     overflow: hidden;
+}
+
+.blog-card::after {
+    content: '💫';
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    opacity: 0.3;
+    animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .blog-card::before {
@@ -1363,11 +1447,12 @@ div.avatar img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
+    width: 6px;
     height: 100%;
     background: var(--bg-gradient);
     transform: scaleY(0);
     transition: transform 0.4s;
+    border-radius: 30px 0 0 30px;
 }
 
 .blog-card:hover::before {
@@ -1375,9 +1460,14 @@ div.avatar img {
 }
 
 .blog-card:hover {
-    transform: translateY(-8px) scale(1.01);
-    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
-    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(255, 107, 157, 0.25), 0 0 30px rgba(199, 125, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 107, 157, 0.5);
+}
+
+.blog-card:hover::after {
+    opacity: 0.6;
+    transform: scale(1.2);
 }
 
 .blog-card-header {
@@ -1397,11 +1487,12 @@ div.avatar img {
     font-weight: 700;
     line-height: 1.3;
     padding-right: 20px;
-    background: var(--bg-gradient);
+    background: linear-gradient(135deg, #ff6b9d 0%, #c77dff 50%, #a8d8ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     transition: all 0.3s;
+    text-shadow: 0 2px 10px rgba(255, 107, 157, 0.2);
 }
 
 .blog-card:hover .blog-card-header h3 {
@@ -1455,17 +1546,20 @@ div.avatar img {
 
 .blog-tag {
     padding: 6px 14px;
-    background: rgba(221, 160, 221, 0.15);
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(199, 125, 255, 0.2));
     color: var(--primary);
-    border-radius: 16px;
+    border-radius: 18px;
     font-size: 13px;
-    border: 1px solid rgba(221, 160, 221, 0.3);
-    transition: all 0.2s;
+    border: 2px solid rgba(255, 107, 157, 0.3);
+    transition: all 0.3s;
+    box-shadow: 0 2px 6px rgba(255, 107, 157, 0.15);
+    font-weight: 500;
 }
 
 .blog-tag:hover {
-    background: rgba(221, 160, 221, 0.25);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.4), rgba(199, 125, 255, 0.3));
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 10px rgba(255, 107, 157, 0.3);
 }
 
 .blog-card-summary {
@@ -1570,56 +1664,90 @@ div.avatar img {
 }
 
 .blog-read-more {
-    padding: 8px 20px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    padding: 10px 24px;
+    background: var(--bg-gradient);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     cursor: pointer;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.3s;
     margin-left: auto;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4), 0 0 10px rgba(199, 125, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.blog-read-more::before {
+    content: '✨';
+    position: absolute;
+    left: -20px;
+    transition: left 0.3s;
 }
 
 .blog-read-more:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5), 0 0 15px rgba(199, 125, 255, 0.4);
+}
+
+.blog-read-more:hover::before {
+    left: 10px;
 }
 
 .blog-category {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08));
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.2), rgba(199, 125, 255, 0.15));
     color: var(--primary);
-    border-radius: 16px;
+    border-radius: 20px;
     font-size: 13px;
-    font-weight: 500;
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    font-weight: 600;
+    border: 2px solid rgba(255, 107, 157, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
+    transition: all 0.3s;
+}
+
+.blog-category:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
 }
 
 .btn-add-friend {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     margin-top: 15px;
     background: var(--bg-gradient);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 20px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4), 0 0 10px rgba(199, 125, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-add-friend::before {
+    content: '💕';
+    position: absolute;
+    left: -20px;
+    transition: left 0.3s;
 }
 
 .btn-add-friend:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5), 0 0 15px rgba(199, 125, 255, 0.4);
+}
+
+.btn-add-friend:hover::before {
+    left: 15px;
 }
 
 .friend-item {
@@ -1628,17 +1756,19 @@ div.avatar img {
     align-items: center;
     padding: 12px 15px;
     margin-bottom: 8px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.05));
-    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15), rgba(199, 125, 255, 0.1));
+    border-radius: 18px;
     cursor: pointer;
     transition: all 0.3s;
-    border: 1px solid transparent;
+    border: 2px solid rgba(255, 107, 157, 0.2);
+    box-shadow: 0 2px 6px rgba(255, 107, 157, 0.1);
 }
 
 .friend-item:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.1));
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.25), rgba(199, 125, 255, 0.2));
     border-color: var(--primary);
-    transform: translateX(5px);
+    transform: translateX(8px) scale(1.03);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.25);
 }
 
 .friend-name {

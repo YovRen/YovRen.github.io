@@ -192,16 +192,17 @@ function setupDiaryEventListeners() {
         })
     })
     
-    // 添加好友按钮
-    const addFriendBtn = document.querySelector("#add-friend-btn")
-    if (addFriendBtn) {
-        addFriendBtn.addEventListener('click', () => {
+    // 添加好友按钮 - 使用事件委托，确保动态添加的按钮也能响应
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'add-friend-btn') {
+            e.preventDefault()
+            e.stopPropagation()
             const friendUsername = prompt('请输入好友的用户名：')
             if (friendUsername && friendUsername.trim()) {
                 addFriend(friendUsername.trim())
             }
-        })
-    }
+        }
+    })
 }
 
 async function getData() {
