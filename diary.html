@@ -29,6 +29,12 @@
                 <button id="login-btn">登录</button>
             </div>
         </div>
+        <!-- 导航栏 -->
+        <ul class="nav-top">
+            <li><a href="blog.html">博客</a></li>
+            <li><a href="index.html">日程</a></li>
+            <li><a href="diary.html" class="active">朋友圈</a></li>
+        </ul>
     </header>
 
     <div class="blog-container">
@@ -119,11 +125,6 @@
         </div>
     </div>
 
-    <ul class="nav">
-        <li><a href="blog.html">博客</a></li>
-        <li><a href="index.html">日程</a></li>
-        <li><a href="diary.html">朋友圈</a></li>
-    </ul>
 
     <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
     <script src="js/jquery.min.js"></script>
@@ -182,12 +183,7 @@
         // 添加轮播图按钮
         document.querySelector('#add-carousel-image-btn')?.addEventListener('click', () => {
             if (!requireLogin()) return
-            const url = prompt('请输入图片URL:')
-            if (url && url.trim()) {
-                const title = prompt('请输入图片标题（可选）:') || ''
-                const link = prompt('请输入点击跳转链接（可选）:') || ''
-                addCarouselImage(url.trim(), title, link)
-            }
+            showAddCarouselImageModal()
         })
     </script>
 </body>

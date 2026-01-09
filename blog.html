@@ -29,6 +29,12 @@
                 <button id="login-btn">登录</button>
             </div>
         </div>
+        <!-- 导航栏 -->
+        <ul class="nav-top">
+            <li><a href="blog.html" class="active">博客</a></li>
+            <li><a href="index.html">日程</a></li>
+            <li><a href="diary.html">朋友圈</a></li>
+        </ul>
     </header>
 
     <div class="blog-container">
@@ -70,22 +76,6 @@
                 <div id="view-subtitle"></div>
             </div>
 
-            <!-- 博主介绍 -->
-            <div class="blog-author-info">
-                <div class="blog-author-header">
-                    <img src="img/users/avatar-1.jpg" alt="博主头像" class="blog-author-avatar" id="author-avatar">
-                    <div>
-                        <h3 class="blog-author-name" id="author-name">拉普达</h3>
-                        <p class="blog-author-bio" id="author-bio">记录生活，分享思考，用文字连接世界。</p>
-                    </div>
-                </div>
-                <div class="blog-author-links">
-                    <a href="#" class="blog-author-link" id="author-github">GitHub</a>
-                    <a href="#" class="blog-author-link" id="author-email">Email</a>
-                    <a href="#" class="blog-author-link" id="author-website">Website</a>
-                </div>
-            </div>
-
             <!-- 引用信息框 -->
             <div class="blog-quote-box" id="blog-quote-box" style="display: none;">
                 <p class="blog-quote-text" id="blog-quote-text"></p>
@@ -95,9 +85,28 @@
             <div id="blog-list"></div>
         </div>
 
-        <!-- 右侧：标签云和热门文章 -->
+        <!-- 右侧：博主介绍、标签云和热门文章 -->
         <div class="blog-sidebar-right">
-            <div class="blog-navigation">
+            <!-- 博主介绍 -->
+            <div class="blog-author-info" id="blog-author-info">
+                <div class="blog-author-header">
+                    <div class="blog-author-avatar-wrapper">
+                        <img src="img/users/avatar-1.jpg" alt="博主头像" class="blog-author-avatar" id="author-avatar">
+                        <button class="blog-author-edit-btn" id="edit-author-btn" style="display: none;">✏️</button>
+                    </div>
+                    <div>
+                        <h3 class="blog-author-name" id="author-name">拉普达</h3>
+                        <p class="blog-author-bio" id="author-bio">记录生活，分享思考，用文字连接世界。</p>
+                    </div>
+                </div>
+                <div class="blog-author-links" id="author-links">
+                    <a href="#" class="blog-author-link" id="author-github">GitHub</a>
+                    <a href="#" class="blog-author-link" id="author-email">Email</a>
+                    <a href="#" class="blog-author-link" id="author-website">Website</a>
+                </div>
+            </div>
+
+            <div class="blog-navigation" style="margin-top: 20px;">
                 <div class="nav-section">
                     <h4 class="nav-title">🏷️ 标签云</h4>
                 </div>
@@ -145,11 +154,6 @@
         </div>
     </div>
 
-    <ul class="nav">
-        <li><a href="blog.html">博客</a></li>
-        <li><a href="index.html">日程</a></li>
-        <li><a href="diary.html">朋友圈</a></li>
-    </ul>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>

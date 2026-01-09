@@ -725,6 +725,168 @@ function updateNavButtons(active) {
     })
 }
 
+// 加载作者信息
+async function loadAuthorInfo() {
+    try {
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            // 未登录时隐藏编辑按钮
+            const editBtn = document.querySelector('#edit-author-btn')
+            if (editBtn) editBtn.style.display = 'none'
+            return
+        }
+        
+        // 显示编辑按钮
+        const editBtn = document.querySelector('#edit-author-btn')
+        if (editBtn) editBtn.style.display = 'block'
+        
+        // 从LeanCloud加载作者信息
+        const UserProfile = AV.Object.extend('userProfile')
+        const query = new AV.Query(UserProfile)
+        query.equalTo('user', currentUser)
+        const result = await query.first()
+        
+        if (result) {
+            const avatar = document.querySelector('#author-avatar')
+            const name = document.querySelector('#author-name')
+            const bio = document.querySelector('#author-bio')
+            const github = document.querySelector('#author-github')
+            const email = document.querySelector('#author-email')
+            const website = document.querySelector('#author-website')
+            
+            if (avatar && result.get('avatar')) avatar.src = result.get('avatar')
+            if (name && result.get('name')) name.textContent = result.get('name')
+            if (bio && result.get('bio')) bio.textContent = result.get('bio')
+            if (github && result.get('github')) {
+                github.href = result.get('github')
+                github.textContent = 'GitHub'
+            }
+            if (email && result.get('email')) {
+                email.href = 'mailto:' + result.get('email')
+                email.textContent = 'Email'
+            }
+            if (website && result.get('website')) {
+                website.href = result.get('website')
+                website.textContent = 'Website'
+            }
+        }
+    } catch (error) {
+        console.error('加载作者信息失败:', error)
+    }
+}
+
+// 保存作者信息
+async function saveAuthorInfo(data) {
+    try {
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            alert('请先登录')
+            return
+        }
+        
+        const UserProfile = AV.Object.extend('userProfile')
+        let profile = null
+        
+        // 查找是否已存在
+        const query = new AV.Query(UserProfile)
+        query.equalTo('user', currentUser)
+        profile = await query.first()
+        
+        if (!profile) {
+            profile = new UserProfile()
+            profile.set('user', currentUser)
+        }
+        
+        if (data.avatar) profile.set('avatar', data.avatar)
+        if (data.name) profile.set('name', data.name)
+        if (data.bio) profile.set('bio', data.bio)
+        if (data.github) profile.set('github', data.github)
+        if (data.email) profile.set('email', data.email)
+        if (data.website) profile.set('website', data.website)
+        
+        const acl = new AV.ACL()
+        acl.setPublicReadAccess(true)
+        acl.setPublicWriteAccess(true)
+        profile.setACL(acl)
+        
+        await profile.save()
+        await loadAuthorInfo()
+        alert('保存成功！')
+    } catch (error) {
+        console.error('保存作者信息失败:', error)
+        alert('保存失败: ' + (error.message || '未知错误'))
+    }
+}
+
+// 显示编辑作者信息弹窗
+function showEditAuthorModal() {
+    const currentUser = AV.User.current()
+    if (!currentUser) {
+        alert('请先登录')
+        return
+    }
+    
+    const avatar = document.querySelector('#author-avatar')?.src || ''
+    const name = document.querySelector('#author-name')?.textContent || ''
+    const bio = document.querySelector('#author-bio')?.textContent || ''
+    const github = document.querySelector('#author-github')?.href || ''
+    const email = document.querySelector('#author-email')?.href?.replace('mailto:', '') || ''
+    const website = document.querySelector('#author-website')?.href || ''
+    
+    const modal = document.createElement('div')
+    modal.className = 'add-important-day-modal-overlay'
+    modal.style.display = 'flex'
+    modal.innerHTML = `
+        <div class="add-important-day-modal" style="max-width: 500px;">
+            <h3>编辑作者信息</h3>
+            <div class="modal-form">
+                <label>头像URL：</label>
+                <input type="text" id="edit-avatar" class="form-control" value="${avatar}" placeholder="图片URL">
+                <label>姓名：</label>
+                <input type="text" id="edit-name" class="form-control" value="${name}" placeholder="姓名">
+                <label>简介：</label>
+                <textarea id="edit-bio" class="form-control" rows="3" placeholder="简介">${bio}</textarea>
+                <label>GitHub：</label>
+                <input type="text" id="edit-github" class="form-control" value="${github}" placeholder="GitHub链接">
+                <label>Email：</label>
+                <input type="email" id="edit-email" class="form-control" value="${email}" placeholder="Email">
+                <label>Website：</label>
+                <input type="text" id="edit-website" class="form-control" value="${website}" placeholder="Website链接">
+            </div>
+            <div class="modal-buttons">
+                <button id="save-author-btn" class="btn-add">保存</button>
+                <button id="cancel-author-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+            </div>
+        </div>
+    `
+    document.body.appendChild(modal)
+    
+    // 保存按钮
+    modal.querySelector('#save-author-btn').addEventListener('click', async () => {
+        await saveAuthorInfo({
+            avatar: modal.querySelector('#edit-avatar').value,
+            name: modal.querySelector('#edit-name').value,
+            bio: modal.querySelector('#edit-bio').value,
+            github: modal.querySelector('#edit-github').value,
+            email: modal.querySelector('#edit-email').value,
+            website: modal.querySelector('#edit-website').value
+        })
+        document.body.removeChild(modal)
+    })
+    
+    // 取消按钮
+    modal.querySelector('#cancel-author-btn').addEventListener('click', () => {
+        document.body.removeChild(modal)
+    })
+    
+    // 点击遮罩关闭
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal)
+        }
+    })
+}
+
 // 初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
@@ -732,6 +894,13 @@ if (document.readyState === 'loading') {
             setupBlogEventListeners();
             setTimeout(initBlogMarkdownEditor, 100);
             load();
+            loadAuthorInfo();
+            
+            // 绑定编辑按钮
+            document.querySelector('#edit-author-btn')?.addEventListener('click', () => {
+                if (typeof requireLogin === 'function' && !requireLogin()) return
+                showEditAuthorModal()
+            })
         } else {
             console.error('博客页面元素初始化失败');
         }
@@ -741,6 +910,13 @@ if (document.readyState === 'loading') {
         setupBlogEventListeners();
         setTimeout(initBlogMarkdownEditor, 100);
         load();
+        loadAuthorInfo();
+        
+        // 绑定编辑按钮
+        document.querySelector('#edit-author-btn')?.addEventListener('click', () => {
+            if (typeof requireLogin === 'function' && !requireLogin()) return
+            showEditAuthorModal()
+        })
     } else {
         console.error('博客页面元素初始化失败');
     }

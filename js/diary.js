@@ -555,6 +555,128 @@ async function addCarouselImage(url, title, link) {
     }
 }
 
+// 上传轮播图片（使用图床）
+async function uploadCarouselImage(file) {
+    try {
+        if (typeof uploadImageToBed === 'undefined') {
+            alert('图片上传功能未加载，请使用图片URL方式添加')
+            return
+        }
+        
+        const url = await uploadImageToBed(file)
+        if (url) {
+            const title = prompt('请输入图片标题（可选）:') || ''
+            const link = prompt('请输入点击跳转链接（可选）:') || ''
+            await addCarouselImage(url, title, link)
+        }
+    } catch (error) {
+        console.error('上传轮播图失败:', error)
+        alert('上传失败: ' + (error.message || '未知错误'))
+    }
+}
+
+// 显示添加轮播图弹窗
+function showAddCarouselImageModal() {
+    const modal = document.createElement('div')
+    modal.className = 'add-important-day-modal-overlay'
+    modal.style.display = 'flex'
+    modal.innerHTML = `
+        <div class="add-important-day-modal" style="max-width: 500px;">
+            <h3>添加轮播图</h3>
+            <div class="modal-form">
+                <label>方式选择：</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button id="upload-image-btn" class="btn" style="flex: 1;">📁 上传图片</button>
+                    <button id="url-image-btn" class="btn" style="flex: 1;">🔗 使用URL</button>
+                </div>
+                <div id="upload-area" style="display: none; border: 2px dashed #ccc; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 15px;">
+                    <p>拖拽图片到此处或点击选择</p>
+                    <input type="file" id="image-file-input" accept="image/*" style="display: none;">
+                    <button class="btn" onclick="document.getElementById('image-file-input').click()">选择文件</button>
+                </div>
+                <div id="url-area" style="display: none;">
+                    <label>图片URL：</label>
+                    <input type="text" id="image-url-input" class="form-control" placeholder="https://...">
+                </div>
+                <label>图片标题（可选）：</label>
+                <input type="text" id="image-title-input" class="form-control" placeholder="图片标题">
+                <label>点击跳转链接（可选）：</label>
+                <input type="text" id="image-link-input" class="form-control" placeholder="https://...">
+            </div>
+            <div class="modal-buttons">
+                <button id="save-carousel-btn" class="btn-add">保存</button>
+                <button id="cancel-carousel-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+            </div>
+        </div>
+    `
+    document.body.appendChild(modal)
+    
+    let selectedFile = null
+    let imageUrl = ''
+    
+    // 上传图片按钮
+    modal.querySelector('#upload-image-btn').addEventListener('click', () => {
+        modal.querySelector('#upload-area').style.display = 'block'
+        modal.querySelector('#url-area').style.display = 'none'
+    })
+    
+    // URL按钮
+    modal.querySelector('#url-image-btn').addEventListener('click', () => {
+        modal.querySelector('#upload-area').style.display = 'none'
+        modal.querySelector('#url-area').style.display = 'block'
+    })
+    
+    // 文件选择
+    const fileInput = modal.querySelector('#image-file-input')
+    fileInput.addEventListener('change', (e) => {
+        selectedFile = e.target.files[0]
+        if (selectedFile) {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                const preview = document.createElement('img')
+                preview.src = e.target.result
+                preview.style.maxWidth = '100%'
+                preview.style.maxHeight = '200px'
+                preview.style.borderRadius = '10px'
+                preview.style.marginTop = '10px'
+                const existingPreview = modal.querySelector('#upload-area img')
+                if (existingPreview) existingPreview.remove()
+                modal.querySelector('#upload-area').appendChild(preview)
+            }
+            reader.readAsDataURL(selectedFile)
+        }
+    })
+    
+    // 保存按钮
+    modal.querySelector('#save-carousel-btn').addEventListener('click', async () => {
+        const title = modal.querySelector('#image-title-input').value
+        const link = modal.querySelector('#image-link-input').value
+        
+        if (selectedFile) {
+            await uploadCarouselImage(selectedFile)
+        } else if (modal.querySelector('#image-url-input').value) {
+            await addCarouselImage(modal.querySelector('#image-url-input').value, title, link)
+        } else {
+            alert('请选择图片或输入图片URL')
+            return
+        }
+        
+        document.body.removeChild(modal)
+    })
+    
+    // 取消按钮
+    modal.querySelector('#cancel-carousel-btn').addEventListener('click', () => {
+        document.body.removeChild(modal)
+    })
+    
+    // 点击遮罩关闭
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal)
+        }
+    })
+}
+
 async function load() {
     allDiaries = await getData()
     await loadFriends()
