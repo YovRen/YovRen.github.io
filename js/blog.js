@@ -1005,10 +1005,13 @@ if (document.readyState === 'loading') {
         })
         
         // 绑定添加便签按钮
-        document.querySelector('#new-note')?.addEventListener('click', () => {
-            if (typeof requireLogin === 'function' && !requireLogin()) return
-            showAddNoteModal()
-        })
+        const newNoteBtn = document.querySelector('#new-note')
+        if (newNoteBtn) {
+            newNoteBtn.addEventListener('click', () => {
+                if (typeof requireLogin === 'function' && !requireLogin()) return
+                showAddNoteModal()
+            })
+        }
         
         // 加载便签
         loadNotes()

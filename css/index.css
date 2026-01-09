@@ -1191,27 +1191,50 @@ body {
 .history-list {
     max-height: calc(100vh - 220px);
     overflow-y: auto;
+    padding: 0;
+    margin-top: 0;
+}
+
+.history-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.history-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+    background: rgba(74, 144, 226, 0.3);
+    border-radius: 2px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 144, 226, 0.5);
+}
+
+.blog-stats + .history-list {
+    margin-top: 0;
 }
 
 .history-loading,
 .history-empty {
     text-align: center;
     color: var(--muted);
-    padding: 20px;
-    font-size: 14px;
+    padding: 15px;
+    font-size: 12px;
 }
 
 .history-date-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .history-date-header {
-    font-weight: bold;
-    color: var(--primary);
+    font-weight: 600;
+    color: var(--text-color);
     margin-bottom: 8px;
-    font-size: 14px;
-    padding: 5px 0;
-    border-bottom: 1px solid #eee;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.1);
 }
 
 .history-todos {
@@ -1224,37 +1247,39 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, rgba(74, 144, 226, 0.08), rgba(118, 75, 162, 0.05));
-    border-radius: 10px;
+    padding: 8px 10px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+    border-radius: 8px;
     font-size: 12px;
     transition: all 0.3s;
-    border: 2px solid rgba(74, 144, 226, 0.1);
-    margin-bottom: 6px;
-    box-shadow: 0 2px 4px rgba(74, 144, 226, 0.08);
+    border: 1px solid rgba(74, 144, 226, 0.1);
+    margin-bottom: 4px;
+    box-shadow: 0 1px 4px rgba(74, 144, 226, 0.08);
 }
 
 .history-todo-item:hover {
-    background: linear-gradient(135deg, rgba(74, 144, 226, 0.15), rgba(118, 75, 162, 0.1));
-    transform: translateX(8px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
-    border-color: rgba(74, 144, 226, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.95) 100%);
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.12);
+    border-color: rgba(74, 144, 226, 0.2);
 }
 
 .history-todo-title {
     flex: 1;
     color: var(--text-color);
     text-decoration: line-through;
-    opacity: 0.7;
+    opacity: 0.6;
+    font-size: 12px;
 }
 
 .history-todo-quadrant {
-    background: var(--primary);
+    background: linear-gradient(135deg, #4a90e2, #764ba2);
     color: white;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 8px;
 }
 
 /* 四象限容器 */
@@ -1420,6 +1445,8 @@ body {
     position: relative;
     overflow: hidden;
     transition: all 0.3s;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .quadrant::before {
@@ -1563,6 +1590,24 @@ body {
     gap: 6px;
     overflow-y: auto;
     max-height: calc(100vh - 350px);
+    padding-right: 2px;
+}
+
+.quadrant-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.quadrant-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.quadrant-content::-webkit-scrollbar-thumb {
+    background: rgba(74, 144, 226, 0.3);
+    border-radius: 2px;
+}
+
+.quadrant-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 144, 226, 0.5);
 }
 
 .empty-quadrant {
@@ -1590,6 +1635,21 @@ body {
     position: relative;
     overflow: hidden;
     font-size: 12px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.todo-content {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.todo-title {
+    font-size: 12px;
+    line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .todo-item::before {
@@ -3555,25 +3615,20 @@ div.balloon {
     position: relative;
 }
 
+.blog-author-info .blog-author-header {
+    margin-bottom: 8px;
+}
+
 .blog-author-info:hover .blog-author-edit-btn {
-    opacity: 1;
-}
-
-.blog-author-avatar-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.blog-author-avatar-wrapper:hover .blog-author-edit-btn {
     opacity: 1;
 }
 
 .blog-author-edit-btn {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 28px;
-    height: 28px;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: var(--bg-gradient);
     color: white;
@@ -3595,18 +3650,8 @@ div.balloon {
 .blog-author-header {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.blog-author-avatar {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(74, 144, 226, 0.3);
-    flex-shrink: 0;
+    gap: 0;
+    margin-bottom: 8px;
 }
 
 .blog-author-name {

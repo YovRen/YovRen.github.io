@@ -107,6 +107,22 @@ function setupDiaryEventListeners() {
             if (content) content.value = ''
         })
     }
+    
+    // 取消按钮（新建时）
+    const cancelWriteBtn = document.querySelector("#cancel-write")
+    if (cancelWriteBtn) {
+        cancelWriteBtn.addEventListener("click", () => {
+            if (writeOverlay) writeOverlay.hidden = true
+            if (editingId) editingId.value = ''
+            if (title) title.value = ''
+            if (contentEditor) {
+                contentEditor.value('')
+            } else if (content) {
+                content.value = ''
+            }
+            if (moodSelect) moodSelect.value = '😊'
+        })
+    }
 
     // 点击遮罩层关闭表单
     if (writeOverlay) {
@@ -462,8 +478,8 @@ function renderCarousel() {
         <div class="carousel-stack" style="position: relative; width: 100%; height: 300px; overflow: visible; cursor: grab;">
             ${carouselImages.map((img, index) => {
                 const zIndex = carouselImages.length - index
-                const offsetY = index * 12 // 每张图片向下偏移12px，更紧凑
-                const offsetX = index * 3 // 每张图片向右偏移3px，形成扑克牌效果
+                const offsetY = index * 20 // 每张图片向下偏移20px，更明显的堆叠效果
+                const offsetX = index * 8 // 每张图片向右偏移8px，形成明显的扑克牌效果
                 return `
                     <div class="carousel-card" 
                          data-index="${index}"
