@@ -494,17 +494,23 @@ function renderCarousel() {
                                 width: 100%;
                                 height: ${cardHeight}px;
                                 z-index: ${zIndex};
-                                border-radius: 8px;
-                                overflow: hidden;
+                                border-radius: 15px;
+                                overflow: visible;
                                 cursor: grab;
                                 transition: transform 0.3s ease-out, top 0.3s ease-out;
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                                border: 1px solid rgba(0,0,0,0.1);
+                                box-shadow: 0 10px 30px rgba(255, 182, 193, 0.5), 0 6px 18px rgba(255, 105, 180, 0.4), 0 3px 10px rgba(255, 20, 147, 0.3), 0 1px 4px rgba(255, 0, 127, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+                                border: 4px solid;
+                                border-image: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffd1dc, #ffe4e1, #ffb6c1) 1;
                                 user-select: none;
                                 touch-action: pan-y;
-                                background: white;
-                                transform: translateY(0);">
-                        <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #f5f5f5; display: block; pointer-events: none;">
+                                background: linear-gradient(135deg, rgba(255, 250, 250, 0.98), rgba(255, 240, 245, 0.95));
+                                transform: translateY(0);
+                                position: relative;
+                                padding: 4px;">
+                        <div style="position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border-radius: 18px; background: linear-gradient(135deg, rgba(255, 182, 193, 0.4), rgba(255, 105, 180, 0.3), rgba(255, 20, 147, 0.2), rgba(255, 182, 193, 0.4)); pointer-events: none; z-index: -1; filter: blur(8px);"></div>
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 12px; overflow: hidden; background: #fff5f5;">
+                            <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #fff5f5; display: block; pointer-events: none;">
+                        </div>
                         ${img.title ? `<div class="carousel-item-title" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); color: white; padding: 8px; font-size: 11px;">${img.title}</div>` : ''}
                         ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">×</button>` : ''}
                     </div>
