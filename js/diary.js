@@ -474,25 +474,27 @@ function renderCarousel() {
     if (!carouselWrapper || carouselImages.length === 0) return
     
     // 真正的蜘蛛纸牌堆叠效果：底层图片的底部比上一层图片的底部低固定像素
-    const stackHeight = 300
+    // 先加载所有图片获取实际尺寸
     const bottomOffset = 25 // 每层底部比上一层低25px
+    const baseHeight = 300 // 基础高度
+    
+    // 创建容器，高度会根据图片动态调整
     carouselWrapper.innerHTML = `
-        <div class="carousel-stack" style="position: relative; width: 100%; height: ${stackHeight + (carouselImages.length - 1) * bottomOffset}px; overflow: hidden; cursor: grab;">
+        <div class="carousel-stack" style="position: relative; width: 100%; min-height: ${baseHeight + (carouselImages.length - 1) * bottomOffset}px; overflow: visible; cursor: grab;">
             ${carouselImages.map((img, index) => {
                 const zIndex = carouselImages.length - index
                 // 计算每张图片的位置：底层图片的底部比上一层低bottomOffset像素
-                // 第一张图片在顶部，第二张图片的底部比第一张低bottomOffset，以此类推
                 const topPosition = index * bottomOffset
-                const cardHeight = stackHeight
                 return `
                     <div class="carousel-card" 
                          data-index="${index}"
+                         data-img-url="${img.url}"
                          style="position: absolute; 
                                 top: ${topPosition}px; 
                                 left: 0;
                                 right: 0;
                                 width: 100%;
-                                height: ${cardHeight}px;
+                                min-height: ${baseHeight}px;
                                 z-index: ${zIndex};
                                 border-radius: 15px;
                                 overflow: visible;
@@ -506,11 +508,30 @@ function renderCarousel() {
                                 background: linear-gradient(135deg, rgba(255, 250, 250, 0.98), rgba(255, 240, 245, 0.95));
                                 transform: translateY(0);
                                 position: relative;
-                                padding: 4px;">
+                                padding: 4px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;">
                         <div style="position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border-radius: 18px; background: linear-gradient(135deg, rgba(255, 182, 193, 0.4), rgba(255, 105, 180, 0.3), rgba(255, 20, 147, 0.2), rgba(255, 182, 193, 0.4)); pointer-events: none; z-index: -1; filter: blur(8px);"></div>
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 12px; overflow: hidden; background: #fff5f5;">
-                            <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #fff5f5; display: block; pointer-events: none;">
-                        </div>
+                        <img src="${img.url}" alt="${img.title || ''}" 
+                             style="max-width: calc(100% - 8px); max-height: 400px; width: auto; height: auto; object-fit: contain; background: transparent; display: block; pointer-events: none; border-radius: 12px;"
+                             onload="(function() {
+                                const img = this;
+                                const card = img.parentElement;
+                                const containerWidth = card.offsetWidth - 8;
+                                const naturalWidth = img.naturalWidth;
+                                const naturalHeight = img.naturalHeight;
+                                if (naturalWidth && naturalHeight) {
+                                    const aspectRatio = naturalWidth / naturalHeight;
+                                    let imgHeight = containerWidth / aspectRatio;
+                                    if (imgHeight > 400) imgHeight = 400;
+                                    card.style.height = (imgHeight + 8) + 'px';
+                                    card.style.minHeight = (imgHeight + 8) + 'px';
+                                } else {
+                                    card.style.height = (img.offsetHeight + 8) + 'px';
+                                    card.style.minHeight = (img.offsetHeight + 8) + 'px';
+                                }
+                             }).call(this);">
                         ${img.title ? `<div class="carousel-item-title" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); color: white; padding: 8px; font-size: 11px;">${img.title}</div>` : ''}
                         ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">×</button>` : ''}
                     </div>

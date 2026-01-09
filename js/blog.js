@@ -724,82 +724,10 @@ function updateNavButtons(active) {
     })
 }
 
-// 加载作者信息
+// 加载作者信息（已移除博主介绍框，此函数不再使用）
 async function loadAuthorInfo() {
-    try {
-        const currentUser = AV.User.current()
-        if (!currentUser) {
-            // 未登录时隐藏编辑按钮
-            const editBtn = document.querySelector('#edit-author-btn')
-            if (editBtn) editBtn.style.display = 'none'
-            return
-        }
-        
-        // 显示编辑按钮
-        const editBtn = document.querySelector('#edit-author-btn')
-        if (editBtn) editBtn.style.display = 'block'
-        
-        // 从LeanCloud加载作者信息
-        const UserProfile = AV.Object.extend('userProfile')
-        const query = new AV.Query(UserProfile)
-        query.equalTo('user', currentUser)
-        const result = await query.first()
-        
-        if (result) {
-            const avatar = document.querySelector('#author-avatar')
-            const name = document.querySelector('#author-name')
-            const bio = document.querySelector('#author-bio')
-            const meta = document.querySelector('#author-meta')
-            const location = document.querySelector('#author-location')
-            const occupation = document.querySelector('#author-occupation')
-            const github = document.querySelector('#author-github')
-            const email = document.querySelector('#author-email')
-            const website = document.querySelector('#author-website')
-            const rss = document.querySelector('#author-rss')
-            const twitter = document.querySelector('#author-twitter')
-            
-            if (avatar && result.get('avatar')) avatar.src = result.get('avatar')
-            if (name && result.get('name')) name.textContent = result.get('name')
-            if (bio && result.get('bio')) bio.textContent = result.get('bio')
-            
-            // 显示元信息
-            if (meta) {
-                if (result.get('location') || result.get('occupation')) {
-                    meta.style.display = 'flex'
-                    if (location && result.get('location')) {
-                        location.innerHTML = `📍 ${result.get('location')}`
-                    }
-                    if (occupation && result.get('occupation')) {
-                        occupation.innerHTML = `💼 ${result.get('occupation')}`
-                    }
-                }
-            }
-            
-            // 显示链接图标
-            if (github && result.get('github')) {
-                github.href = result.get('github')
-                github.style.display = 'flex'
-            }
-            if (email && result.get('email')) {
-                email.href = 'mailto:' + result.get('email')
-                email.style.display = 'flex'
-            }
-            if (website && result.get('website')) {
-                website.href = result.get('website')
-                website.style.display = 'flex'
-            }
-            if (rss && result.get('rss')) {
-                rss.href = result.get('rss')
-                rss.style.display = 'flex'
-            }
-            if (twitter && result.get('twitter')) {
-                twitter.href = result.get('twitter')
-                twitter.style.display = 'flex'
-            }
-        }
-    } catch (error) {
-        console.error('加载作者信息失败:', error)
-    }
+    // 已移除博主介绍功能，此函数不再执行任何操作，避免报错
+    return
 }
 
 // 保存作者信息
@@ -841,7 +769,7 @@ async function saveAuthorInfo(data) {
         profile.setACL(acl)
         
         await profile.save()
-        await loadAuthorInfo()
+        // await loadAuthorInfo() // 已移除博主介绍功能
         alert('保存成功！')
     } catch (error) {
         console.error('保存作者信息失败:', error)
@@ -980,13 +908,6 @@ if (document.readyState === 'loading') {
             setupBlogEventListeners();
             setTimeout(initBlogMarkdownEditor, 100);
             load();
-            loadAuthorInfo();
-            
-            // 绑定编辑按钮
-            document.querySelector('#edit-author-btn')?.addEventListener('click', () => {
-                if (typeof requireLogin === 'function' && !requireLogin()) return
-                showEditAuthorModal()
-            })
         } else {
             console.error('博客页面元素初始化失败');
         }
