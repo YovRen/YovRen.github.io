@@ -750,24 +750,52 @@ async function loadAuthorInfo() {
             const avatar = document.querySelector('#author-avatar')
             const name = document.querySelector('#author-name')
             const bio = document.querySelector('#author-bio')
+            const meta = document.querySelector('#author-meta')
+            const location = document.querySelector('#author-location')
+            const occupation = document.querySelector('#author-occupation')
             const github = document.querySelector('#author-github')
             const email = document.querySelector('#author-email')
             const website = document.querySelector('#author-website')
+            const rss = document.querySelector('#author-rss')
+            const twitter = document.querySelector('#author-twitter')
             
             if (avatar && result.get('avatar')) avatar.src = result.get('avatar')
             if (name && result.get('name')) name.textContent = result.get('name')
             if (bio && result.get('bio')) bio.textContent = result.get('bio')
+            
+            // 显示元信息
+            if (meta) {
+                if (result.get('location') || result.get('occupation')) {
+                    meta.style.display = 'flex'
+                    if (location && result.get('location')) {
+                        location.innerHTML = `📍 ${result.get('location')}`
+                    }
+                    if (occupation && result.get('occupation')) {
+                        occupation.innerHTML = `💼 ${result.get('occupation')}`
+                    }
+                }
+            }
+            
+            // 显示链接图标
             if (github && result.get('github')) {
                 github.href = result.get('github')
-                github.textContent = 'GitHub'
+                github.style.display = 'flex'
             }
             if (email && result.get('email')) {
                 email.href = 'mailto:' + result.get('email')
-                email.textContent = 'Email'
+                email.style.display = 'flex'
             }
             if (website && result.get('website')) {
                 website.href = result.get('website')
-                website.textContent = 'Website'
+                website.style.display = 'flex'
+            }
+            if (rss && result.get('rss')) {
+                rss.href = result.get('rss')
+                rss.style.display = 'flex'
+            }
+            if (twitter && result.get('twitter')) {
+                twitter.href = result.get('twitter')
+                twitter.style.display = 'flex'
             }
         }
     } catch (error) {
@@ -800,9 +828,13 @@ async function saveAuthorInfo(data) {
         if (data.avatar) profile.set('avatar', data.avatar)
         if (data.name) profile.set('name', data.name)
         if (data.bio) profile.set('bio', data.bio)
+        if (data.location) profile.set('location', data.location)
+        if (data.occupation) profile.set('occupation', data.occupation)
         if (data.github) profile.set('github', data.github)
         if (data.email) profile.set('email', data.email)
         if (data.website) profile.set('website', data.website)
+        if (data.rss) profile.set('rss', data.rss)
+        if (data.twitter) profile.set('twitter', data.twitter)
         
         const acl = new AV.ACL()
         acl.setPublicReadAccess(true)
@@ -819,19 +851,62 @@ async function saveAuthorInfo(data) {
 }
 
 // 显示编辑作者信息弹窗
-function showEditAuthorModal() {
+async function showEditAuthorModal() {
     const currentUser = AV.User.current()
     if (!currentUser) {
         alert('请先登录')
         return
     }
     
-    const avatar = document.querySelector('#author-avatar')?.src || ''
-    const name = document.querySelector('#author-name')?.textContent || ''
-    const bio = document.querySelector('#author-bio')?.textContent || ''
-    const github = document.querySelector('#author-github')?.href || ''
-    const email = document.querySelector('#author-email')?.href?.replace('mailto:', '') || ''
-    const website = document.querySelector('#author-website')?.href || ''
+    // 先加载现有数据
+    let existingData = {}
+    try {
+        const UserProfile = AV.Object.extend('userProfile')
+        const query = new AV.Query(UserProfile)
+        query.equalTo('user', currentUser)
+        const result = await query.first()
+        if (result) {
+            existingData = {
+                avatar: result.get('avatar') || document.querySelector('#author-avatar')?.src || '',
+                name: result.get('name') || document.querySelector('#author-name')?.textContent || '',
+                bio: result.get('bio') || document.querySelector('#author-bio')?.textContent || '',
+                location: result.get('location') || '',
+                occupation: result.get('occupation') || '',
+                github: result.get('github') || document.querySelector('#author-github')?.href || '',
+                email: result.get('email') || document.querySelector('#author-email')?.href?.replace('mailto:', '') || '',
+                website: result.get('website') || document.querySelector('#author-website')?.href || '',
+                rss: result.get('rss') || '',
+                twitter: result.get('twitter') || ''
+            }
+        } else {
+            existingData = {
+                avatar: document.querySelector('#author-avatar')?.src || '',
+                name: document.querySelector('#author-name')?.textContent || '',
+                bio: document.querySelector('#author-bio')?.textContent || '',
+                location: '',
+                occupation: '',
+                github: document.querySelector('#author-github')?.href || '',
+                email: document.querySelector('#author-email')?.href?.replace('mailto:', '') || '',
+                website: document.querySelector('#author-website')?.href || '',
+                rss: '',
+                twitter: ''
+            }
+        }
+    } catch (error) {
+        console.error('加载作者信息失败:', error)
+        existingData = {
+            avatar: document.querySelector('#author-avatar')?.src || '',
+            name: document.querySelector('#author-name')?.textContent || '',
+            bio: document.querySelector('#author-bio')?.textContent || '',
+            location: '',
+            occupation: '',
+            github: '',
+            email: '',
+            website: '',
+            rss: '',
+            twitter: ''
+        }
+    }
     
     const modal = document.createElement('div')
     modal.className = 'add-important-day-modal-overlay'
@@ -841,17 +916,25 @@ function showEditAuthorModal() {
             <h3>编辑作者信息</h3>
             <div class="modal-form">
                 <label>头像URL：</label>
-                <input type="text" id="edit-avatar" class="form-control" value="${avatar}" placeholder="图片URL">
+                <input type="text" id="edit-avatar" class="form-control" value="${existingData.avatar}" placeholder="图片URL">
                 <label>姓名：</label>
-                <input type="text" id="edit-name" class="form-control" value="${name}" placeholder="姓名">
+                <input type="text" id="edit-name" class="form-control" value="${existingData.name}" placeholder="姓名">
                 <label>简介：</label>
-                <textarea id="edit-bio" class="form-control" rows="3" placeholder="简介">${bio}</textarea>
+                <textarea id="edit-bio" class="form-control" rows="3" placeholder="简介">${existingData.bio}</textarea>
+                <label>位置：</label>
+                <input type="text" id="edit-location" class="form-control" value="${existingData.location}" placeholder="例如：北京">
+                <label>职业：</label>
+                <input type="text" id="edit-occupation" class="form-control" value="${existingData.occupation}" placeholder="例如：前端工程师">
                 <label>GitHub：</label>
-                <input type="text" id="edit-github" class="form-control" value="${github}" placeholder="GitHub链接">
+                <input type="text" id="edit-github" class="form-control" value="${existingData.github}" placeholder="GitHub链接">
                 <label>Email：</label>
-                <input type="email" id="edit-email" class="form-control" value="${email}" placeholder="Email">
+                <input type="email" id="edit-email" class="form-control" value="${existingData.email}" placeholder="Email">
                 <label>Website：</label>
-                <input type="text" id="edit-website" class="form-control" value="${website}" placeholder="Website链接">
+                <input type="text" id="edit-website" class="form-control" value="${existingData.website}" placeholder="Website链接">
+                <label>RSS订阅：</label>
+                <input type="text" id="edit-rss" class="form-control" value="${existingData.rss}" placeholder="RSS链接">
+                <label>Twitter：</label>
+                <input type="text" id="edit-twitter" class="form-control" value="${existingData.twitter}" placeholder="Twitter链接">
             </div>
             <div class="modal-buttons">
                 <button id="save-author-btn" class="btn-add">保存</button>
@@ -867,9 +950,13 @@ function showEditAuthorModal() {
             avatar: modal.querySelector('#edit-avatar').value,
             name: modal.querySelector('#edit-name').value,
             bio: modal.querySelector('#edit-bio').value,
+            location: modal.querySelector('#edit-location').value,
+            occupation: modal.querySelector('#edit-occupation').value,
             github: modal.querySelector('#edit-github').value,
             email: modal.querySelector('#edit-email').value,
-            website: modal.querySelector('#edit-website').value
+            website: modal.querySelector('#edit-website').value,
+            rss: modal.querySelector('#edit-rss').value,
+            twitter: modal.querySelector('#edit-twitter').value
         })
         document.body.removeChild(modal)
     })

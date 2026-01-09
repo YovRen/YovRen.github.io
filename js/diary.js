@@ -445,30 +445,53 @@ async function loadCarousel() {
     }
 }
 
-// 渲染轮播图（网格布局）
+// 渲染轮播图（扑克牌叠排样式）
+let carouselSpeed = 2000 // 默认速度（毫秒）
+let carouselHovered = false
+let carouselAutoPlayInterval = null
+
 function renderCarousel() {
     const carouselWrapper = document.querySelector('#carousel-wrapper')
     if (!carouselWrapper || carouselImages.length === 0) return
     
-    // 使用网格布局，根据图片数量自动调整
-    let gridCols = 1
-    if (carouselImages.length === 2) gridCols = 2
-    else if (carouselImages.length >= 3) gridCols = 3
-    
+    // 扑克牌叠排样式
     carouselWrapper.innerHTML = `
-        <div class="carousel-grid" style="display: grid; grid-template-columns: repeat(${gridCols}, 1fr); gap: 10px; height: 100%;">
-            ${carouselImages.map((img, index) => `
-                <div class="carousel-item" style="position: relative; width: 100%; height: 100%; min-height: 150px; border-radius: 12px; overflow: hidden; cursor: ${img.link ? 'pointer' : 'default'};">
-                    <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #f5f5f5;">
-                    ${img.title ? `<div class="carousel-item-title">${img.title}</div>` : ''}
-                    ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;">×</button>` : ''}
+        <div class="carousel-stack" style="position: relative; width: 100%; height: 300px;">
+            ${carouselImages.map((img, index) => {
+                const zIndex = carouselImages.length - index
+                const offset = index * 8 // 每张图片偏移8px
+                return `
+                    <div class="carousel-card" 
+                         data-index="${index}"
+                         style="position: absolute; 
+                                top: ${offset}px; 
+                                left: ${offset}px; 
+                                right: ${offset}px;
+                                bottom: ${offset}px;
+                                z-index: ${zIndex};
+                                border-radius: 12px;
+                                overflow: hidden;
+                                cursor: ${img.link ? 'pointer' : 'default'};
+                                transition: all 0.3s;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #f5f5f5; display: block;">
+                        ${img.title ? `<div class="carousel-item-title">${img.title}</div>` : ''}
+                        ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 100;">×</button>` : ''}
+                    </div>
+                `
+            }).join('')}
+            ${carouselImages.length > 1 ? `
+                <div class="carousel-speed-control" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 8px; z-index: 1000;">
+                    <span>速度:</span>
+                    <input type="range" id="carousel-speed-slider" min="500" max="5000" step="500" value="${carouselSpeed}" style="width: 80px;">
+                    <span id="carousel-speed-value">${carouselSpeed/1000}秒</span>
                 </div>
-            `).join('')}
+            ` : ''}
         </div>
     `
     
     // 绑定删除按钮和点击事件
-    carouselWrapper.querySelectorAll('.carousel-item').forEach((item, index) => {
+    carouselWrapper.querySelectorAll('.carousel-card').forEach((item, index) => {
         const img = carouselImages[index]
         const deleteBtn = item.querySelector('.carousel-delete-btn')
         
@@ -486,7 +509,77 @@ function renderCarousel() {
                 window.open(img.link, '_blank')
             })
         }
+        
+        // Hover效果：将当前图片提到最前
+        item.addEventListener('mouseenter', () => {
+            item.style.transform = 'translateY(-10px) scale(1.02)'
+            item.style.zIndex = 1000
+        })
+        
+        item.addEventListener('mouseleave', () => {
+            const originalIndex = parseInt(item.dataset.index)
+            item.style.transform = ''
+            item.style.zIndex = carouselImages.length - originalIndex
+        })
     })
+    
+    // 速度控制
+    const speedSlider = carouselWrapper.querySelector('#carousel-speed-slider')
+    const speedValue = carouselWrapper.querySelector('#carousel-speed-value')
+    if (speedSlider && speedValue) {
+        speedSlider.addEventListener('input', (e) => {
+            carouselSpeed = parseInt(e.target.value)
+            speedValue.textContent = (carouselSpeed / 1000) + '秒'
+            if (carouselAutoPlayInterval) {
+                startCarouselAutoPlay()
+            }
+        })
+    }
+    
+    // 自动轮播（hover时暂停）
+    startCarouselAutoPlay()
+    
+    const stack = carouselWrapper.querySelector('.carousel-stack')
+    if (stack) {
+        stack.addEventListener('mouseenter', () => {
+            carouselHovered = true
+            stopCarouselAutoPlay()
+        })
+        stack.addEventListener('mouseleave', () => {
+            carouselHovered = false
+            startCarouselAutoPlay()
+        })
+    }
+}
+
+function startCarouselAutoPlay() {
+    if (carouselImages.length <= 1 || carouselHovered) return
+    stopCarouselAutoPlay()
+    
+    carouselAutoPlayInterval = setInterval(() => {
+        if (carouselHovered) return
+        
+        // 将第一张图片移到最后
+        const firstCard = document.querySelector('.carousel-card[data-index="0"]')
+        if (firstCard) {
+            firstCard.style.transition = 'all 0.5s'
+            firstCard.style.transform = 'translateX(-100%)'
+            firstCard.style.opacity = '0'
+            
+            setTimeout(() => {
+                // 重新排列
+                carouselImages.push(carouselImages.shift())
+                renderCarousel()
+            }, 500)
+        }
+    }, carouselSpeed)
+}
+
+function stopCarouselAutoPlay() {
+    if (carouselAutoPlayInterval) {
+        clearInterval(carouselAutoPlayInterval)
+        carouselAutoPlayInterval = null
+    }
 }
 
 // 渲染指示器（网格布局不需要指示器）
@@ -497,16 +590,7 @@ function renderCarouselIndicators() {
     indicators.innerHTML = ''
 }
 
-// 轮播图自动播放（网格布局不需要自动播放）
-function startCarouselAutoPlay() {
-    // 网格布局不需要自动播放
-    if (carouselInterval) clearInterval(carouselInterval)
-}
-
-function resetCarouselAutoPlay() {
-    // 网格布局不需要自动播放
-    if (carouselInterval) clearInterval(carouselInterval)
-}
+// 这些函数已在renderCarousel中重新定义
 
 // 删除轮播图
 async function deleteCarouselImage(id) {
