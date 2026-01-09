@@ -282,19 +282,14 @@ async function saveData(data) {
     diary.set('content', data.content);
     diary.set('mood', data.mood || '😊');
     
-    // 获取城市信息
-    let city = '';
-    if (typeof returnCitySN !== 'undefined' && returnCitySN && returnCitySN['cname']) {
-        city = returnCitySN['cname'];
-    }
-    diary.set('city', city);
-    
-    // 获取天气信息（异步）
+    // 获取城市和天气信息（异步）
     try {
-        const weatherInfo = await getWeatherInfo();
-        diary.set('weather', weatherInfo);
+        const locationWeather = await getLocationAndWeather();
+        diary.set('city', locationWeather.city || '');
+        diary.set('weather', locationWeather.weather || '');
     } catch (error) {
-        console.error('获取天气失败:', error);
+        console.error('获取位置和天气失败:', error);
+        diary.set('city', '');
         diary.set('weather', '');
     }
     
@@ -314,28 +309,71 @@ async function saveData(data) {
     await diary.save();
 }
 
-// 异步获取天气信息
-function getWeatherInfo() {
-    return new Promise((resolve) => {
-        let ret = "";
-        jQuery.support.cors = true;
-        $.ajax({
-            url: "https://api.seniverse.com/v3/weather/now.json?key=S8qLqLqLqLqLqLqL&location=ip&language=zh-Hans&unit=c",
-            type: "GET",
-            dataType: "jsonp",
-            timeout: 5000,
-            success: function (data) {
-                if (data && data.results && data.results[0] && data.results[0].now) {
-                    ret = data.results[0].now.text;
-                }
-                resolve(ret);
-            },
-            error: function (err) {
-                console.error('天气API错误:', err);
-                resolve("");
+// 异步获取位置和天气信息（使用免费API）
+async function getLocationAndWeather() {
+    try {
+        // 方法1: 使用IP定位获取城市（免费，无需key）
+        const ipResponse = await fetch('https://ipapi.co/json/');
+        const ipData = await ipResponse.json();
+        const city = ipData.city || ipData.region || '未知';
+        
+        // 方法2: 使用OpenWeatherMap免费API获取天气（需要注册获取免费key，这里使用备用方案）
+        // 如果OpenWeatherMap不可用，使用简单的天气描述
+        let weather = '';
+        try {
+            // 使用免费的天气API（wttr.in）
+            const weatherResponse = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=%C&lang=zh`);
+            if (weatherResponse.ok) {
+                weather = await weatherResponse.text();
+                weather = weather.trim();
+            }
+        } catch (e) {
+            console.log('天气API备用方案失败，使用默认值');
+        }
+        
+        // 如果天气获取失败，使用城市信息推断
+        if (!weather || weather === '') {
+            weather = '未知';
+        }
+        
+        return { city, weather };
+    } catch (error) {
+        console.error('获取位置和天气失败:', error);
+        // 备用方案：使用浏览器地理位置API
+        return new Promise((resolve) => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        try {
+                            // 使用反向地理编码获取城市（使用免费的nominatim API）
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            const geoResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`);
+                            const geoData = await geoResponse.json();
+                            const city = geoData.address?.city || geoData.address?.town || geoData.address?.county || '未知';
+                            
+                            // 获取天气
+                            const weatherResponse = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=%C&lang=zh`);
+                            let weather = '未知';
+                            if (weatherResponse.ok) {
+                                weather = await weatherResponse.text();
+                                weather = weather.trim();
+                            }
+                            
+                            resolve({ city, weather });
+                        } catch (e) {
+                            resolve({ city: '未知', weather: '未知' });
+                        }
+                    },
+                    () => {
+                        resolve({ city: '未知', weather: '未知' });
+                    }
+                );
+            } else {
+                resolve({ city: '未知', weather: '未知' });
             }
         });
-    });
+    }
 }
 
 async function updateData(id, data) {
@@ -358,113 +396,162 @@ async function deleteData(id) {
     }
 }
 
-// 加载热门动态
-async function loadPopularDiaries() {
-    try {
-        const popularEl = document.querySelector('#diary-popular')
-        if (!popularEl) return
-        
-        // 按内容长度排序
-        const popular = [...allDiaries].sort((a, b) => {
-            const lenA = (a.attributes.content || '').length
-            const lenB = (b.attributes.content || '').length
-            return lenB - lenA
-        }).slice(0, 5)
-        
-        if (popular.length === 0) {
-            popularEl.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无动态</div>'
-            return
-        }
-        
-        popularEl.innerHTML = popular.map((diary) => {
-            const title = diary.attributes.title || '无标题'
-            const time = diary.attributes.time || ''
-            const author = diary.attributes.author || '未知'
-            return `
-                <div class="popular-diary-item" data-id="${diary.id}" style="padding: 12px; margin-bottom: 10px; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(118, 75, 162, 0.05)); border-radius: 15px; cursor: pointer; transition: all 0.3s; border: 2px solid rgba(74, 144, 226, 0.15);">
-                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text-color);">${title}</div>
-                    <div style="font-size: 12px; color: var(--muted);">${author} · ${time}</div>
-                </div>
-            `
-        }).join('')
-        
-        // 绑定点击事件
-        popularEl.querySelectorAll('.popular-diary-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const id = this.dataset.id
-                const diary = allDiaries.find(d => d.id === id)
-                if (diary) {
-                    // 滚动到该动态
-                    const diaryEl = document.querySelector(`[data-diary-id="${id}"]`)
-                    if (diaryEl) {
-                        diaryEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                        diaryEl.style.animation = 'pulse 0.5s'
-                        setTimeout(() => {
-                            diaryEl.style.animation = ''
-                        }, 500)
-                    }
-                }
-            })
-        })
-    } catch (error) {
-        console.error('加载热门动态失败:', error)
-    }
-}
+// 轮播图相关变量
+let carouselImages = [];
+let currentCarouselIndex = 0;
+let carouselInterval = null;
 
-// 加载推荐好友
-async function loadRecommendFriends() {
+// 加载轮播图
+async function loadCarousel() {
     try {
-        const recommendEl = document.querySelector('#diary-recommend')
-        if (!recommendEl) return
+        const carouselWrapper = document.querySelector('#carousel-wrapper')
+        if (!carouselWrapper) return
         
         const currentUser = AV.User.current()
         if (!currentUser) {
-            recommendEl.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">请先登录</div>'
+            carouselWrapper.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 20px; text-align: center;">请先登录</div>'
             return
         }
         
-        // 获取所有用户（通过日记作者）
-        const authors = new Set()
-        allDiaries.forEach(diary => {
-            const author = diary.attributes.author
-            if (author && author !== currentUser.get('username')) {
-                authors.add(author)
+        // 从LeanCloud加载轮播图数据
+        const CarouselImage = AV.Object.extend('carouselImage')
+        const query = new AV.Query(CarouselImage)
+        query.equalTo('user', currentUser)
+        query.descending('createdAt')
+        const results = await query.find()
+        
+        carouselImages = results.map(item => ({
+            id: item.id,
+            url: item.get('url') || '',
+            title: item.get('title') || '',
+            link: item.get('link') || ''
+        }))
+        
+        if (carouselImages.length === 0) {
+            carouselWrapper.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 20px; text-align: center;">暂无图片<br><small>点击右上角"添加"按钮添加图片</small></div>'
+            renderCarouselIndicators()
+            return
+        }
+        
+        renderCarousel()
+        renderCarouselIndicators()
+        startCarouselAutoPlay()
+    } catch (error) {
+        console.error('加载轮播图失败:', error)
+        const carouselWrapper = document.querySelector('#carousel-wrapper')
+        if (carouselWrapper) {
+            carouselWrapper.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 20px; text-align: center;">加载失败</div>'
+        }
+    }
+}
+
+// 渲染轮播图
+function renderCarousel() {
+    const carouselWrapper = document.querySelector('#carousel-wrapper')
+    if (!carouselWrapper || carouselImages.length === 0) return
+    
+    const currentImage = carouselImages[currentCarouselIndex]
+    carouselWrapper.innerHTML = `
+        <div class="carousel-slide" style="position: relative; width: 100%; height: 100%;">
+            <img src="${currentImage.url}" alt="${currentImage.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
+            ${currentImage.title ? `<div class="carousel-title">${currentImage.title}</div>` : ''}
+            ${canEdit() ? `<button class="carousel-delete-btn" data-id="${currentImage.id}" style="position: absolute; top: 10px; right: 10px; background: rgba(255, 77, 77, 0.8); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px;">×</button>` : ''}
+        </div>
+    `
+    
+    // 绑定删除按钮
+    const deleteBtn = carouselWrapper.querySelector('.carousel-delete-btn')
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', async (e) => {
+            e.stopPropagation()
+            if (confirm('确定要删除这张图片吗？')) {
+                await deleteCarouselImage(currentImage.id)
             }
         })
-        
-        // 获取已有好友
-        const friendUsernames = new Set(friends.map(f => f.username))
-        
-        // 过滤掉已有好友
-        const recommendList = Array.from(authors).filter(author => !friendUsernames.has(author)).slice(0, 5)
-        
-        if (recommendList.length === 0) {
-            recommendEl.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无推荐</div>'
+    }
+    
+    // 绑定点击跳转
+    if (currentImage.link) {
+        carouselWrapper.querySelector('.carousel-slide').style.cursor = 'pointer'
+        carouselWrapper.querySelector('.carousel-slide').addEventListener('click', () => {
+            window.open(currentImage.link, '_blank')
+        })
+    }
+}
+
+// 渲染指示器
+function renderCarouselIndicators() {
+    const indicators = document.querySelector('#carousel-indicators')
+    if (!indicators) return
+    
+    indicators.innerHTML = carouselImages.map((_, index) => 
+        `<span class="carousel-indicator ${index === currentCarouselIndex ? 'active' : ''}" data-index="${index}"></span>`
+    ).join('')
+    
+    // 绑定指示器点击
+    indicators.querySelectorAll('.carousel-indicator').forEach(indicator => {
+        indicator.addEventListener('click', () => {
+            currentCarouselIndex = parseInt(indicator.dataset.index)
+            renderCarousel()
+            renderCarouselIndicators()
+            resetCarouselAutoPlay()
+        })
+    })
+}
+
+// 轮播图自动播放
+function startCarouselAutoPlay() {
+    if (carouselImages.length <= 1) return
+    resetCarouselAutoPlay()
+}
+
+function resetCarouselAutoPlay() {
+    if (carouselInterval) clearInterval(carouselInterval)
+    carouselInterval = setInterval(() => {
+        currentCarouselIndex = (currentCarouselIndex + 1) % carouselImages.length
+        renderCarousel()
+        renderCarouselIndicators()
+    }, 4000)
+}
+
+// 删除轮播图
+async function deleteCarouselImage(id) {
+    try {
+        const image = AV.Object.createWithoutData('carouselImage', id)
+        await image.destroy()
+        await loadCarousel()
+    } catch (error) {
+        console.error('删除轮播图失败:', error)
+        alert('删除失败: ' + (error.message || '未知错误'))
+    }
+}
+
+// 添加轮播图
+async function addCarouselImage(url, title, link) {
+    try {
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            alert('请先登录')
             return
         }
         
-        recommendEl.innerHTML = recommendList.map((author) => {
-            return `
-                <div class="recommend-friend-item" data-author="${author}" style="padding: 12px; margin-bottom: 10px; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(118, 75, 162, 0.05)); border-radius: 15px; cursor: pointer; transition: all 0.3s; border: 2px solid rgba(74, 144, 226, 0.15); display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-weight: 600; font-size: 14px; color: var(--text-color);">${author}</div>
-                        <div style="font-size: 12px; color: var(--muted);">点击添加好友</div>
-                    </div>
-                    <button class="btn-add-friend-small" data-author="${author}" style="background: var(--bg-gradient); color: white; border: none; border-radius: 12px; padding: 6px 12px; font-size: 12px; cursor: pointer;">+</button>
-                </div>
-            `
-        }).join('')
+        const CarouselImage = AV.Object.extend('carouselImage')
+        const image = new CarouselImage()
+        image.set('url', url)
+        image.set('title', title || '')
+        image.set('link', link || '')
+        image.set('user', currentUser)
         
-        // 绑定添加好友事件
-        recommendEl.querySelectorAll('.btn-add-friend-small').forEach(btn => {
-            btn.addEventListener('click', async function(e) {
-                e.stopPropagation()
-                const author = this.dataset.author
-                await addFriend(author)
-            })
-        })
+        const acl = new AV.ACL()
+        acl.setPublicReadAccess(true)
+        acl.setPublicWriteAccess(true)
+        image.setACL(acl)
+        
+        await image.save()
+        await loadCarousel()
     } catch (error) {
-        console.error('加载推荐好友失败:', error)
+        console.error('添加轮播图失败:', error)
+        alert('添加失败: ' + (error.message || '未知错误'))
     }
 }
 
@@ -474,8 +561,7 @@ async function load() {
     renderDiaries(allDiaries)
     updateStats(allDiaries)
     renderFriends()
-    loadPopularDiaries()
-    loadRecommendFriends()
+    loadCarousel()
     updateViewTitle('全部动态', `共 ${allDiaries.length} 条动态`)
 }
 

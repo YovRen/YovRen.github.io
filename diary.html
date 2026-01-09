@@ -67,24 +67,23 @@
             <div id="diary-entries"></div>
         </div>
 
-        <!-- 右侧：热门动态和推荐 -->
+        <!-- 右侧：轮播图 -->
         <div class="blog-sidebar-right">
             <div class="blog-navigation">
                 <div class="nav-section">
-                    <h4 class="nav-title">🔥 热门动态</h4>
+                    <h4 class="nav-title">🖼️ 图片轮播</h4>
+                    <button id="add-carousel-image-btn" class="toggle-btn" style="font-size: 12px; padding: 6px 12px;">+ 添加</button>
                 </div>
             </div>
-            <div class="diary-popular" id="diary-popular">
-                <div class="popular-loading">加载中...</div>
-            </div>
-
-            <div class="blog-navigation" style="margin-top: 25px;">
-                <div class="nav-section">
-                    <h4 class="nav-title">💡 推荐好友</h4>
+            <div class="carousel-container" id="carousel-container">
+                <div class="carousel-wrapper" id="carousel-wrapper">
+                    <div class="carousel-loading">加载中...</div>
                 </div>
-            </div>
-            <div class="diary-recommend" id="diary-recommend">
-                <div class="recommend-loading">加载中...</div>
+                <div class="carousel-controls">
+                    <button class="carousel-btn prev" id="carousel-prev">‹</button>
+                    <div class="carousel-indicators" id="carousel-indicators"></div>
+                    <button class="carousel-btn next" id="carousel-next">›</button>
+                </div>
             </div>
         </div>
     </div>
@@ -162,6 +161,34 @@
             }
             return true;
         }
+        
+        // 轮播图控制
+        document.querySelector('#carousel-prev')?.addEventListener('click', () => {
+            if (carouselImages.length === 0) return
+            currentCarouselIndex = (currentCarouselIndex - 1 + carouselImages.length) % carouselImages.length
+            renderCarousel()
+            renderCarouselIndicators()
+            resetCarouselAutoPlay()
+        })
+        
+        document.querySelector('#carousel-next')?.addEventListener('click', () => {
+            if (carouselImages.length === 0) return
+            currentCarouselIndex = (currentCarouselIndex + 1) % carouselImages.length
+            renderCarousel()
+            renderCarouselIndicators()
+            resetCarouselAutoPlay()
+        })
+        
+        // 添加轮播图按钮
+        document.querySelector('#add-carousel-image-btn')?.addEventListener('click', () => {
+            if (!requireLogin()) return
+            const url = prompt('请输入图片URL:')
+            if (url && url.trim()) {
+                const title = prompt('请输入图片标题（可选）:') || ''
+                const link = prompt('请输入点击跳转链接（可选）:') || ''
+                addCarouselImage(url.trim(), title, link)
+            }
+        })
     </script>
 </body>
 

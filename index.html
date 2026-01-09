@@ -30,8 +30,43 @@
     </header>
 
     <div class="blog-container">
-        <!-- 左侧：历史记录目录 -->
+        <!-- 左侧：添加待办和历史记录 -->
         <div class="blog-sidebar">
+            <button id="add-todo-btn" class="btn-new-blog">📝 添加待办事项</button>
+
+            <!-- 添加待办表单（隐藏，点击按钮后显示） -->
+            <div class="add-todo-form-overlay" id="add-todo-overlay" hidden>
+                <div class="add-todo-form-content">
+                    <h3 style="margin-bottom: 15px;">添加待办事项</h3>
+                    <input type="text" placeholder="📝 待办事项标题..." id="todo-input" class="form-control"
+                        style="margin-bottom: 15px;">
+                    <div class="todo-form-options">
+                        <div class="option-group" style="margin-bottom: 15px;">
+                            <label for="importance">重要性：</label>
+                            <select id="importance" class="form-control">
+                                <option value="high">重要</option>
+                                <option value="low">不重要</option>
+                            </select>
+                        </div>
+                        <div class="option-group" style="margin-bottom: 15px;">
+                            <label for="urgency">紧急度：</label>
+                            <select id="urgency" class="form-control">
+                                <option value="high">紧急</option>
+                                <option value="low">不紧急</option>
+                            </select>
+                        </div>
+                        <div class="option-group" style="margin-bottom: 15px;">
+                            <label for="deadline">截止日期：</label>
+                            <input type="date" id="deadline" class="form-control">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button id="submit-todo-btn" class="btn-add" style="flex: 1;">添加</button>
+                        <button id="cancel-todo-btn" class="btn" style="background: #ccc; flex: 1;">取消</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="blog-navigation">
                 <div class="nav-section">
                     <h4 class="nav-title">📚 历史记录</h4>
@@ -48,31 +83,6 @@
             <div class="blog-view-header">
                 <h2>待办事项</h2>
                 <div id="view-subtitle">管理您的任务</div>
-            </div>
-            <!-- 添加待办表单 -->
-            <div class="add-todo-form">
-                <input type="text" placeholder="📝 添加待办事项..." id="todo-input" class="todo-input">
-                <div class="todo-form-options">
-                    <div class="option-group">
-                        <label for="importance">重要性：</label>
-                        <select id="importance">
-                            <option value="high">重要</option>
-                            <option value="low">不重要</option>
-                        </select>
-                    </div>
-                    <div class="option-group">
-                        <label for="urgency">紧急度：</label>
-                        <select id="urgency">
-                            <option value="high">紧急</option>
-                            <option value="low">不紧急</option>
-                        </select>
-                    </div>
-                    <div class="option-group">
-                        <label for="deadline">截止日期：</label>
-                        <input type="date" id="deadline">
-                    </div>
-                    <button id="add-todo-btn" class="btn-add">添加</button>
-                </div>
             </div>
 
             <!-- 四象限网格 -->
@@ -128,7 +138,8 @@
             <div class="blog-navigation">
                 <div class="nav-section">
                     <h4 class="nav-title">📅 重要日</h4>
-                    <button id="add-important-day-btn" class="toggle-btn" style="font-size: 12px; padding: 6px 12px;">+ 添加</button>
+                    <button id="add-important-day-btn" class="toggle-btn" style="font-size: 12px; padding: 6px 12px;">+
+                        添加</button>
                 </div>
             </div>
             <div class="important-days-list" id="important-days-list">
@@ -147,11 +158,13 @@
                 <label>标题：</label>
                 <input type="text" id="important-day-title" class="form-control" placeholder="例如：生日、纪念日等">
                 <label>描述（可选）：</label>
-                <textarea id="important-day-description" class="form-control" rows="3" placeholder="描述这个重要日..."></textarea>
+                <textarea id="important-day-description" class="form-control" rows="3"
+                    placeholder="描述这个重要日..."></textarea>
             </div>
             <div class="modal-buttons">
                 <button id="save-important-day-btn" class="btn-add">保存</button>
-                <button id="cancel-important-day-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+                <button id="cancel-important-day-btn" class="btn"
+                    style="background: #ccc; margin-left: 10px;">取消</button>
             </div>
             <input type="hidden" id="editing-important-day-id" value="">
         </div>
@@ -184,7 +197,7 @@
         document.querySelector('#logout-btn')?.addEventListener('click', async () => {
             await logout();
         });
-        
+
         // 检查编辑权限
         function requireLogin() {
             if (!canEdit()) {
@@ -196,7 +209,7 @@
         }
 
         // 历史记录侧边栏切换
-        document.querySelector('#toggle-history')?.addEventListener('click', function() {
+        document.querySelector('#toggle-history')?.addEventListener('click', function () {
             const sidebar = document.querySelector('.blog-sidebar');
             const isCollapsed = sidebar.classList.contains('collapsed');
             if (isCollapsed) {

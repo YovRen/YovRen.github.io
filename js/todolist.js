@@ -10,9 +10,43 @@ function initElements() {
     urgency = document.querySelector("#urgency")
     deadline = document.querySelector("#deadline")
     addTodoBtn = document.querySelector("#add-todo-btn")
+    const submitTodoBtn = document.querySelector("#submit-todo-btn")
+    const cancelTodoBtn = document.querySelector("#cancel-todo-btn")
+    const addTodoOverlay = document.querySelector("#add-todo-overlay")
     searchInput = document.querySelector("#search-all")
     
-    if (!todoInput || !importance || !urgency || !deadline || !addTodoBtn) {
+    // 显示添加待办表单
+    if (addTodoBtn && addTodoOverlay) {
+        addTodoBtn.addEventListener('click', () => {
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
+            }
+            addTodoOverlay.hidden = false
+            if (todoInput) todoInput.focus()
+        })
+    }
+    
+    // 取消按钮
+    if (cancelTodoBtn && addTodoOverlay) {
+        cancelTodoBtn.addEventListener('click', () => {
+            addTodoOverlay.hidden = true
+            if (todoInput) todoInput.value = ''
+            if (deadline) deadline.value = ''
+            if (importance) importance.value = 'high'
+            if (urgency) urgency.value = 'high'
+        })
+    }
+    
+    // 点击遮罩关闭
+    if (addTodoOverlay) {
+        addTodoOverlay.addEventListener('click', (e) => {
+            if (e.target === addTodoOverlay) {
+                addTodoOverlay.hidden = true
+            }
+        })
+    }
+    
+    if (!todoInput || !importance || !urgency || !deadline || !submitTodoBtn) {
         console.error('DOM元素未找到，请检查HTML结构');
         return false;
     }
@@ -29,52 +63,56 @@ function getQuadrant(importance, urgency) {
 
 // 添加事件监听器
 function setupEventListeners() {
-    if (!addTodoBtn || !todoInput) {
-        console.warn('部分DOM元素未找到，跳过事件绑定');
-        return;
-    }
+    // 提交待办事项
+    const submitTodoBtn = document.querySelector("#submit-todo-btn")
+    const addTodoOverlay = document.querySelector("#add-todo-overlay")
     
-    // 添加待办事项
-    addTodoBtn.addEventListener("click", async () => {
-        if (typeof requireLogin === 'function' && !requireLogin()) {
-            return;
-        }
-        if (todoInput.value.trim() !== '') {
-            try {
-                addTodoBtn.disabled = true;
-                addTodoBtn.textContent = '添加中...';
-                const quadrant = getQuadrant(importance.value, urgency.value);
-                await saveData({
-                    title: todoInput.value.trim(),
-                    done: false,
-                    importance: importance.value,
-                    urgency: urgency.value,
-                    quadrant: quadrant,
-                    deadline: deadline.value || null,
-                    archived: false,
-                    completedDate: null
-                })
-                todoInput.value = ''
-                deadline.value = ''
-                importance.value = 'high'
-                urgency.value = 'high'
-                await load()
-            } catch (error) {
-                console.error('保存失败:', error);
-                alert('保存失败: ' + (error.message || '未知错误') + '\n请检查浏览器控制台获取详细信息');
-            } finally {
-                addTodoBtn.disabled = false;
-                addTodoBtn.textContent = '添加';
+    if (submitTodoBtn && todoInput) {
+        submitTodoBtn.addEventListener("click", async () => {
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                return;
             }
-        }
-    })
+            if (todoInput && todoInput.value.trim() !== '') {
+                try {
+                    submitTodoBtn.disabled = true;
+                    submitTodoBtn.textContent = '添加中...';
+                    const quadrant = getQuadrant(importance.value, urgency.value);
+                    await saveData({
+                        title: todoInput.value.trim(),
+                        done: false,
+                        importance: importance.value,
+                        urgency: urgency.value,
+                        quadrant: quadrant,
+                        deadline: deadline.value || null,
+                        archived: false,
+                        completedDate: null
+                    })
+                    todoInput.value = ''
+                    deadline.value = ''
+                    importance.value = 'high'
+                    urgency.value = 'high'
+                    if (addTodoOverlay) addTodoOverlay.hidden = true
+                    await load()
+                } catch (error) {
+                    console.error('保存失败:', error);
+                    alert('保存失败: ' + (error.message || '未知错误') + '\n请检查浏览器控制台获取详细信息');
+                } finally {
+                    submitTodoBtn.disabled = false;
+                    submitTodoBtn.textContent = '添加';
+                }
+            }
+        })
+    }
 
     // Enter键添加
-    todoInput.addEventListener("keydown", async (event) => {
-        if (event.keyCode === 13) {
-            addTodoBtn.click()
-        }
-    })
+    if (todoInput) {
+        todoInput.addEventListener("keydown", async (event) => {
+            if (event.keyCode === 13) {
+                const submitBtn = document.querySelector("#submit-todo-btn")
+                if (submitBtn) submitBtn.click()
+            }
+        })
+    }
 
     // 搜索功能
     if (searchInput) {
