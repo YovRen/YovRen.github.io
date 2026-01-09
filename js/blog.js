@@ -42,12 +42,55 @@ function initBlogMarkdownEditor() {
         try {
             blogContentEditor = new EasyMDE({
                 element: blogContent,
-                placeholder: "开始写作吧...支持Markdown格式，可直接粘贴图片",
+                placeholder: "开始写作吧...支持Markdown格式，可直接粘贴图片，支持LaTeX和Mermaid图表",
                 spellChecker: false,
                 autosave: {
                     enabled: false
                 },
-                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"],
+                previewRender: function(plainText, preview) {
+                    // 自定义预览渲染，支持LaTeX和Mermaid
+                    if (typeof marked !== 'undefined') {
+                        // 先处理Mermaid代码块
+                        let html = plainText.replace(/```mermaid\n([\s\S]*?)\n```/g, function(match, code) {
+                            const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+                            return '<div class="mermaid" id="' + id + '">' + code + '</div>';
+                        });
+                        
+                        // 使用marked渲染Markdown
+                        html = marked.parse(html);
+                        
+                        // 渲染LaTeX（使用KaTeX）
+                        if (typeof renderMathInElement !== 'undefined') {
+                            setTimeout(() => {
+                                renderMathInElement(preview, {
+                                    delimiters: [
+                                        {left: "$$", right: "$$", display: true},
+                                        {left: "$", right: "$", display: false},
+                                        {left: "\\[", right: "\\]", display: true},
+                                        {left: "\\(", right: "\\)", display: false}
+                                    ]
+                                });
+                            }, 0);
+                        }
+                        
+                        // 渲染Mermaid图表
+                        if (typeof mermaid !== 'undefined') {
+                            setTimeout(() => {
+                                mermaid.initialize({ startOnLoad: false, theme: 'default' });
+                                preview.querySelectorAll('.mermaid').forEach((el) => {
+                                    if (!el.hasAttribute('data-processed')) {
+                                        mermaid.run({ nodes: [el] });
+                                        el.setAttribute('data-processed', 'true');
+                                    }
+                                });
+                            }, 100);
+                        }
+                        
+                        return html;
+                    }
+                    return plainText.replace(/\n/g, '<br>');
+                }
             });
 
             // 设置图片上传功能
@@ -429,6 +472,34 @@ function renderBlogs(blogs) {
 
     // 渲染后绑定事件
     bindBlogEvents();
+    
+    // 渲染LaTeX和Mermaid
+    setTimeout(() => {
+        // 渲染LaTeX
+        if (typeof renderMathInElement !== 'undefined') {
+            blogList.querySelectorAll('.blog-card-content, .blog-card-full').forEach(el => {
+                renderMathInElement(el, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                        {left: "\\[", right: "\\]", display: true},
+                        {left: "\\(", right: "\\)", display: false}
+                    ]
+                });
+            });
+        }
+        
+        // 渲染Mermaid图表
+        if (typeof mermaid !== 'undefined') {
+            mermaid.initialize({ startOnLoad: false, theme: 'default' });
+            blogList.querySelectorAll('.mermaid').forEach((el) => {
+                if (!el.hasAttribute('data-processed')) {
+                    mermaid.run({ nodes: [el] });
+                    el.setAttribute('data-processed', 'true');
+                }
+            });
+        }
+    }, 100);
 }
 
 function createBlogCard(blog) {
@@ -455,8 +526,18 @@ function createBlogCard(blog) {
         summary = summary.substring(0, 150) + '...'
     }
     
-    // 完整内容的HTML（用于详情页）
-    const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
+    // 完整内容的HTML（用于详情页），支持LaTeX和Mermaid
+    // 先处理Mermaid代码块（在marked解析之前）
+    let processedContent = contentText
+    if (typeof mermaid !== 'undefined') {
+        processedContent = processedContent.replace(/```mermaid\n([\s\S]*?)\n```/g, function(match, code) {
+            const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+            return '\n<div class="mermaid" id="' + id + '">' + code.trim() + '</div>\n';
+        });
+    }
+    
+    // 使用marked解析Markdown
+    let contentHtml = typeof marked !== 'undefined' ? marked.parse(processedContent) : processedContent.replace(/\n/g, '<br>')
 
     const author = blog.attributes.author || '未知用户'
     const card = document.createElement("div")
@@ -573,6 +654,35 @@ function bindBlogEvents() {
             } else {
                 card.classList.add('expanded')
                 this.textContent = '收起'
+                
+                // 展开后渲染LaTeX和Mermaid
+                setTimeout(() => {
+                    const contentEl = card.querySelector('.blog-card-content');
+                    if (contentEl) {
+                        // 渲染LaTeX
+                        if (typeof renderMathInElement !== 'undefined') {
+                            renderMathInElement(contentEl, {
+                                delimiters: [
+                                    {left: "$$", right: "$$", display: true},
+                                    {left: "$", right: "$", display: false},
+                                    {left: "\\[", right: "\\]", display: true},
+                                    {left: "\\(", right: "\\)", display: false}
+                                ]
+                            });
+                        }
+                        
+                        // 渲染Mermaid图表
+                        if (typeof mermaid !== 'undefined') {
+                            mermaid.initialize({ startOnLoad: false, theme: 'default' });
+                            contentEl.querySelectorAll('.mermaid').forEach((el) => {
+                                if (!el.hasAttribute('data-processed')) {
+                                    mermaid.run({ nodes: [el] });
+                                    el.setAttribute('data-processed', 'true');
+                                }
+                            });
+                        }
+                    }
+                }, 100);
             }
         })
     })

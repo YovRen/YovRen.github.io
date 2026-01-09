@@ -2470,7 +2470,77 @@ div.avatar img {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
+/* 博客预览标题样式 */
+.blog-card-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.blog-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+.blog-meta-date,
+.blog-meta-category {
+    color: #666;
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    cursor: pointer;
+}
+
+.blog-meta-date:hover,
+.blog-meta-category:hover {
+    color: var(--primary);
+}
+
+.blog-meta-separator {
+    color: #ccc;
+}
+
 .blog-card-summary {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+.blog-summary-label {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 8px;
+}
+
+.blog-summary-text {
+    color: #666;
+    line-height: 1.8;
+    font-size: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.blog-card-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.blog-card-summary-old {
     color: var(--muted);
     line-height: 1.8;
     margin-bottom: 20px;
