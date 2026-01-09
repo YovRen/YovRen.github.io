@@ -1052,7 +1052,16 @@ function showAddNoteModal() {
             <h3>添加便签</h3>
             <div class="modal-form">
                 <label>便签内容：</label>
-                <textarea id="note-content-input" class="form-control" rows="6" placeholder="输入便签内容..."></textarea>
+                <textarea id="note-content-input" class="form-control" rows="6" placeholder="输入便签内容...支持Markdown格式，可直接粘贴图片"></textarea>
+                <div id="note-image-upload-area" style="display: none; border: 2px dashed #ccc; border-radius: 10px; padding: 15px; text-align: center; margin: 10px 0;">
+                    <p style="font-size: 12px; color: #666; margin-bottom: 10px;">拖拽图片到此处或点击选择</p>
+                    <input type="file" id="note-image-file-input" accept="image/*" multiple style="display: none;">
+                    <button type="button" class="btn" onclick="document.getElementById('note-image-file-input').click()" style="padding: 6px 12px; font-size: 12px;">选择图片</button>
+                    <div id="note-image-preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                </div>
+                <div style="margin: 10px 0;">
+                    <button type="button" class="btn" id="toggle-note-image-upload" style="padding: 6px 12px; font-size: 12px; width: 100%;">📷 添加图片</button>
+                </div>
                 <label>便签颜色：</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                     <div class="note-color-option" data-color="#fff9c4" style="width: 30px; height: 30px; border-radius: 4px; background: #fff9c4; border: 2px solid #ddd; cursor: pointer;"></div>
@@ -1071,6 +1080,65 @@ function showAddNoteModal() {
     document.body.appendChild(modal)
     
     let selectedColor = '#fff9c4'
+    let noteImages = []
+    
+    // 图片上传功能
+    const toggleImageUpload = modal.querySelector('#toggle-note-image-upload')
+    const imageUploadArea = modal.querySelector('#note-image-upload-area')
+    const imageFileInput = modal.querySelector('#note-image-file-input')
+    const imagePreview = modal.querySelector('#note-image-preview')
+    
+    toggleImageUpload.addEventListener('click', () => {
+        if (imageUploadArea.style.display === 'none') {
+            imageUploadArea.style.display = 'block'
+            toggleImageUpload.textContent = '📷 隐藏图片上传'
+        } else {
+            imageUploadArea.style.display = 'none'
+            toggleImageUpload.textContent = '📷 添加图片'
+        }
+    })
+    
+    imageFileInput.addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files)
+        for (const file of files) {
+            try {
+                const url = await uploadImageToLeanCloud(file)
+                noteImages.push(url)
+                const img = document.createElement('img')
+                img.src = url
+                img.style.maxWidth = '100px'
+                img.style.maxHeight = '100px'
+                img.style.borderRadius = '8px'
+                img.style.margin = '4px'
+                imagePreview.appendChild(img)
+            } catch (error) {
+                console.error('上传图片失败:', error)
+                alert('上传图片失败: ' + (error.message || '未知错误'))
+            }
+        }
+    })
+    
+    // 支持粘贴图片
+    modal.querySelector('#note-content-input').addEventListener('paste', async (e) => {
+        const items = e.clipboardData.items
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile()
+                try {
+                    const url = await uploadImageToLeanCloud(file)
+                    noteImages.push(url)
+                    const textarea = e.target
+                    const cursorPos = textarea.selectionStart
+                    const textBefore = textarea.value.substring(0, cursorPos)
+                    const textAfter = textarea.value.substring(cursorPos)
+                    textarea.value = textBefore + `![图片](${url})` + textAfter
+                    textarea.setSelectionRange(cursorPos + url.length + 7, cursorPos + url.length + 7)
+                } catch (error) {
+                    console.error('粘贴图片上传失败:', error)
+                }
+            }
+        }
+    })
     
     // 颜色选择
     modal.querySelectorAll('.note-color-option').forEach(option => {
@@ -1086,10 +1154,14 @@ function showAddNoteModal() {
     
     // 保存
     modal.querySelector('#save-note-btn').addEventListener('click', async () => {
-        const content = modal.querySelector('#note-content-input').value.trim()
-        if (!content) {
-            alert('请输入便签内容')
+        let content = modal.querySelector('#note-content-input').value.trim()
+        if (!content && noteImages.length === 0) {
+            alert('请输入便签内容或添加图片')
             return
+        }
+        // 如果只有图片没有文字，添加图片链接
+        if (!content && noteImages.length > 0) {
+            content = noteImages.map(url => `![图片](${url})`).join('\n')
         }
         try {
             await saveNote({ content, color: selectedColor })

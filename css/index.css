@@ -2362,48 +2362,10 @@ div.avatar img {
     }
 }
 
-.blog-card::after {
-    content: '⭐';
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 24px;
-    opacity: 0.25;
-    animation: rotate 10s linear infinite;
-}
-
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.blog-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 6px;
-    height: 100%;
-    background: var(--bg-gradient);
-    transform: scaleY(0);
-    transition: transform 0.4s;
-    border-radius: 30px 0 0 30px;
-    box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
-}
-
-.blog-card:hover::before {
-    transform: scaleY(1);
-}
 
 .blog-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 50px rgba(74, 144, 226, 0.2), 0 0 30px rgba(118, 75, 162, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-color: rgba(74, 144, 226, 0.4);
-}
-
-.blog-card:hover::after {
-    opacity: 0.6;
-    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #ccc;
 }
 
 .blog-card-header {
@@ -2432,16 +2394,8 @@ div.avatar img {
     font-weight: 600;
     line-height: 1.3;
     padding-right: 15px;
-    background: linear-gradient(135deg, #4a90e2 0%, #764ba2 50%, #4ecdc4 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    transition: all 0.3s;
 }
 
-.blog-card:hover .blog-card-header h3 {
-    transform: translateX(5px);
-}
 
 .blog-card-meta {
     display: flex;
@@ -2841,7 +2795,7 @@ div.avatar img {
 
 .cell {
     width: 100%;
-    max-width: 600px;
+    max-width: 1200px;
     max-height: 90vh;
     overflow-y: auto;
     padding: 20px;
@@ -2860,17 +2814,32 @@ div.avatar img {
 
 
 .btn {
-    padding: 4px 10px;
-    color: #000;
-    float: right;
-    margin-top: 10px;
+    padding: 8px 16px;
+    color: #666;
     font-size: 14px;
-    line-height: 26px;
-    text-shadow: 0px 1px 0px #fff;
-    background: linear-gradient(to bottom, #FDFDFD 0%, #C5C5C5 100%);
-    box-shadow: 0px 2px 3px rgba(173, 173, 173, 0.7);
-    border: 1px solid #e1e1e1;
-    border-radius: 5px;
+    line-height: 1.5;
+    background: #f5f5f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: #e8e8e8;
+    border-color: #ccc;
+}
+
+.btn[style*="background: #ccc"] {
+    background: #ccc !important;
+}
+
+.btn[style*="background: #ccc"]:hover {
+    background: #bbb !important;
 }
 
 

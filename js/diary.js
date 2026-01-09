@@ -536,13 +536,6 @@ function renderCarousel() {
                 `
             }).join('')}
         </div>
-        ${carouselImages.length > 1 ? `
-            <div class="carousel-speed-control" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, rgba(74, 144, 226, 0.9), rgba(118, 75, 162, 0.9)); backdrop-filter: blur(10px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 10px; display: flex; align-items: center; gap: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); opacity: 0.85; transition: opacity 0.3s;">
-                <span style="font-weight: 500;">速度:</span>
-                <input type="range" id="carousel-speed-slider" min="500" max="5000" step="500" value="${carouselSpeed}" style="width: 70px; height: 4px; cursor: pointer; accent-color: white;">
-                <span id="carousel-speed-value" style="min-width: 35px; font-weight: 500;">${carouselSpeed/1000}秒</span>
-            </div>
-        ` : ''}
     `
     
     const stack = carouselWrapper.querySelector('.carousel-stack')
@@ -627,45 +620,16 @@ function renderCarousel() {
         // 移除hover效果，保持堆叠状态
     })
     
-    // 速度控制
-    const speedSlider = carouselWrapper.querySelector('#carousel-speed-slider')
-    const speedValue = carouselWrapper.querySelector('#carousel-speed-value')
-    if (speedSlider && speedValue) {
-        speedSlider.addEventListener('input', (e) => {
-            carouselSpeed = parseInt(e.target.value)
-            speedValue.textContent = (carouselSpeed / 1000) + '秒'
-            if (carouselAutoPlayInterval) {
-                startCarouselAutoPlay()
-            }
-        })
-    }
-    
     // 自动轮播（hover时暂停）
     if (stack) {
         stack.addEventListener('mouseenter', () => {
             carouselHovered = true
             stopCarouselAutoPlay()
-            // hover时显示速度控制条
-            const speedControl = carouselWrapper.querySelector('.carousel-speed-control')
-            if (speedControl) {
-                speedControl.style.opacity = '1'
-            }
         })
         stack.addEventListener('mouseleave', () => {
             carouselHovered = false
             startCarouselAutoPlay()
-            // 离开时降低速度控制条透明度
-            const speedControl = carouselWrapper.querySelector('.carousel-speed-control')
-            if (speedControl) {
-                speedControl.style.opacity = '0.6'
-            }
         })
-        
-        // 初始设置速度控制条透明度
-        const speedControl = carouselWrapper.querySelector('.carousel-speed-control')
-        if (speedControl) {
-            speedControl.style.opacity = '0.6'
-        }
     }
     
     startCarouselAutoPlay()
@@ -796,14 +760,34 @@ function showAddCarouselImageModal() {
                 <input type="text" id="image-title-input" class="form-control" placeholder="图片标题">
                 <label>点击跳转链接（可选）：</label>
                 <input type="text" id="image-link-input" class="form-control" placeholder="https://...">
+                ${carouselImages.length > 0 ? `
+                <label>轮播速度（秒）：</label>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <input type="range" id="carousel-speed-slider" min="0.5" max="5" step="0.5" value="${carouselSpeed/1000}" style="flex: 1; height: 6px; cursor: pointer;">
+                    <span id="carousel-speed-value" style="min-width: 50px; font-size: 14px; color: var(--text-color);">${carouselSpeed/1000}秒</span>
+                </div>
+                ` : ''}
             </div>
             <div class="modal-buttons">
                 <button id="save-carousel-btn" class="btn-add">保存</button>
-                <button id="cancel-carousel-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+                <button id="cancel-carousel-btn" class="btn">取消</button>
             </div>
         </div>
     `
     document.body.appendChild(modal)
+    
+    // 速度控制（如果有轮播图）
+    if (carouselImages.length > 0) {
+        const speedSlider = modal.querySelector('#carousel-speed-slider')
+        const speedValue = modal.querySelector('#carousel-speed-value')
+        if (speedSlider && speedValue) {
+            speedSlider.addEventListener('input', (e) => {
+                const speed = parseFloat(e.target.value)
+                carouselSpeed = speed * 1000
+                speedValue.textContent = speed + '秒'
+            })
+        }
+    }
     
     let selectedFile = null
     let imageUrl = ''
