@@ -901,6 +901,32 @@ async function showEditAuthorModal() {
     })
 }
 
+// 绑定添加便签按钮
+function setupNoteButton() {
+    const newNoteBtn = document.querySelector('#new-note')
+    if (newNoteBtn) {
+        console.log('找到添加便签按钮，开始绑定事件')
+        // 移除旧的事件监听器
+        const newBtn = newNoteBtn.cloneNode(true)
+        newNoteBtn.parentNode.replaceChild(newBtn, newNoteBtn)
+        
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault()
+            e.stopPropagation()
+            console.log('点击添加便签按钮')
+            if (typeof requireLogin === 'function' && !requireLogin()) {
+                console.log('需要登录')
+                return
+            }
+            console.log('调用showAddNoteModal')
+            showAddNoteModal()
+        })
+        console.log('便签按钮事件已绑定')
+    } else {
+        console.error('new-note按钮未找到')
+    }
+}
+
 // 初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
@@ -908,6 +934,10 @@ if (document.readyState === 'loading') {
             setupBlogEventListeners();
             setTimeout(initBlogMarkdownEditor, 100);
             load();
+            // 绑定添加便签按钮
+            setTimeout(setupNoteButton, 200);
+            // 加载便签
+            setTimeout(loadNotes, 300);
         } else {
             console.error('博客页面元素初始化失败');
         }
@@ -917,30 +947,10 @@ if (document.readyState === 'loading') {
         setupBlogEventListeners();
         setTimeout(initBlogMarkdownEditor, 100);
         load();
-        
-        // 绑定添加便签按钮（使用事件委托，确保按钮存在）
-        setTimeout(() => {
-            const newNoteBtn = document.querySelector('#new-note')
-            if (newNoteBtn) {
-                // 移除旧的事件监听器
-                const newBtn = newNoteBtn.cloneNode(true)
-                newNoteBtn.parentNode.replaceChild(newBtn, newNoteBtn)
-                
-                newBtn.addEventListener('click', function(e) {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    console.log('点击添加便签按钮')
-                    if (typeof requireLogin === 'function' && !requireLogin()) return
-                    showAddNoteModal()
-                })
-                console.log('便签按钮事件已绑定')
-            } else {
-                console.error('new-note按钮未找到')
-            }
-        }, 100)
-        
+        // 绑定添加便签按钮
+        setTimeout(setupNoteButton, 200);
         // 加载便签
-        loadNotes()
+        setTimeout(loadNotes, 300);
     } else {
         console.error('博客页面元素初始化失败');
     }

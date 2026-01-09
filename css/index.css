@@ -984,6 +984,10 @@ body {
     max-width: 500px;
     box-shadow: 0 8px 30px rgba(74, 144, 226, 0.2), 0 0 20px rgba(118, 75, 162, 0.15);
     border: 3px solid rgba(74, 144, 226, 0.3);
+    box-sizing: border-box;
+    margin: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .add-important-day-modal h3 {

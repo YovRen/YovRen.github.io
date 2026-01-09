@@ -496,43 +496,41 @@ function renderCarousel() {
                                 width: 100%;
                                 min-height: ${baseHeight}px;
                                 z-index: ${zIndex};
-                                border-radius: 15px;
-                                overflow: visible;
+                                border-radius: 12px;
+                                overflow: hidden;
                                 cursor: grab;
-                                transition: transform 0.3s ease-out, top 0.3s ease-out;
-                                box-shadow: 0 10px 30px rgba(255, 182, 193, 0.5), 0 6px 18px rgba(255, 105, 180, 0.4), 0 3px 10px rgba(255, 20, 147, 0.3), 0 1px 4px rgba(255, 0, 127, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-                                border: 4px solid;
-                                border-image: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffd1dc, #ffe4e1, #ffb6c1) 1;
+                                transition: transform 0.3s ease-out, top 0.3s ease-out, height 0.3s ease-out;
+                                box-shadow: 0 10px 30px rgba(255, 182, 193, 0.5), 0 6px 18px rgba(255, 105, 180, 0.4), 0 3px 10px rgba(255, 20, 147, 0.3), 0 1px 4px rgba(255, 0, 127, 0.2);
+                                border: 3px solid #ffb6c1;
                                 user-select: none;
                                 touch-action: pan-y;
                                 background: linear-gradient(135deg, rgba(255, 250, 250, 0.98), rgba(255, 240, 245, 0.95));
                                 transform: translateY(0);
                                 position: relative;
-                                padding: 4px;
+                                padding: 0;
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;">
-                        <div style="position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border-radius: 18px; background: linear-gradient(135deg, rgba(255, 182, 193, 0.4), rgba(255, 105, 180, 0.3), rgba(255, 20, 147, 0.2), rgba(255, 182, 193, 0.4)); pointer-events: none; z-index: -1; filter: blur(8px);"></div>
                         <img src="${img.url}" alt="${img.title || ''}" 
-                             style="max-width: calc(100% - 8px); max-height: 400px; width: auto; height: auto; object-fit: contain; background: transparent; display: block; pointer-events: none; border-radius: 12px;"
+                             style="max-width: 100%; max-height: 400px; width: auto; height: auto; object-fit: contain; background: transparent; display: block; pointer-events: none; border-radius: 9px;"
                              onload="(function() {
                                 const img = this;
                                 const card = img.parentElement;
-                                const containerWidth = card.offsetWidth - 8;
+                                const containerWidth = card.offsetWidth;
                                 const naturalWidth = img.naturalWidth;
                                 const naturalHeight = img.naturalHeight;
                                 if (naturalWidth && naturalHeight) {
                                     const aspectRatio = naturalWidth / naturalHeight;
                                     let imgHeight = containerWidth / aspectRatio;
                                     if (imgHeight > 400) imgHeight = 400;
-                                    card.style.height = (imgHeight + 8) + 'px';
-                                    card.style.minHeight = (imgHeight + 8) + 'px';
+                                    card.style.height = imgHeight + 'px';
+                                    card.style.minHeight = imgHeight + 'px';
                                 } else {
-                                    card.style.height = (img.offsetHeight + 8) + 'px';
-                                    card.style.minHeight = (img.offsetHeight + 8) + 'px';
+                                    card.style.height = img.offsetHeight + 'px';
+                                    card.style.minHeight = img.offsetHeight + 'px';
                                 }
                              }).call(this);">
-                        ${img.title ? `<div class="carousel-item-title" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); color: white; padding: 8px; font-size: 11px;">${img.title}</div>` : ''}
+                        ${img.title ? `<div class="carousel-item-title" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); color: white; padding: 8px; font-size: 11px; z-index: 10;">${img.title}</div>` : ''}
                         ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">×</button>` : ''}
                     </div>
                 `
