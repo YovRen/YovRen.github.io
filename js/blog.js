@@ -453,24 +453,25 @@ function createBlogCard(blog) {
     // 完整内容的HTML（用于详情页）
     const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
 
+    const author = blog.attributes.author || '未知用户'
     const card = document.createElement("div")
     card.className = "blog-card"
     card.dataset.blogId = blogId
     card.innerHTML = `
         <div class="blog-card-header">
-            <h3 class="blog-card-title">${title}</h3>
-            <div class="blog-card-meta">
-                <span class="blog-time">${time}</span>
+            <div class="blog-header-left">
+                <span class="blog-title">${title || '无标题'}</span>
+            </div>
+            <div class="blog-header-right">
+                <span class="blog-author">👤 ${author}</span>
+                <span class="blog-time">${time || ''}</span>
                 ${canEdit() ? `
-                    <button class="blog-edit-btn" data-id="${blogId}">✏️ 编辑</button>
-                    <button class="blog-delete-btn" data-id="${blogId}">🗑️ 删除</button>
+                    <button class="blog-edit-btn" data-id="${blogId}">✏️</button>
+                    <button class="blog-delete-btn" data-id="${blogId}">🗑️</button>
                 ` : ''}
             </div>
         </div>
-        <div class="blog-card-summary">
-            ${summary || '暂无内容'}
-        </div>
-        <div class="blog-card-full-content" style="display: none;">
+        <div class="blog-card-content">
             ${contentHtml}
         </div>
         <div class="blog-card-footer">
@@ -865,7 +866,7 @@ async function showEditAuthorModal() {
             </div>
             <div class="modal-buttons">
                 <button id="save-author-btn" class="btn-add">保存</button>
-                <button id="cancel-author-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+                <button id="cancel-author-btn" class="btn">取消</button>
             </div>
         </div>
     `
@@ -1073,7 +1074,7 @@ function showAddNoteModal() {
             </div>
             <div class="modal-buttons">
                 <button id="save-note-btn" class="btn-add">保存</button>
-                <button id="cancel-note-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+                <button id="cancel-note-btn" class="btn">取消</button>
             </div>
         </div>
     `

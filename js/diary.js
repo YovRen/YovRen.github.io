@@ -213,10 +213,8 @@ function setupDiaryEventListeners() {
         if (e.target && e.target.id === 'add-friend-btn') {
             e.preventDefault()
             e.stopPropagation()
-            const friendUsername = prompt('请输入好友的用户名：')
-            if (friendUsername && friendUsername.trim()) {
-                addFriend(friendUsername.trim())
-            }
+            if (!requireLogin()) return
+            showAddFriendModal()
         }
     })
 }
