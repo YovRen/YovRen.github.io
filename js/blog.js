@@ -325,14 +325,27 @@ function createBlogCard(blog) {
     const blogId = blog.id
     const title = blog.attributes.title || '无标题'
     const contentText = blog.attributes.content || ''
-    const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
     const time = blog.attributes.time || ''
     const category = blog.attributes.category || '未分类'
     const tags = blog.attributes.tags || ''
     const tagArray = tags.split(',').filter(t => t.trim())
+    
+    // 生成摘要（前200个字符，去除markdown标记）
+    let summary = contentText
+        .replace(/[#*_`\[\]()]/g, '') // 移除markdown标记
+        .replace(/\n/g, ' ') // 替换换行为空格
+        .trim()
+    
+    if (summary.length > 200) {
+        summary = summary.substring(0, 200) + '...'
+    }
+    
+    // 完整内容的HTML（用于详情页）
+    const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
 
     const card = document.createElement("div")
     card.className = "blog-card"
+    card.dataset.blogId = blogId
     card.innerHTML = `
         <div class="blog-card-header">
             <h3 class="blog-card-title">${title}</h3>
@@ -344,7 +357,10 @@ function createBlogCard(blog) {
                 ` : ''}
             </div>
         </div>
-        <div class="blog-card-content">
+        <div class="blog-card-summary">
+            ${summary || '暂无内容'}
+        </div>
+        <div class="blog-card-full-content" style="display: none;">
             ${contentHtml}
         </div>
         <div class="blog-card-footer">
@@ -354,6 +370,7 @@ function createBlogCard(blog) {
                     ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
                 </div>
             ` : ''}
+            <button class="blog-read-more" data-id="${blogId}">阅读全文 →</button>
         </div>
     `
 
@@ -372,14 +389,27 @@ function bindBlogEvents() {
             if (blog) {
                 if (blogEditingId) blogEditingId.value = id
                 if (blogTitle) blogTitle.value = blog.attributes.title || ''
-                if (blogContentEditor) {
-                    blogContentEditor.value(blog.attributes.content || '')
-                } else if (blogContent) {
-                    blogContent.value = blog.attributes.content || ''
-                }
                 if (blogTags) blogTags.value = blog.attributes.tags || ''
                 if (blogCategory) blogCategory.value = blog.attributes.category || ''
-                if (blogOverlay) blogOverlay.hidden = false
+                
+                // 确保编辑器已初始化
+                if (!blogContentEditor && blogContent) {
+                    initBlogMarkdownEditor()
+                    // 等待编辑器初始化完成
+                    setTimeout(() => {
+                        if (blogContentEditor) {
+                            blogContentEditor.value(blog.attributes.content || '')
+                        }
+                        if (blogOverlay) blogOverlay.hidden = false
+                    }, 200)
+                } else if (blogContentEditor) {
+                    blogContentEditor.value(blog.attributes.content || '')
+                    if (blogOverlay) blogOverlay.hidden = false
+                } else if (blogContent) {
+                    blogContent.value = blog.attributes.content || ''
+                    if (blogOverlay) blogOverlay.hidden = false
+                }
+                
                 if (blogCancel) blogCancel.style.display = 'inline-block'
             }
         })
@@ -389,6 +419,32 @@ function bindBlogEvents() {
         btn.addEventListener('click', async function () {
             const id = this.getAttribute('data-id')
             await deleteBlog(id)
+        })
+    })
+    
+    // 阅读全文按钮
+    document.querySelectorAll('.blog-read-more').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation()
+            const id = this.getAttribute('data-id')
+            const card = this.closest('.blog-card')
+            const summary = card.querySelector('.blog-card-summary')
+            const fullContent = card.querySelector('.blog-card-full-content')
+            const readMoreBtn = this
+            
+            if (fullContent.style.display === 'none') {
+                // 显示完整内容
+                const contentHtml = fullContent.getAttribute('data-content')
+                summary.style.display = 'none'
+                fullContent.style.display = 'block'
+                fullContent.innerHTML = contentHtml
+                readMoreBtn.textContent = '收起 ↑'
+            } else {
+                // 收起内容
+                summary.style.display = 'block'
+                fullContent.style.display = 'none'
+                readMoreBtn.textContent = '阅读全文 →'
+            }
         })
     })
 }

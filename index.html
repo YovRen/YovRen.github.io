@@ -14,23 +14,27 @@
 
 <body>
     <header>
-        <div class="title">日程管理</div>
-        <div class="controls">
-            <input type="text" placeholder="🔍 搜索..." id="search-all" class="search-input">
-            <div id="user-info" style="display: none;">
-                <span class="username"></span>
-                <button id="logout-btn">登出</button>
+        <div class="header-content">
+            <div class="title">日程管理</div>
+            <div class="controls">
+                <input type="text" placeholder="🔍 搜索..." id="search-all" class="search-input">
+                <div id="user-info" style="display: none;">
+                    <span class="username"></span>
+                    <button id="logout-btn">登出</button>
+                </div>
+                <button id="login-btn">登录</button>
             </div>
-            <button id="login-btn">登录</button>
         </div>
     </header>
 
-    <div class="schedule-main-container">
+    <div class="blog-container">
         <!-- 左侧：历史记录目录 -->
-        <div class="history-sidebar">
-            <div class="history-header">
-                <h3>📚 历史记录</h3>
-                <button id="toggle-history" class="toggle-btn">收起</button>
+        <div class="blog-sidebar">
+            <div class="blog-navigation">
+                <div class="nav-section">
+                    <h4 class="nav-title">📚 历史记录</h4>
+                    <button id="toggle-history" class="toggle-btn">收起</button>
+                </div>
             </div>
             <div class="history-list" id="history-list">
                 <div class="history-loading">加载中...</div>
@@ -38,7 +42,11 @@
         </div>
 
         <!-- 右侧：四象限待办列表 -->
-        <div class="quadrant-container">
+        <div class="blog-main">
+            <div class="blog-view-header">
+                <h2>待办事项</h2>
+            </div>
+            <div class="quadrant-container">
             <!-- 添加待办表单 -->
             <div class="add-todo-form">
                 <input type="text" placeholder="📝 添加待办事项..." id="todo-input" class="todo-input">
@@ -111,11 +119,12 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
     </div>
 
     <ul class="nav">
-        <li><a href="diary.html">日记</a></li>
+        <li><a href="diary.html">朋友圈</a></li>
         <li><a href="blog.html">博客</a></li>
         <li><a href="index.html">日程</a></li>
     </ul>

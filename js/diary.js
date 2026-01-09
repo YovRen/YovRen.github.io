@@ -5,6 +5,9 @@ let title, content, submit, timeline, diaryEntries, searchInput;
 let newDiaryBtn, cancelEditBtn, editingId, moodSelect, writeOverlay;
 let allDiaries = []
 let contentEditor = null;
+let currentFilter = 'all';
+let friends = [];
+let friendsContainer;
 
 function initDiaryElements() {
     title = document.querySelector("#title")
@@ -173,6 +176,32 @@ function setupDiaryEventListeners() {
     } else {
         console.error('submit button not found!');
     }
+    
+    // 导航按钮事件
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filter = btn.dataset.filter
+            if (filter === 'all') {
+                showAllDiaries()
+            } else if (filter === 'friends') {
+                currentFilter = 'friends'
+                renderDiaries(allDiaries)
+                updateViewTitle('全部动态', `共 ${allDiaries.length} 条动态`)
+                updateNavButtons('friends')
+            }
+        })
+    })
+    
+    // 添加好友按钮
+    const addFriendBtn = document.querySelector("#add-friend-btn")
+    if (addFriendBtn) {
+        addFriendBtn.addEventListener('click', () => {
+            const friendUsername = prompt('请输入好友的用户名：')
+            if (friendUsername && friendUsername.trim()) {
+                addFriend(friendUsername.trim())
+            }
+        })
+    }
 }
 
 async function getData() {
@@ -255,8 +284,176 @@ async function deleteData(id) {
 
 async function load() {
     allDiaries = await getData()
+    await loadFriends()
     renderDiaries(allDiaries)
     updateStats(allDiaries)
+    renderFriends()
+    updateViewTitle('全部动态', `共 ${allDiaries.length} 条动态`)
+}
+
+// 加载好友列表
+async function loadFriends() {
+    try {
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            friends = []
+            return
+        }
+        
+        const Friend = AV.Object.extend('friend')
+        const query = new AV.Query(Friend)
+        query.equalTo('user', currentUser)
+        const results = await query.find()
+        
+        friends = results.map(f => ({
+            id: f.id,
+            username: f.get('friendUsername') || '',
+            friendId: f.get('friendId') || ''
+        }))
+    } catch (error) {
+        console.error('加载好友失败:', error)
+        friends = []
+    }
+}
+
+// 渲染好友列表
+function renderFriends() {
+    friendsContainer = document.querySelector("#friends-container")
+    if (!friendsContainer) return
+    
+    if (friends.length === 0) {
+        friendsContainer.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无好友</div>'
+        return
+    }
+    
+    friendsContainer.innerHTML = friends.map(friend => `
+        <div class="friend-item" data-friend="${friend.username}">
+            <span class="friend-name">${friend.username}</span>
+            <button class="friend-remove-btn" data-id="${friend.id}" style="background: transparent; border: none; color: #ff6b6b; cursor: pointer; font-size: 12px;">删除</button>
+        </div>
+    `).join('')
+    
+    // 绑定好友点击事件
+    friendsContainer.querySelectorAll('.friend-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (e.target.classList.contains('friend-remove-btn')) return
+            const friendName = this.dataset.friend
+            filterByFriend(friendName)
+        })
+    })
+    
+    // 绑定删除好友事件
+    friendsContainer.querySelectorAll('.friend-remove-btn').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.stopPropagation()
+            if (confirm('确定要删除这个好友吗？')) {
+                const id = this.dataset.id
+                await removeFriend(id)
+            }
+        })
+    })
+    
+    // 更新好友数统计
+    const friendCountEl = document.querySelector("#friend-count")
+    if (friendCountEl) friendCountEl.textContent = friends.length
+}
+
+// 添加好友
+async function addFriend(friendUsername) {
+    try {
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            alert('请先登录')
+            return
+        }
+        
+        // 查找好友用户
+        const friendQuery = new AV.Query(AV.User)
+        friendQuery.equalTo('username', friendUsername)
+        const friendUsers = await friendQuery.find()
+        
+        if (friendUsers.length === 0) {
+            alert('未找到该用户')
+            return
+        }
+        
+        const friendUser = friendUsers[0]
+        
+        // 检查是否已经是好友
+        const Friend = AV.Object.extend('friend')
+        const checkQuery = new AV.Query(Friend)
+        checkQuery.equalTo('user', currentUser)
+        checkQuery.equalTo('friendId', friendUser.id)
+        const existing = await checkQuery.find()
+        
+        if (existing.length > 0) {
+            alert('该用户已经是您的好友')
+            return
+        }
+        
+        // 添加好友
+        const friend = new Friend()
+        friend.set('user', currentUser)
+        friend.set('friendId', friendUser.id)
+        friend.set('friendUsername', friendUsername)
+        await friend.save()
+        
+        await loadFriends()
+        alert('添加好友成功！')
+    } catch (error) {
+        console.error('添加好友失败:', error)
+        alert('添加好友失败: ' + (error.message || '未知错误'))
+    }
+}
+
+// 删除好友
+async function removeFriend(friendId) {
+    try {
+        const friend = AV.Object.createWithoutData('friend', friendId)
+        await friend.destroy()
+        await loadFriends()
+    } catch (error) {
+        console.error('删除好友失败:', error)
+        alert('删除好友失败: ' + (error.message || '未知错误'))
+    }
+}
+
+// 按好友筛选
+function filterByFriend(friendUsername) {
+    currentFilter = 'friend'
+    const filtered = allDiaries.filter(diary => {
+        const author = diary.attributes.author || ''
+        return author === friendUsername
+    })
+    renderDiaries(filtered)
+    updateViewTitle(`好友: ${friendUsername}`, `共 ${filtered.length} 条动态`)
+    updateNavButtons('friends')
+}
+
+// 显示全部
+function showAllDiaries() {
+    currentFilter = 'all'
+    renderDiaries(allDiaries)
+    updateViewTitle('全部动态', `共 ${allDiaries.length} 条动态`)
+    updateNavButtons('all')
+}
+
+// 更新视图标题
+function updateViewTitle(title, subtitle) {
+    const titleEl = document.querySelector("#view-title")
+    const subtitleEl = document.querySelector("#view-subtitle")
+    if (titleEl) titleEl.textContent = title
+    if (subtitleEl) subtitleEl.textContent = subtitle
+}
+
+// 更新导航按钮状态
+function updateNavButtons(active) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active')
+        if (btn.dataset.filter === active) {
+            btn.classList.add('active')
+        }
+    })
 }
 
 function renderDiaries(datas) {

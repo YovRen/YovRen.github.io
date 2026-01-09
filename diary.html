@@ -16,29 +16,52 @@
 
 <body>
     <header>
-        <div class="title">日记</div>
-        <div class="controls">
-            <input type="text" placeholder="🔍 搜索日记..." id="search-diary" class="search-input">
-            <div id="user-info" style="display: none;">
-                <span class="username"></span>
-                <button id="logout-btn">登出</button>
+        <div class="header-content">
+            <div class="title">朋友圈</div>
+            <div class="controls">
+                <input type="text" placeholder="🔍 搜索动态..." id="search-diary" class="search-input">
+                <div id="user-info" style="display: none;">
+                    <span class="username"></span>
+                    <button id="logout-btn">登出</button>
+                </div>
+                <button id="login-btn">登录</button>
             </div>
-            <button id="login-btn">登录</button>
         </div>
     </header>
 
-    <div class="diary-page-container">
-        <div class="diary-sidebar">
-            <button id="new-diary" class="btn-new-diary">✏️ 写新日记</button>
-            <div class="diary-stats">
-                <h4>📊 日记统计</h4>
-                <p>总日记数: <span id="total-count">0</span></p>
+    <div class="blog-container">
+        <div class="blog-sidebar">
+            <button id="new-diary" class="btn-new-blog">✏️ 写新朋友圈</button>
+            
+            <div class="blog-navigation">
+                <div class="nav-section">
+                    <h4 class="nav-title">📚 导航</h4>
+                    <div class="nav-buttons">
+                        <button class="nav-btn active" data-filter="all">全部</button>
+                        <button class="nav-btn" data-filter="friends">好友</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="blog-stats">
+                <h4>📊 朋友圈统计</h4>
+                <p>总动态数: <span id="total-count">0</span></p>
                 <p>总字数: <span id="total-words">0</span></p>
-                <p>已写天数: <span id="total-days">0</span></p>
+                <p>好友数: <span id="friend-count">0</span></p>
+            </div>
+
+            <div class="blog-categories" id="friend-list">
+                <h4>👥 我的好友</h4>
+                <div id="friends-container"></div>
+                <button id="add-friend-btn" class="btn-add-friend">+ 添加好友</button>
             </div>
         </div>
 
-        <div class="diary-main">
+        <div class="blog-main">
+            <div class="blog-view-header">
+                <h2 id="view-title">全部动态</h2>
+                <div id="view-subtitle"></div>
+            </div>
             <div id="diary-entries"></div>
         </div>
     </div>
@@ -75,7 +98,7 @@
     </div>
 
     <ul class="nav">
-        <li><a href="diary.html">日记</a></li>
+        <li><a href="diary.html">朋友圈</a></li>
         <li><a href="blog.html">博客</a></li>
         <li><a href="index.html">日程</a></li>
     </ul>
