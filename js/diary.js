@@ -512,10 +512,10 @@ function renderCarousel() {
             }).join('')}
         </div>
         ${carouselImages.length > 1 ? `
-            <div class="carousel-speed-control" style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 15px; font-size: 10px; display: flex; align-items: center; gap: 6px; z-index: 1000;">
-                <span>速度:</span>
-                <input type="range" id="carousel-speed-slider" min="500" max="5000" step="500" value="${carouselSpeed}" style="width: 60px; height: 4px;">
-                <span id="carousel-speed-value" style="min-width: 30px;">${carouselSpeed/1000}秒</span>
+            <div class="carousel-speed-control" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, rgba(74, 144, 226, 0.9), rgba(118, 75, 162, 0.9)); backdrop-filter: blur(10px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 10px; display: flex; align-items: center; gap: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); opacity: 0.85; transition: opacity 0.3s;">
+                <span style="font-weight: 500;">速度:</span>
+                <input type="range" id="carousel-speed-slider" min="500" max="5000" step="500" value="${carouselSpeed}" style="width: 70px; height: 4px; cursor: pointer; accent-color: white;">
+                <span id="carousel-speed-value" style="min-width: 35px; font-weight: 500;">${carouselSpeed/1000}秒</span>
             </div>
         ` : ''}
     `
@@ -620,11 +620,27 @@ function renderCarousel() {
         stack.addEventListener('mouseenter', () => {
             carouselHovered = true
             stopCarouselAutoPlay()
+            // hover时显示速度控制条
+            const speedControl = carouselWrapper.querySelector('.carousel-speed-control')
+            if (speedControl) {
+                speedControl.style.opacity = '1'
+            }
         })
         stack.addEventListener('mouseleave', () => {
             carouselHovered = false
             startCarouselAutoPlay()
+            // 离开时降低速度控制条透明度
+            const speedControl = carouselWrapper.querySelector('.carousel-speed-control')
+            if (speedControl) {
+                speedControl.style.opacity = '0.6'
+            }
         })
+        
+        // 初始设置速度控制条透明度
+        const speedControl = carouselWrapper.querySelector('.carousel-speed-control')
+        if (speedControl) {
+            speedControl.style.opacity = '0.6'
+        }
     }
     
     startCarouselAutoPlay()

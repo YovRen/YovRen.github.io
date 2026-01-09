@@ -1037,62 +1037,77 @@ async function loadNotes() {
             return
         }
         
-        const Note = AV.Object.extend('note')
-        const query = new AV.Query(Note)
-        query.equalTo('user', currentUser)
-        query.descending('createdAt')
-        const results = await query.find()
-        
-        if (results.length === 0) {
-            notesList.innerHTML = '<div style="color: var(--muted); font-size: 12px; padding: 10px;">暂无便签</div>'
-            return
-        }
-        
-        notesList.innerHTML = results.map(note => {
-            const id = note.id
-            const content = note.get('content') || ''
-            const color = note.get('color') || '#fff9c4'
-            const createdAt = note.get('createdAt')
-            const dateStr = createdAt ? new Date(createdAt).toLocaleDateString('zh-CN') : ''
+        // 尝试查询note类，如果不存在则静默处理
+        try {
+            const Note = AV.Object.extend('note')
+            const query = new AV.Query(Note)
+            query.equalTo('user', currentUser)
+            query.descending('createdAt')
+            const results = await query.find()
             
-            return `
-                <div class="note-item" data-id="${id}" style="background: ${color}; border-radius: 8px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer; position: relative; min-height: 80px;">
-                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">${dateStr}</div>
-                    <div style="font-size: 13px; line-height: 1.5; word-break: break-word;">${escapeHtml(content)}</div>
-                    <button class="note-delete-btn" data-id="${id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.8); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; line-height: 1; display: none; align-items: center; justify-content: center;">×</button>
-                </div>
-            `
-        }).join('')
-        
-        // 绑定删除和编辑事件
-        notesList.querySelectorAll('.note-item').forEach(item => {
-            const deleteBtn = item.querySelector('.note-delete-btn')
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', async (e) => {
-                    e.stopPropagation()
-                    if (confirm('确定要删除这个便签吗？')) {
-                        await deleteNote(item.dataset.id)
-                    }
-                })
-                
-                item.addEventListener('mouseenter', () => {
-                    deleteBtn.style.display = 'flex'
-                })
-                item.addEventListener('mouseleave', () => {
-                    deleteBtn.style.display = 'none'
-                })
+            if (results.length === 0) {
+                notesList.innerHTML = '<div style="color: var(--muted); font-size: 12px; padding: 10px;">暂无便签</div>'
+                return
             }
             
-            item.addEventListener('click', function(e) {
-                if (e.target.classList.contains('note-delete-btn')) return
-                editNote(this.dataset.id)
+            notesList.innerHTML = results.map(note => {
+                const id = note.id
+                const content = note.get('content') || ''
+                const color = note.get('color') || '#fff9c4'
+                const createdAt = note.get('createdAt')
+                const dateStr = createdAt ? new Date(createdAt).toLocaleDateString('zh-CN') : ''
+                
+                return `
+                    <div class="note-item" data-id="${id}" style="background: ${color}; border-radius: 8px; padding: 8px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer; position: relative; min-height: 50px;">
+                        <div style="font-size: 11px; color: #666; margin-bottom: 4px;">${dateStr}</div>
+                        <div style="font-size: 12px; line-height: 1.4; word-break: break-word;">${escapeHtml(content)}</div>
+                        <button class="note-delete-btn" data-id="${id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.8); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 11px; line-height: 1; display: none; align-items: center; justify-content: center;">×</button>
+                    </div>
+                `
+            }).join('')
+            
+            // 绑定删除和编辑事件
+            notesList.querySelectorAll('.note-item').forEach(item => {
+                const deleteBtn = item.querySelector('.note-delete-btn')
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation()
+                        if (confirm('确定要删除这个便签吗？')) {
+                            await deleteNote(item.dataset.id)
+                        }
+                    })
+                    
+                    item.addEventListener('mouseenter', () => {
+                        deleteBtn.style.display = 'flex'
+                    })
+                    item.addEventListener('mouseleave', () => {
+                        deleteBtn.style.display = 'none'
+                    })
+                }
+                
+                item.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('note-delete-btn')) return
+                    editNote(this.dataset.id)
+                })
             })
-        })
+        } catch (queryError) {
+            // 如果note类不存在，静默处理，显示空状态
+            if (queryError.code === 101 || queryError.message && queryError.message.includes("doesn't exists")) {
+                notesList.innerHTML = '<div style="color: var(--muted); font-size: 12px; padding: 10px;">暂无便签</div>'
+            } else {
+                throw queryError
+            }
+        }
     } catch (error) {
         console.error('加载便签失败:', error)
         const notesList = document.querySelector('#blog-notes-list')
         if (notesList) {
-            notesList.innerHTML = '<div style="color: #ff6b6b; font-size: 12px; padding: 10px;">加载失败</div>'
+            // 如果是类不存在的错误，静默处理
+            if (error.code === 101 || (error.message && error.message.includes("doesn't exists"))) {
+                notesList.innerHTML = '<div style="color: var(--muted); font-size: 12px; padding: 10px;">暂无便签</div>'
+            } else {
+                notesList.innerHTML = '<div style="color: #ff6b6b; font-size: 12px; padding: 10px;">加载失败</div>'
+            }
         }
     }
 }
@@ -1170,8 +1185,17 @@ function showAddNoteModal() {
 
 async function editNote(id) {
     try {
-        const note = AV.Object.createWithoutData('note', id)
-        await note.fetch()
+        let note
+        try {
+            note = AV.Object.createWithoutData('note', id)
+            await note.fetch()
+        } catch (fetchError) {
+            if (fetchError.code === 101 || (fetchError.message && fetchError.message.includes("doesn't exists"))) {
+                alert('便签功能需要先在LeanCloud创建note类。请先在LeanCloud控制台创建note类。')
+                return
+            }
+            throw fetchError
+        }
         
         const modal = document.createElement('div')
         modal.className = 'add-important-day-modal-overlay'
@@ -1281,6 +1305,10 @@ async function saveNote(data) {
         return note
     } catch (error) {
         console.error('保存便签失败:', error)
+        // 如果是类不存在的错误，提示用户
+        if (error.code === 101 || (error.message && error.message.includes("doesn't exists"))) {
+            alert('便签功能需要先在LeanCloud创建note类。请先在LeanCloud控制台创建note类。')
+        }
         throw error
     }
 }
@@ -1292,7 +1320,12 @@ async function deleteNote(id) {
         await loadNotes()
     } catch (error) {
         console.error('删除便签失败:', error)
-        alert('删除失败: ' + (error.message || '未知错误'))
+        // 如果是类不存在的错误，静默处理
+        if (error.code === 101 || (error.message && error.message.includes("doesn't exists"))) {
+            await loadNotes() // 重新加载，会显示空状态
+        } else {
+            alert('删除失败: ' + (error.message || '未知错误'))
+        }
     }
 }
 
