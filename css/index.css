@@ -43,7 +43,7 @@ html {
     100% { background-position: 0% 50%; }
 }
 
-/* 米老鼠背景图案 */
+/* 迪士尼世界背景 - 手绘风格 */
 body::before {
     content: '';
     position: fixed;
@@ -52,15 +52,113 @@ body::before {
     right: 0;
     bottom: 0;
     background-image: 
-        radial-gradient(circle at 20% 30%, rgba(74, 144, 226, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.06) 0%, transparent 50%),
-        /* 米老鼠头部形状 */
-        radial-gradient(ellipse 150px 120px at 15% 20%, rgba(74, 144, 226, 0.1) 0%, transparent 60%),
-        radial-gradient(ellipse 150px 120px at 85% 20%, rgba(74, 144, 226, 0.1) 0%, transparent 60%),
-        radial-gradient(ellipse 200px 180px at 50% 35%, rgba(74, 144, 226, 0.08) 0%, transparent 70%);
+        /* 天空渐变 */
+        linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 30%, #FFF8DC 70%, #F0E68C 100%),
+        /* 云朵 */
+        radial-gradient(ellipse 200px 80px at 10% 15%, rgba(255, 255, 255, 0.6) 0%, transparent 60%),
+        radial-gradient(ellipse 180px 70px at 25% 20%, rgba(255, 255, 255, 0.5) 0%, transparent 60%),
+        radial-gradient(ellipse 220px 90px at 75% 18%, rgba(255, 255, 255, 0.6) 0%, transparent 60%),
+        radial-gradient(ellipse 190px 75px at 90% 25%, rgba(255, 255, 255, 0.5) 0%, transparent 60%),
+        /* 迪士尼城堡 - 主塔 */
+        linear-gradient(135deg, transparent 48%, rgba(255, 182, 193, 0.3) 49%, rgba(255, 182, 193, 0.3) 51%, transparent 52%),
+        linear-gradient(45deg, transparent 48%, rgba(255, 182, 193, 0.3) 49%, rgba(255, 182, 193, 0.3) 51%, transparent 52%),
+        /* 城堡主体 */
+        polygon(
+            45% 60%, 48% 55%, 50% 50%, 52% 55%, 55% 60%,
+            55% 85%, 45% 85%
+        ),
+        /* 左侧塔楼 */
+        polygon(
+            35% 65%, 38% 60%, 40% 55%, 42% 60%, 45% 65%,
+            45% 85%, 35% 85%
+        ),
+        /* 右侧塔楼 */
+        polygon(
+            55% 65%, 58% 60%, 60% 55%, 62% 60%, 65% 65%,
+            65% 85%, 55% 85%
+        ),
+        /* 城堡尖顶装饰 */
+        radial-gradient(circle 15px at 40% 55%, rgba(255, 215, 0, 0.4) 0%, transparent 70%),
+        radial-gradient(circle 15px at 50% 50%, rgba(255, 215, 0, 0.5) 0%, transparent 70%),
+        radial-gradient(circle 15px at 60% 55%, rgba(255, 215, 0, 0.4) 0%, transparent 70%),
+        /* 地面/草地 */
+        linear-gradient(to top, rgba(144, 238, 144, 0.2) 0%, rgba(144, 238, 144, 0.1) 30%, transparent 50%);
+    background-size: 
+        100% 100%,
+        100% 100%,
+        100% 100%,
+        100% 100%,
+        100% 100%,
+        200px 200px,
+        200px 200px,
+        400px 300px,
+        300px 250px,
+        300px 250px,
+        100px 100px,
+        100px 100px,
+        100px 100px,
+        100% 100%;
+    background-position:
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        0 0,
+        center bottom,
+        left bottom,
+        right bottom,
+        35% 55%,
+        50% 50%,
+        60% 55%,
+        0 bottom;
+    background-repeat: no-repeat;
     pointer-events: none;
     z-index: 0;
-    animation: float 25s ease-in-out infinite;
+    animation: disneyFloat 30s ease-in-out infinite;
+    opacity: 0.7;
+}
+
+@keyframes disneyFloat {
+    0%, 100% { 
+        transform: translateY(0px) scale(1);
+        opacity: 0.7;
+    }
+    50% { 
+        transform: translateY(-20px) scale(1.02);
+        opacity: 0.8;
+    }
+}
+
+/* 使用SVG绘制精美的迪士尼城堡 */
+body::after {
+    content: '';
+    position: fixed;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 500px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Cdefs%3E%3ClinearGradient id='castleGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FFB6C1;stop-opacity:0.4'/%3E%3Cstop offset='100%25' style='stop-color:%23FFC0CB;stop-opacity:0.3'/%3E%3C/linearGradient%3E%3ClinearGradient id='goldGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FFD700;stop-opacity:0.5'/%3E%3Cstop offset='100%25' style='stop-color:%23FFA500;stop-opacity:0.4'/%3E%3C/linearGradient%3E%3C/defs%3E%3C!-- 云朵 --%3E%3Cellipse cx='120' cy='100' rx='100' ry='45' fill='rgba(255,255,255,0.5)'/%3E%3Cellipse cx='680' cy='90' rx='110' ry='50' fill='rgba(255,255,255,0.5)'/%3E%3Cellipse cx='400' cy='60' rx='90' ry='40' fill='rgba(255,255,255,0.4)'/%3E%3C!-- 左侧小塔楼 --%3E%3Cpath d='M 180 320 L 200 260 L 220 240 L 240 260 L 260 320 L 260 450 L 180 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.5)' stroke-width='2'/%3E%3C!-- 左侧中塔楼 --%3E%3Cpath d='M 240 300 L 260 240 L 280 220 L 300 240 L 320 300 L 320 450 L 240 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.5)' stroke-width='2'/%3E%3C!-- 主城堡中心 --%3E%3Cpath d='M 300 280 L 330 200 L 360 170 L 390 200 L 420 280 L 420 450 L 300 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.6)' stroke-width='3'/%3E%3C!-- 右侧中塔楼 --%3E%3Cpath d='M 420 300 L 440 240 L 460 220 L 480 240 L 500 300 L 500 450 L 420 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.5)' stroke-width='2'/%3E%3C!-- 右侧小塔楼 --%3E%3Cpath d='M 500 320 L 520 260 L 540 240 L 560 260 L 580 320 L 580 450 L 500 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.5)' stroke-width='2'/%3E%3C!-- 主塔金色尖顶 --%3E%3Cpath d='M 360 170 L 375 120 L 390 170' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.7)' stroke-width='2'/%3E%3Ccircle cx='375' cy='120' r='12' fill='rgba(255,215,0,0.6)'/%3E%3C!-- 左侧塔尖 --%3E%3Cpath d='M 280 220 L 290 180 L 300 220' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.6)' stroke-width='2'/%3E%3Ccircle cx='290' cy='180' r='8' fill='rgba(255,215,0,0.5)'/%3E%3Cpath d='M 200 240 L 210 200 L 220 240' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.6)' stroke-width='2'/%3E%3Ccircle cx='210' cy='200' r='8' fill='rgba(255,215,0,0.5)'/%3E%3C!-- 右侧塔尖 --%3E%3Cpath d='M 460 220 L 470 180 L 480 220' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.6)' stroke-width='2'/%3E%3Ccircle cx='470' cy='180' r='8' fill='rgba(255,215,0,0.5)'/%3E%3Cpath d='M 540 240 L 550 200 L 560 240' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.6)' stroke-width='2'/%3E%3Ccircle cx='550' cy='200' r='8' fill='rgba(255,215,0,0.5)'/%3E%3C!-- 城堡窗户（发光） --%3E%3Crect x='315' y='320' width='25' height='30' fill='rgba(255,255,0,0.4)' stroke='rgba(255,182,193,0.6)' stroke-width='1.5' rx='2'/%3E%3Crect x='365' y='320' width='25' height='30' fill='rgba(255,255,0,0.4)' stroke='rgba(255,182,193,0.6)' stroke-width='1.5' rx='2'/%3E%3Crect x='255' y='340' width='20' height='25' fill='rgba(255,255,0,0.3)' stroke='rgba(255,182,193,0.5)' stroke-width='1' rx='2'/%3E%3Crect x='485' y='340' width='20' height='25' fill='rgba(255,255,0,0.3)' stroke='rgba(255,182,193,0.5)' stroke-width='1' rx='2'/%3E%3C!-- 星星装饰 --%3E%3Cpath d='M 60 80 L 62 95 L 77 95 L 66 105 L 68 120 L 60 112 L 52 120 L 54 105 L 43 95 L 58 95 Z' fill='rgba(255,215,0,0.4)'/%3E%3Cpath d='M 740 120 L 741 130 L 751 130 L 743 136 L 744 146 L 740 140 L 736 146 L 737 136 L 729 130 L 739 130 Z' fill='rgba(255,215,0,0.4)'/%3E%3Cpath d='M 100 200 L 101 210 L 111 210 L 103 216 L 104 226 L 100 220 L 96 226 L 97 216 L 89 210 L 99 210 Z' fill='rgba(255,215,0,0.3)'/%3E%3Cpath d='M 700 180 L 701 190 L 711 190 L 703 196 L 704 206 L 700 200 L 696 206 L 697 196 L 689 190 L 699 190 Z' fill='rgba(255,215,0,0.3)'/%3E%3C!-- 魔法光效 --%3E%3Ccircle cx='375' cy='120' r='20' fill='rgba(255,215,0,0.1)'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    pointer-events: none;
+    z-index: 0;
+    animation: castleFloat 25s ease-in-out infinite;
+    opacity: 0.65;
+}
+
+@keyframes castleFloat {
+    0%, 100% { 
+        transform: translateX(-50%) translateY(0px) scale(1);
+        opacity: 0.65;
+    }
+    50% { 
+        transform: translateX(-50%) translateY(-20px) scale(1.02);
+        opacity: 0.75;
+    }
 }
 
 @keyframes float {
@@ -832,12 +930,82 @@ body {
     border-color: rgba(74, 144, 226, 0.4) !important;
 }
 
+.popular-blog-item,
+.popular-diary-item,
+.recommend-friend-item {
+    margin-bottom: 15px !important;
+    padding: 15px !important;
+}
+
+.blog-tags-cloud {
+    padding: 10px 0;
+    line-height: 2.2;
+}
+
+.blog-popular,
+.diary-popular,
+.diary-recommend {
+    padding: 10px 0;
+}
+
 .popular-blog-item:hover,
 .popular-diary-item:hover,
 .recommend-friend-item:hover {
     transform: translateX(-5px) scale(1.02);
     box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
     border-color: rgba(74, 144, 226, 0.3);
+}
+
+/* 朋友圈动态样式优化 */
+.diary-entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.diary-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.diary-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.diary-author {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 600;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(118, 75, 162, 0.05));
+    border-radius: 12px;
+    border: 2px solid rgba(74, 144, 226, 0.2);
+}
+
+.diary-entry-footer {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(74, 144, 226, 0.1);
+    flex-wrap: wrap;
+}
+
+.diary-location,
+.diary-weather {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 4px 10px;
+    background: rgba(74, 144, 226, 0.05);
+    border-radius: 10px;
 }
 
 @media (max-width: 1400px) {

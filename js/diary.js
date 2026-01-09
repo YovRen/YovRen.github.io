@@ -156,7 +156,7 @@ function setupDiaryEventListeners() {
                     })
                 } else {
                     // 新建模式
-                    saveData({
+                    await saveData({
                         title: title ? title.value : '',
                         content: contentValue,
                         mood: moodSelect ? moodSelect.value : '😊'
@@ -281,14 +281,29 @@ function time() {
     return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
 }
 
-function saveData(data) {
+async function saveData(data) {
     const Diary = AV.Object.extend('journal');
     const diary = new Diary();
     diary.set('title', data.title);
     diary.set('content', data.content);
     diary.set('mood', data.mood || '😊');
-    diary.set('city', returnCitySN && returnCitySN['cname'] ? returnCitySN['cname'] : '未知');
-    diary.set('weather', weather());
+    
+    // 获取城市信息
+    let city = '';
+    if (typeof returnCitySN !== 'undefined' && returnCitySN && returnCitySN['cname']) {
+        city = returnCitySN['cname'];
+    }
+    diary.set('city', city);
+    
+    // 获取天气信息（异步）
+    try {
+        const weatherInfo = await getWeatherInfo();
+        diary.set('weather', weatherInfo);
+    } catch (error) {
+        console.error('获取天气失败:', error);
+        diary.set('weather', '');
+    }
+    
     diary.set('time', time());
     // 图片已通过图床直接插入 Markdown 内容，无需单独的 image 字段
     
@@ -302,7 +317,31 @@ function saveData(data) {
     // 保存用户对象的引用
     diary.set('user', currentUser);
     
-    diary.save();
+    await diary.save();
+}
+
+// 异步获取天气信息
+function getWeatherInfo() {
+    return new Promise((resolve) => {
+        let ret = "";
+        jQuery.support.cors = true;
+        $.ajax({
+            url: "https://api.seniverse.com/v3/weather/now.json?key=S8qLqLqLqLqLqLqL&location=ip&language=zh-Hans&unit=c",
+            type: "GET",
+            dataType: "jsonp",
+            timeout: 5000,
+            success: function (data) {
+                if (data && data.results && data.results[0] && data.results[0].now) {
+                    ret = data.results[0].now.text;
+                }
+                resolve(ret);
+            },
+            error: function (err) {
+                console.error('天气API错误:', err);
+                resolve("");
+            }
+        });
+    });
 }
 
 async function updateData(id, data) {
@@ -756,28 +795,35 @@ function createDiaryEntry(diary) {
     const contentText = diary.attributes.content || ''
     const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
     const time = diary.attributes.time || ''
-    const city = diary.attributes.city || '未知'
-    const weather = diary.attributes.weather || '未知'
+    const city = diary.attributes.city || ''
+    const weather = diary.attributes.weather || ''
+    const author = diary.attributes.author || '未知用户'
     // 图片已通过图床直接插入 Markdown 内容，无需单独的 image 字段
     
     const entry = document.createElement("div")
     entry.className = "diary-entry"
+    entry.dataset.diaryId = diaryId
     entry.innerHTML = `
         <div class="diary-entry-header">
-            <span class="diary-mood">${mood}</span>
-            <span class="diary-title">${title || '无标题'}</span>
-            <span class="diary-time">${time.split(' ')[1] || ''}</span>
-            ${canEdit() ? `
-                <button class="diary-edit-btn" data-id="${diaryId}">✏️</button>
-                <button class="diary-delete-btn" data-id="${diaryId}">🗑️</button>
-            ` : ''}
+            <div class="diary-header-left">
+                <span class="diary-mood">${mood}</span>
+                <span class="diary-title">${title || '无标题'}</span>
+            </div>
+            <div class="diary-header-right">
+                <span class="diary-author">👤 ${author}</span>
+                <span class="diary-time">${time || ''}</span>
+                ${canEdit() ? `
+                    <button class="diary-edit-btn" data-id="${diaryId}">✏️</button>
+                    <button class="diary-delete-btn" data-id="${diaryId}">🗑️</button>
+                ` : ''}
+            </div>
         </div>
         <div class="diary-entry-content">
             ${contentHtml}
         </div>
         <div class="diary-entry-footer">
-            <span class="diary-location">📍 ${city}</span>
-            <span class="diary-weather">☀️ ${weather}</span>
+            ${city ? `<span class="diary-location">📍 ${city}</span>` : ''}
+            ${weather ? `<span class="diary-weather">☀️ ${weather}</span>` : ''}
         </div>
     `
 

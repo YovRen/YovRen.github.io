@@ -164,9 +164,13 @@ async function saveData(data) {
         todo.set('archived', data.archived || false);
         todo.set('user', currentUser);
         if (data.deadline) {
-            // 将字符串日期转换为 Date 对象
+            // LeanCloud要求deadline字段为String类型，保存为ISO格式字符串
             const deadlineDate = new Date(data.deadline);
-            todo.set('deadline', deadlineDate);
+            // 格式化为 YYYY-MM-DD 字符串
+            const deadlineStr = deadlineDate.getFullYear() + '-' + 
+                               String(deadlineDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                               String(deadlineDate.getDate()).padStart(2, '0');
+            todo.set('deadline', deadlineStr);
         }
         if (data.completedDate) {
             // 确保保存为字符串格式
