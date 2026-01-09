@@ -445,73 +445,67 @@ async function loadCarousel() {
     }
 }
 
-// 渲染轮播图
+// 渲染轮播图（网格布局）
 function renderCarousel() {
     const carouselWrapper = document.querySelector('#carousel-wrapper')
     if (!carouselWrapper || carouselImages.length === 0) return
     
-    const currentImage = carouselImages[currentCarouselIndex]
+    // 使用网格布局，根据图片数量自动调整
+    let gridCols = 1
+    if (carouselImages.length === 2) gridCols = 2
+    else if (carouselImages.length >= 3) gridCols = 3
+    
     carouselWrapper.innerHTML = `
-        <div class="carousel-slide" style="position: relative; width: 100%; height: 100%;">
-            <img src="${currentImage.url}" alt="${currentImage.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
-            ${currentImage.title ? `<div class="carousel-title">${currentImage.title}</div>` : ''}
-            ${canEdit() ? `<button class="carousel-delete-btn" data-id="${currentImage.id}" style="position: absolute; top: 10px; right: 10px; background: rgba(255, 77, 77, 0.8); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px;">×</button>` : ''}
+        <div class="carousel-grid" style="display: grid; grid-template-columns: repeat(${gridCols}, 1fr); gap: 10px; height: 100%;">
+            ${carouselImages.map((img, index) => `
+                <div class="carousel-item" style="position: relative; width: 100%; height: 100%; min-height: 150px; border-radius: 12px; overflow: hidden; cursor: ${img.link ? 'pointer' : 'default'};">
+                    <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #f5f5f5;">
+                    ${img.title ? `<div class="carousel-item-title">${img.title}</div>` : ''}
+                    ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;">×</button>` : ''}
+                </div>
+            `).join('')}
         </div>
     `
     
-    // 绑定删除按钮
-    const deleteBtn = carouselWrapper.querySelector('.carousel-delete-btn')
-    if (deleteBtn) {
-        deleteBtn.addEventListener('click', async (e) => {
-            e.stopPropagation()
-            if (confirm('确定要删除这张图片吗？')) {
-                await deleteCarouselImage(currentImage.id)
-            }
-        })
-    }
-    
-    // 绑定点击跳转
-    if (currentImage.link) {
-        carouselWrapper.querySelector('.carousel-slide').style.cursor = 'pointer'
-        carouselWrapper.querySelector('.carousel-slide').addEventListener('click', () => {
-            window.open(currentImage.link, '_blank')
-        })
-    }
-}
-
-// 渲染指示器
-function renderCarouselIndicators() {
-    const indicators = document.querySelector('#carousel-indicators')
-    if (!indicators) return
-    
-    indicators.innerHTML = carouselImages.map((_, index) => 
-        `<span class="carousel-indicator ${index === currentCarouselIndex ? 'active' : ''}" data-index="${index}"></span>`
-    ).join('')
-    
-    // 绑定指示器点击
-    indicators.querySelectorAll('.carousel-indicator').forEach(indicator => {
-        indicator.addEventListener('click', () => {
-            currentCarouselIndex = parseInt(indicator.dataset.index)
-            renderCarousel()
-            renderCarouselIndicators()
-            resetCarouselAutoPlay()
-        })
+    // 绑定删除按钮和点击事件
+    carouselWrapper.querySelectorAll('.carousel-item').forEach((item, index) => {
+        const img = carouselImages[index]
+        const deleteBtn = item.querySelector('.carousel-delete-btn')
+        
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async (e) => {
+                e.stopPropagation()
+                if (confirm('确定要删除这张图片吗？')) {
+                    await deleteCarouselImage(img.id)
+                }
+            })
+        }
+        
+        if (img.link) {
+            item.addEventListener('click', () => {
+                window.open(img.link, '_blank')
+            })
+        }
     })
 }
 
-// 轮播图自动播放
+// 渲染指示器（网格布局不需要指示器）
+function renderCarouselIndicators() {
+    const indicators = document.querySelector('#carousel-indicators')
+    if (!indicators) return
+    // 网格布局不需要指示器
+    indicators.innerHTML = ''
+}
+
+// 轮播图自动播放（网格布局不需要自动播放）
 function startCarouselAutoPlay() {
-    if (carouselImages.length <= 1) return
-    resetCarouselAutoPlay()
+    // 网格布局不需要自动播放
+    if (carouselInterval) clearInterval(carouselInterval)
 }
 
 function resetCarouselAutoPlay() {
+    // 网格布局不需要自动播放
     if (carouselInterval) clearInterval(carouselInterval)
-    carouselInterval = setInterval(() => {
-        currentCarouselIndex = (currentCarouselIndex + 1) % carouselImages.length
-        renderCarousel()
-        renderCarouselIndicators()
-    }, 4000)
 }
 
 // 删除轮播图
@@ -555,23 +549,20 @@ async function addCarouselImage(url, title, link) {
     }
 }
 
-// 上传轮播图片（使用图床）
+// 上传轮播图片（使用LeanCloud）
 async function uploadCarouselImage(file) {
     try {
-        if (typeof uploadImageToBed === 'undefined') {
-            alert('图片上传功能未加载，请使用图片URL方式添加')
-            return
-        }
-        
-        const url = await uploadImageToBed(file)
-        if (url) {
-            const title = prompt('请输入图片标题（可选）:') || ''
-            const link = prompt('请输入点击跳转链接（可选）:') || ''
-            await addCarouselImage(url, title, link)
+        if (typeof uploadImageToLeanCloud === 'undefined') {
+            // 如果没有uploadImageToLeanCloud，直接使用AV.File
+            const avFile = new AV.File(file.name, file)
+            const savedFile = await avFile.save()
+            return savedFile.attributes.url
+        } else {
+            return await uploadImageToLeanCloud(file)
         }
     } catch (error) {
         console.error('上传轮播图失败:', error)
-        alert('上传失败: ' + (error.message || '未知错误'))
+        throw error
     }
 }
 
@@ -626,8 +617,11 @@ function showAddCarouselImageModal() {
         modal.querySelector('#url-area').style.display = 'block'
     })
     
-    // 文件选择
+    // 文件选择（支持多文件）
     const fileInput = modal.querySelector('#image-file-input')
+    fileInput.setAttribute('multiple', 'multiple')
+    
+    // 单文件预览（用于保存按钮）
     fileInput.addEventListener('change', (e) => {
         selectedFile = e.target.files[0]
         if (selectedFile) {
@@ -642,26 +636,57 @@ function showAddCarouselImageModal() {
                 const existingPreview = modal.querySelector('#upload-area img')
                 if (existingPreview) existingPreview.remove()
                 modal.querySelector('#upload-area').appendChild(preview)
+                
+                // 显示多文件提示
+                if (e.target.files.length > 1) {
+                    const count = document.createElement('div')
+                    count.textContent = `已选择 ${e.target.files.length} 张图片，点击保存将全部上传`
+                    count.style.marginTop = '10px'
+                    count.style.fontSize = '12px'
+                    count.style.color = 'var(--primary)'
+                    const existingCount = modal.querySelector('#upload-area .file-count')
+                    if (existingCount) existingCount.remove()
+                    count.className = 'file-count'
+                    modal.querySelector('#upload-area').appendChild(count)
+                }
             }
             reader.readAsDataURL(selectedFile)
         }
     })
     
-    // 保存按钮
+    // 保存按钮（支持单图和多图）
     modal.querySelector('#save-carousel-btn').addEventListener('click', async () => {
         const title = modal.querySelector('#image-title-input').value
         const link = modal.querySelector('#image-link-input').value
+        const files = Array.from(fileInput.files)
         
-        if (selectedFile) {
-            await uploadCarouselImage(selectedFile)
-        } else if (modal.querySelector('#image-url-input').value) {
-            await addCarouselImage(modal.querySelector('#image-url-input').value, title, link)
-        } else {
-            alert('请选择图片或输入图片URL')
-            return
+        try {
+            if (files.length > 0) {
+                // 多图上传
+                modal.querySelector('#save-carousel-btn').disabled = true
+                modal.querySelector('#save-carousel-btn').textContent = `上传中... (0/${files.length})`
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i]
+                    const url = await uploadCarouselImage(file)
+                    await addCarouselImage(url, title, link)
+                    modal.querySelector('#save-carousel-btn').textContent = `上传中... (${i + 1}/${files.length})`
+                }
+                
+                document.body.removeChild(modal)
+            } else if (modal.querySelector('#image-url-input').value) {
+                // URL方式
+                await addCarouselImage(modal.querySelector('#image-url-input').value, title, link)
+                document.body.removeChild(modal)
+            } else {
+                alert('请选择图片或输入图片URL')
+            }
+        } catch (error) {
+            console.error('保存失败:', error)
+            alert('保存失败: ' + (error.message || '未知错误'))
+            modal.querySelector('#save-carousel-btn').disabled = false
+            modal.querySelector('#save-carousel-btn').textContent = '保存'
         }
-        
-        document.body.removeChild(modal)
     })
     
     // 取消按钮

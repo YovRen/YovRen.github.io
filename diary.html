@@ -20,6 +20,11 @@
     <header>
         <div class="header-content">
             <div class="title">朋友圈</div>
+            <div class="header-nav">
+                <a href="blog.html" class="nav-link">博客</a>
+                <a href="index.html" class="nav-link">日程</a>
+                <a href="diary.html" class="nav-link active">朋友圈</a>
+            </div>
             <div class="controls">
                 <input type="text" placeholder="🔍 搜索动态..." id="search-diary" class="search-input">
                 <div id="user-info" style="display: none;">
@@ -29,12 +34,6 @@
                 <button id="login-btn">登录</button>
             </div>
         </div>
-        <!-- 导航栏 -->
-        <ul class="nav-top">
-            <li><a href="blog.html">博客</a></li>
-            <li><a href="index.html">日程</a></li>
-            <li><a href="diary.html" class="active">朋友圈</a></li>
-        </ul>
     </header>
 
     <div class="blog-container">
@@ -77,18 +76,13 @@
         <div class="blog-sidebar-right">
             <div class="blog-navigation">
                 <div class="nav-section">
-                    <h4 class="nav-title">🖼️ 图片轮播</h4>
-                    <button id="add-carousel-image-btn" class="toggle-btn" style="font-size: 12px; padding: 6px 12px;">+ 添加</button>
+                    <h4 class="nav-title">🖼️ 图片</h4>
+                    <button id="add-carousel-image-btn" class="toggle-btn" style="font-size: 11px; padding: 4px 10px;">+</button>
                 </div>
             </div>
             <div class="carousel-container" id="carousel-container">
                 <div class="carousel-wrapper" id="carousel-wrapper">
                     <div class="carousel-loading">加载中...</div>
-                </div>
-                <div class="carousel-controls">
-                    <button class="carousel-btn prev" id="carousel-prev">‹</button>
-                    <div class="carousel-indicators" id="carousel-indicators"></div>
-                    <button class="carousel-btn next" id="carousel-next">›</button>
                 </div>
             </div>
         </div>
@@ -162,23 +156,6 @@
             }
             return true;
         }
-        
-        // 轮播图控制
-        document.querySelector('#carousel-prev')?.addEventListener('click', () => {
-            if (carouselImages.length === 0) return
-            currentCarouselIndex = (currentCarouselIndex - 1 + carouselImages.length) % carouselImages.length
-            renderCarousel()
-            renderCarouselIndicators()
-            resetCarouselAutoPlay()
-        })
-        
-        document.querySelector('#carousel-next')?.addEventListener('click', () => {
-            if (carouselImages.length === 0) return
-            currentCarouselIndex = (currentCarouselIndex + 1) % carouselImages.length
-            renderCarousel()
-            renderCarouselIndicators()
-            resetCarouselAutoPlay()
-        })
         
         // 添加轮播图按钮
         document.querySelector('#add-carousel-image-btn')?.addEventListener('click', () => {
