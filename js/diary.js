@@ -457,32 +457,35 @@ function renderCarousel() {
     const carouselWrapper = document.querySelector('#carousel-wrapper')
     if (!carouselWrapper || carouselImages.length === 0) return
     
-    // 上下叠加的扑克牌样式
+    // 上下叠加的扑克牌样式（像蜘蛛纸牌）
     carouselWrapper.innerHTML = `
-        <div class="carousel-stack" style="position: relative; width: 100%; height: 300px; overflow: hidden; cursor: grab;">
+        <div class="carousel-stack" style="position: relative; width: 100%; height: 300px; overflow: visible; cursor: grab;">
             ${carouselImages.map((img, index) => {
                 const zIndex = carouselImages.length - index
-                const offsetY = index * 15 // 每张图片向下偏移15px
+                const offsetY = index * 12 // 每张图片向下偏移12px，更紧凑
+                const offsetX = index * 3 // 每张图片向右偏移3px，形成扑克牌效果
                 return `
                     <div class="carousel-card" 
                          data-index="${index}"
                          style="position: absolute; 
                                 top: ${offsetY}px; 
-                                left: 0;
-                                right: 0;
-                                width: 100%;
+                                left: ${offsetX}px;
+                                right: ${offsetX}px;
+                                width: calc(100% - ${offsetX * 2}px);
                                 height: calc(100% - ${offsetY}px);
                                 z-index: ${zIndex};
-                                border-radius: 12px;
+                                border-radius: 8px;
                                 overflow: hidden;
                                 cursor: ${img.link ? 'pointer' : 'grab'};
-                                transition: transform 0.3s, top 0.3s;
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                                transition: transform 0.3s, top 0.3s, left 0.3s;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1);
+                                border: 1px solid rgba(0,0,0,0.1);
                                 user-select: none;
-                                touch-action: pan-y;">
+                                touch-action: pan-y;
+                                background: white;">
                         <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #f5f5f5; display: block; pointer-events: none;">
-                        ${img.title ? `<div class="carousel-item-title">${img.title}</div>` : ''}
-                        ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 100;">×</button>` : ''}
+                        ${img.title ? `<div class="carousel-item-title" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); color: white; padding: 8px; font-size: 11px;">${img.title}</div>` : ''}
+                        ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">×</button>` : ''}
                     </div>
                 `
             }).join('')}
@@ -580,11 +583,12 @@ function renderCarousel() {
             }
         })
         
-        // Hover效果：将当前图片提到最前
+        // Hover效果：将当前图片提到最前（像扑克牌一样）
         item.addEventListener('mouseenter', () => {
             if (!isDragging) {
                 item.style.zIndex = 1000
-                item.style.transform = 'translateY(-5px)'
+                item.style.transform = 'translateY(-8px) translateX(-2px) scale(1.02)'
+                item.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25), 0 0 4px rgba(0,0,0,0.15)'
             }
         })
         
@@ -593,6 +597,7 @@ function renderCarousel() {
                 const originalIndex = parseInt(item.dataset.index)
                 item.style.zIndex = carouselImages.length - originalIndex
                 item.style.transform = ''
+                item.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1)'
             }
         })
     })

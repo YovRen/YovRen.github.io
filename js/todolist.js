@@ -538,6 +538,7 @@ function renderTodo(todo, quadrant, deadlineInfo) {
         todoItem.classList.add('checked')
     }
     todoItem.dataset.id = todo.id
+    todoItem.style.cursor = 'pointer'
     todoItem.innerHTML = `
         <div class="todo-checkbox">
             <input type="checkbox" id="todo-${todo.id}" class="todo-check" ${todo.attributes.done ? 'checked' : ''}>
@@ -552,6 +553,18 @@ function renderTodo(todo, quadrant, deadlineInfo) {
         </div>
     `
     quadrantEl.appendChild(todoItem)
+    
+    // 添加点击编辑功能
+    todoItem.addEventListener('click', function(e) {
+        // 如果点击的是checkbox或按钮，不触发编辑
+        if (e.target.classList.contains('todo-check') || 
+            e.target.classList.contains('btn-archive') || 
+            e.target.classList.contains('btn-delete') ||
+            e.target.closest('.todo-actions')) {
+            return
+        }
+        editTodo(todo.id)
+    })
 }
 
 function escapeHtml(text) {
@@ -643,6 +656,96 @@ function bindEvents() {
             }
         })
     })
+}
+
+// 编辑待办事项
+async function editTodo(id) {
+    try {
+        const todo = AV.Object.createWithoutData('todolist', id)
+        await todo.fetch()
+        
+        // 填充表单
+        if (todoInput) todoInput.value = todo.get('title') || ''
+        if (importance) importance.value = todo.get('importance') || 'high'
+        if (urgency) urgency.value = todo.get('urgency') || 'high'
+        if (deadline) {
+            const deadlineDate = todo.get('deadline')
+            if (deadlineDate) {
+                let dateStr = ''
+                if (deadlineDate instanceof Date) {
+                    dateStr = deadlineDate.toISOString().split('T')[0]
+                } else if (typeof deadlineDate === 'string') {
+                    dateStr = deadlineDate.split('T')[0]
+                } else if (deadlineDate.iso) {
+                    dateStr = deadlineDate.iso.split('T')[0]
+                }
+                deadline.value = dateStr
+            } else {
+                deadline.value = ''
+            }
+        }
+        
+        // 显示表单
+        const addTodoOverlay = document.querySelector('#add-todo-overlay')
+        if (addTodoOverlay) {
+            addTodoOverlay.hidden = false
+            if (todoInput) todoInput.focus()
+        }
+        
+        // 修改提交按钮行为
+        const submitTodoBtn = document.querySelector("#submit-todo-btn")
+        if (submitTodoBtn) {
+            // 移除旧的事件监听器（通过克隆替换）
+            const newSubmitBtn = submitTodoBtn.cloneNode(true)
+            submitTodoBtn.parentNode.replaceChild(newSubmitBtn, submitTodoBtn)
+            
+            // 添加新的事件监听器
+            newSubmitBtn.addEventListener("click", async () => {
+                if (typeof requireLogin === 'function' && !requireLogin()) {
+                    return;
+                }
+                if (todoInput && todoInput.value.trim() !== '') {
+                    try {
+                        newSubmitBtn.disabled = true;
+                        newSubmitBtn.textContent = '保存中...';
+                        const quadrant = getQuadrant(importance.value, urgency.value);
+                        
+                        // 更新而不是新建
+                        todo.set('title', todoInput.value.trim())
+                        todo.set('importance', importance.value)
+                        todo.set('urgency', urgency.value)
+                        todo.set('quadrant', quadrant)
+                        if (deadline && deadline.value) {
+                            const deadlineDate = new Date(deadline.value)
+                            const deadlineStr = deadlineDate.getFullYear() + '-' + 
+                                               String(deadlineDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                               String(deadlineDate.getDate()).padStart(2, '0')
+                            todo.set('deadline', deadlineStr)
+                        } else {
+                            todo.set('deadline', null)
+                        }
+                        await todo.save()
+                        
+                        todoInput.value = ''
+                        deadline.value = ''
+                        importance.value = 'high'
+                        urgency.value = 'high'
+                        if (addTodoOverlay) addTodoOverlay.hidden = true
+                        await load()
+                    } catch (error) {
+                        console.error('保存失败:', error);
+                        alert('保存失败: ' + (error.message || '未知错误'));
+                    } finally {
+                        newSubmitBtn.disabled = false;
+                        newSubmitBtn.textContent = '添加';
+                    }
+                }
+            })
+        }
+    } catch (error) {
+        console.error('加载待办事项失败:', error)
+        alert('加载失败: ' + (error.message || '未知错误'))
+    }
 }
 
 // 过滤待办事项

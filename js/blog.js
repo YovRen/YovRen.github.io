@@ -405,8 +405,7 @@ async function load() {
     updateBlogStats(allBlogs)
     renderCategories(allBlogs)
     renderArchives(allBlogs)
-    loadTagsCloud()
-    loadPopularBlogs()
+    loadNotes()
     updateViewTitle('全部博客', `共 ${allBlogs.length} 篇文章`)
 }
 
@@ -1004,7 +1003,293 @@ if (document.readyState === 'loading') {
             if (typeof requireLogin === 'function' && !requireLogin()) return
             showEditAuthorModal()
         })
+        
+        // 绑定添加便签按钮
+        document.querySelector('#new-note')?.addEventListener('click', () => {
+            if (typeof requireLogin === 'function' && !requireLogin()) return
+            showAddNoteModal()
+        })
+        
+        // 加载便签
+        loadNotes()
     } else {
         console.error('博客页面元素初始化失败');
     }
+}
+
+// 便签功能
+async function loadNotes() {
+    try {
+        const notesList = document.querySelector('#blog-notes-list')
+        if (!notesList) return
+        
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            notesList.innerHTML = '<div style="color: var(--muted); font-size: 12px; padding: 10px;">请先登录</div>'
+            return
+        }
+        
+        const Note = AV.Object.extend('note')
+        const query = new AV.Query(Note)
+        query.equalTo('user', currentUser)
+        query.descending('createdAt')
+        const results = await query.find()
+        
+        if (results.length === 0) {
+            notesList.innerHTML = '<div style="color: var(--muted); font-size: 12px; padding: 10px;">暂无便签</div>'
+            return
+        }
+        
+        notesList.innerHTML = results.map(note => {
+            const id = note.id
+            const content = note.get('content') || ''
+            const color = note.get('color') || '#fff9c4'
+            const createdAt = note.get('createdAt')
+            const dateStr = createdAt ? new Date(createdAt).toLocaleDateString('zh-CN') : ''
+            
+            return `
+                <div class="note-item" data-id="${id}" style="background: ${color}; border-radius: 8px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer; position: relative; min-height: 80px;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">${dateStr}</div>
+                    <div style="font-size: 13px; line-height: 1.5; word-break: break-word;">${escapeHtml(content)}</div>
+                    <button class="note-delete-btn" data-id="${id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.8); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; line-height: 1; display: none; align-items: center; justify-content: center;">×</button>
+                </div>
+            `
+        }).join('')
+        
+        // 绑定删除和编辑事件
+        notesList.querySelectorAll('.note-item').forEach(item => {
+            const deleteBtn = item.querySelector('.note-delete-btn')
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation()
+                    if (confirm('确定要删除这个便签吗？')) {
+                        await deleteNote(item.dataset.id)
+                    }
+                })
+                
+                item.addEventListener('mouseenter', () => {
+                    deleteBtn.style.display = 'flex'
+                })
+                item.addEventListener('mouseleave', () => {
+                    deleteBtn.style.display = 'none'
+                })
+            }
+            
+            item.addEventListener('click', function(e) {
+                if (e.target.classList.contains('note-delete-btn')) return
+                editNote(this.dataset.id)
+            })
+        })
+    } catch (error) {
+        console.error('加载便签失败:', error)
+        const notesList = document.querySelector('#blog-notes-list')
+        if (notesList) {
+            notesList.innerHTML = '<div style="color: #ff6b6b; font-size: 12px; padding: 10px;">加载失败</div>'
+        }
+    }
+}
+
+function showAddNoteModal() {
+    const modal = document.createElement('div')
+    modal.className = 'add-important-day-modal-overlay'
+    modal.style.display = 'flex'
+    modal.innerHTML = `
+        <div class="add-important-day-modal" style="max-width: 400px;">
+            <h3>添加便签</h3>
+            <div class="modal-form">
+                <label>便签内容：</label>
+                <textarea id="note-content-input" class="form-control" rows="6" placeholder="输入便签内容..."></textarea>
+                <label>便签颜色：</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                    <div class="note-color-option" data-color="#fff9c4" style="width: 30px; height: 30px; border-radius: 4px; background: #fff9c4; border: 2px solid #ddd; cursor: pointer;"></div>
+                    <div class="note-color-option" data-color="#c5e1a5" style="width: 30px; height: 30px; border-radius: 4px; background: #c5e1a5; border: 2px solid #ddd; cursor: pointer;"></div>
+                    <div class="note-color-option" data-color="#b3e5fc" style="width: 30px; height: 30px; border-radius: 4px; background: #b3e5fc; border: 2px solid #ddd; cursor: pointer;"></div>
+                    <div class="note-color-option" data-color="#f8bbd0" style="width: 30px; height: 30px; border-radius: 4px; background: #f8bbd0; border: 2px solid #ddd; cursor: pointer;"></div>
+                    <div class="note-color-option" data-color="#d1c4e9" style="width: 30px; height: 30px; border-radius: 4px; background: #d1c4e9; border: 2px solid #ddd; cursor: pointer;"></div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="save-note-btn" class="btn-add">保存</button>
+                <button id="cancel-note-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+            </div>
+        </div>
+    `
+    document.body.appendChild(modal)
+    
+    let selectedColor = '#fff9c4'
+    
+    // 颜色选择
+    modal.querySelectorAll('.note-color-option').forEach(option => {
+        option.addEventListener('click', function() {
+            modal.querySelectorAll('.note-color-option').forEach(opt => {
+                opt.style.border = '2px solid #ddd'
+            })
+            this.style.border = '2px solid #4a90e2'
+            selectedColor = this.dataset.color
+        })
+    })
+    modal.querySelector('.note-color-option').style.border = '2px solid #4a90e2'
+    
+    // 保存
+    modal.querySelector('#save-note-btn').addEventListener('click', async () => {
+        const content = modal.querySelector('#note-content-input').value.trim()
+        if (!content) {
+            alert('请输入便签内容')
+            return
+        }
+        try {
+            await saveNote({ content, color: selectedColor })
+            document.body.removeChild(modal)
+            await loadNotes()
+        } catch (error) {
+            console.error('保存便签失败:', error)
+            alert('保存失败: ' + (error.message || '未知错误'))
+        }
+    })
+    
+    // 取消
+    modal.querySelector('#cancel-note-btn').addEventListener('click', () => {
+        document.body.removeChild(modal)
+    })
+    
+    // 点击遮罩关闭
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal)
+        }
+    })
+}
+
+async function editNote(id) {
+    try {
+        const note = AV.Object.createWithoutData('note', id)
+        await note.fetch()
+        
+        const modal = document.createElement('div')
+        modal.className = 'add-important-day-modal-overlay'
+        modal.style.display = 'flex'
+        modal.innerHTML = `
+            <div class="add-important-day-modal" style="max-width: 400px;">
+                <h3>编辑便签</h3>
+                <div class="modal-form">
+                    <label>便签内容：</label>
+                    <textarea id="note-content-input" class="form-control" rows="6" placeholder="输入便签内容...">${escapeHtml(note.get('content') || '')}</textarea>
+                    <label>便签颜色：</label>
+                    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                        <div class="note-color-option" data-color="#fff9c4" style="width: 30px; height: 30px; border-radius: 4px; background: #fff9c4; border: 2px solid #ddd; cursor: pointer;"></div>
+                        <div class="note-color-option" data-color="#c5e1a5" style="width: 30px; height: 30px; border-radius: 4px; background: #c5e1a5; border: 2px solid #ddd; cursor: pointer;"></div>
+                        <div class="note-color-option" data-color="#b3e5fc" style="width: 30px; height: 30px; border-radius: 4px; background: #b3e5fc; border: 2px solid #ddd; cursor: pointer;"></div>
+                        <div class="note-color-option" data-color="#f8bbd0" style="width: 30px; height: 30px; border-radius: 4px; background: #f8bbd0; border: 2px solid #ddd; cursor: pointer;"></div>
+                        <div class="note-color-option" data-color="#d1c4e9" style="width: 30px; height: 30px; border-radius: 4px; background: #d1c4e9; border: 2px solid #ddd; cursor: pointer;"></div>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button id="save-note-btn" class="btn-add">保存</button>
+                    <button id="cancel-note-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+                </div>
+            </div>
+        `
+        document.body.appendChild(modal)
+        
+        let selectedColor = note.get('color') || '#fff9c4'
+        
+        // 颜色选择
+        modal.querySelectorAll('.note-color-option').forEach(option => {
+            if (option.dataset.color === selectedColor) {
+                option.style.border = '2px solid #4a90e2'
+            }
+            option.addEventListener('click', function() {
+                modal.querySelectorAll('.note-color-option').forEach(opt => {
+                    opt.style.border = '2px solid #ddd'
+                })
+                this.style.border = '2px solid #4a90e2'
+                selectedColor = this.dataset.color
+            })
+        })
+        
+        // 保存
+        modal.querySelector('#save-note-btn').addEventListener('click', async () => {
+            const content = modal.querySelector('#note-content-input').value.trim()
+            if (!content) {
+                alert('请输入便签内容')
+                return
+            }
+            try {
+                await saveNote({ id, content, color: selectedColor })
+                document.body.removeChild(modal)
+                await loadNotes()
+            } catch (error) {
+                console.error('保存便签失败:', error)
+                alert('保存失败: ' + (error.message || '未知错误'))
+            }
+        })
+        
+        // 取消
+        modal.querySelector('#cancel-note-btn').addEventListener('click', () => {
+            document.body.removeChild(modal)
+        })
+        
+        // 点击遮罩关闭
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal)
+            }
+        })
+    } catch (error) {
+        console.error('加载便签失败:', error)
+        alert('加载失败: ' + (error.message || '未知错误'))
+    }
+}
+
+async function saveNote(data) {
+    try {
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            throw new Error('请先登录')
+        }
+        
+        const Note = AV.Object.extend('note')
+        let note
+        
+        if (data.id) {
+            // 更新
+            note = AV.Object.createWithoutData('note', data.id)
+        } else {
+            // 新建
+            note = new Note()
+        }
+        
+        note.set('user', currentUser)
+        note.set('content', data.content)
+        note.set('color', data.color || '#fff9c4')
+        
+        const acl = new AV.ACL()
+        acl.setPublicReadAccess(true)
+        acl.setPublicWriteAccess(true)
+        note.setACL(acl)
+        
+        await note.save()
+        await loadNotes()
+        return note
+    } catch (error) {
+        console.error('保存便签失败:', error)
+        throw error
+    }
+}
+
+async function deleteNote(id) {
+    try {
+        const note = AV.Object.createWithoutData('note', id)
+        await note.destroy()
+        await loadNotes()
+    } catch (error) {
+        console.error('删除便签失败:', error)
+        alert('删除失败: ' + (error.message || '未知错误'))
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
 }

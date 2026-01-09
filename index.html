@@ -75,7 +75,6 @@
             <div class="blog-navigation">
                 <div class="nav-section">
                     <h4 class="nav-title">📚 历史记录</h4>
-                    <button id="toggle-history" class="toggle-btn">收起</button>
                 </div>
             </div>
             <div class="history-list" id="history-list">
@@ -202,18 +201,6 @@
             return true;
         }
 
-        // 历史记录侧边栏切换
-        document.querySelector('#toggle-history')?.addEventListener('click', function () {
-            const sidebar = document.querySelector('.blog-sidebar');
-            const isCollapsed = sidebar.classList.contains('collapsed');
-            if (isCollapsed) {
-                sidebar.classList.remove('collapsed');
-                this.textContent = '收起';
-            } else {
-                sidebar.classList.add('collapsed');
-                this.textContent = '展开';
-            }
-        });
     </script>
 </body>
 
