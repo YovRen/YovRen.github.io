@@ -440,14 +440,19 @@ function createBlogCard(blog) {
     const tags = blog.attributes.tags || ''
     const tagArray = tags.split(',').filter(t => t.trim())
     
-    // 生成摘要（前200个字符，去除markdown标记）
+    // 生成摘要（去除markdown标记，用于预览）
     let summary = contentText
-        .replace(/[#*_`\[\]()]/g, '') // 移除markdown标记
-        .replace(/\n/g, ' ') // 替换换行为空格
+        .replace(/^#+\s+/gm, '') // 移除标题标记
+        .replace(/\*\*([^*]+)\*\*/g, '$1') // 移除粗体标记
+        .replace(/\*([^*]+)\*/g, '$1') // 移除斜体标记
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // 移除链接标记
+        .replace(/`([^`]+)`/g, '$1') // 移除代码标记
+        .replace(/\n+/g, ' ') // 替换换行为空格
         .trim()
     
-    if (summary.length > 200) {
-        summary = summary.substring(0, 200) + '...'
+    // 限制摘要长度
+    if (summary.length > 150) {
+        summary = summary.substring(0, 150) + '...'
     }
     
     // 完整内容的HTML（用于详情页）
@@ -458,30 +463,50 @@ function createBlogCard(blog) {
     card.className = "blog-card"
     card.dataset.blogId = blogId
     card.innerHTML = `
-        <div class="blog-card-header">
-            <div class="blog-header-left">
-                <span class="blog-title">${title || '无标题'}</span>
+        <div class="blog-card-preview">
+            <div class="blog-card-title">${title || '无标题'}</div>
+            <div class="blog-card-meta">
+                <span class="blog-meta-date">📅 发表于 ${time || ''}</span>
+                <span class="blog-meta-separator">|</span>
+                <span class="blog-meta-category">📁 分类于 ${category}</span>
             </div>
-            <div class="blog-header-right">
-                <span class="blog-author">👤 ${author}</span>
-                <span class="blog-time">${time || ''}</span>
+            <div class="blog-card-summary">
+                <div class="blog-summary-label">摘要：</div>
+                <div class="blog-summary-text">${summary || '暂无摘要'}</div>
+            </div>
+            <div class="blog-card-actions">
                 ${canEdit() ? `
                     <button class="blog-edit-btn" data-id="${blogId}">✏️</button>
                     <button class="blog-delete-btn" data-id="${blogId}">🗑️</button>
                 ` : ''}
+                <button class="blog-read-more" data-id="${blogId}">阅读全文»</button>
             </div>
         </div>
-        <div class="blog-card-content">
-            ${contentHtml}
-        </div>
-        <div class="blog-card-footer">
-            ${category ? `<span class="blog-category">📁 ${category}</span>` : ''}
-            ${tagArray.length > 0 ? `
-                <div class="blog-tags">
-                    ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
+        <div class="blog-card-full" style="display: none;">
+            <div class="blog-card-header">
+                <div class="blog-header-left">
+                    <span class="blog-title">${title || '无标题'}</span>
                 </div>
-            ` : ''}
-            <button class="blog-read-more" data-id="${blogId}">阅读全文 →</button>
+                <div class="blog-header-right">
+                    <span class="blog-author">👤 ${author}</span>
+                    <span class="blog-time">${time || ''}</span>
+                    ${canEdit() ? `
+                        <button class="blog-edit-btn" data-id="${blogId}">✏️</button>
+                        <button class="blog-delete-btn" data-id="${blogId}">🗑️</button>
+                    ` : ''}
+                </div>
+            </div>
+            <div class="blog-card-content">
+                ${contentHtml}
+            </div>
+            <div class="blog-card-footer">
+                ${category ? `<span class="blog-category">📁 ${category}</span>` : ''}
+                ${tagArray.length > 0 ? `
+                    <div class="blog-tags">
+                        ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
+                    </div>
+                ` : ''}
+            </div>
         </div>
     `
 
@@ -539,22 +564,14 @@ function bindBlogEvents() {
             e.stopPropagation()
             const id = this.getAttribute('data-id')
             const card = this.closest('.blog-card')
-            const summary = card.querySelector('.blog-card-summary')
-            const fullContent = card.querySelector('.blog-card-full-content')
-            const readMoreBtn = this
             
-            if (!summary || !fullContent) return
-            
-            if (fullContent.style.display === 'none' || fullContent.style.display === '') {
-                // 显示完整内容
-                summary.style.display = 'none'
-                fullContent.style.display = 'block'
-                readMoreBtn.textContent = '收起 ↑'
+            // 切换预览和完整内容
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded')
+                this.textContent = '阅读全文»'
             } else {
-                // 收起内容
-                summary.style.display = 'block'
-                fullContent.style.display = 'none'
-                readMoreBtn.textContent = '阅读全文 →'
+                card.classList.add('expanded')
+                this.textContent = '收起'
             }
         })
     })

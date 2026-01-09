@@ -275,7 +275,7 @@ body>* {
 header {
     position: relative;
     width: 100%;
-    min-height: 70px;
+    min-height: 50px;
     background: var(--bg-gradient);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 100;
@@ -286,7 +286,7 @@ header {
 
 @media (max-width: 768px) {
     header {
-        min-height: 60px;
+        min-height: 45px;
         padding: 0 10px;
     }
 }
@@ -345,8 +345,8 @@ header::after {
     align-items: center;
     justify-content: space-between;
     padding: 0 1rem;
-    height: 70px;
-    gap: 20px;
+    height: 50px;
+    gap: 15px;
 }
 
 .header-nav {
@@ -382,11 +382,11 @@ header::after {
 
 header .title {
     flex: 0 0 auto;
-    font-size: 26px;
+    font-size: 20px;
     font-weight: 700;
     color: white;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 header .controls {
@@ -1536,7 +1536,7 @@ body {
 
 /* 第一象限：重要且紧急 */
 .quadrant-1 {
-    border-top: 5px solid #ff6b6b;
+    border-top: 2px solid #ff6b6b;
 }
 
 .quadrant-1 .quadrant-header {
@@ -2337,17 +2337,32 @@ div.avatar img {
 
 .blog-card {
     background: #ffffff;
-    padding: 12px 15px;
-    margin-bottom: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     transition: all 0.2s;
     border: 1px solid #e8e8e3;
-    border-left: 3px solid #d4a574;
     position: relative;
     overflow: hidden;
     width: 100%;
     box-sizing: border-box;
+}
+
+.blog-card-preview {
+    display: block;
+}
+
+.blog-card-full {
+    display: none;
+}
+
+.blog-card.expanded .blog-card-preview {
+    display: none;
+}
+
+.blog-card.expanded .blog-card-full {
+    display: block;
 }
 
 @media (max-width: 768px) {
@@ -2563,25 +2578,21 @@ div.avatar img {
 }
 
 .blog-read-more {
-    padding: 6px 12px;
-    background: var(--bg-gradient);
+    padding: 4px 12px;
+    background: #666;
     color: white;
-    border: none;
-    border-radius: 8px;
+    border: 1px solid #555;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 400;
     transition: all 0.2s;
-    margin-left: auto;
-    box-shadow: 0 2px 6px rgba(74, 144, 226, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .blog-read-more:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(74, 144, 226, 0.3);
+    background: #555;
+    border-color: #444;
 }
 
 .blog-category {
