@@ -171,24 +171,30 @@ body::after {
     animation: lineMove 30s linear infinite;
 }
 
-/* 迪士尼城堡 - 使用单独的容器确保可见 */
+/* 迪士尼城堡 - 真实的灰姑娘城堡设计，包含迪士尼角色 */
 .disney-castle {
     position: fixed;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 800px;
-    max-width: 90vw;
-    height: 500px;
-    max-height: 50vh;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Cdefs%3E%3ClinearGradient id='castleGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FFB6C1;stop-opacity:0.6'/%3E%3Cstop offset='100%25' style='stop-color:%23FFC0CB;stop-opacity:0.5'/%3E%3C/linearGradient%3E%3ClinearGradient id='goldGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FFD700;stop-opacity:0.7'/%3E%3Cstop offset='100%25' style='stop-color:%23FFA500;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3C/defs%3E%3C!-- 云朵 --%3E%3Cellipse cx='120' cy='100' rx='100' ry='45' fill='rgba(255,255,255,0.7)'/%3E%3Cellipse cx='680' cy='90' rx='110' ry='50' fill='rgba(255,255,255,0.7)'/%3E%3Cellipse cx='400' cy='60' rx='90' ry='40' fill='rgba(255,255,255,0.6)'/%3E%3C!-- 左侧小塔楼 --%3E%3Cpath d='M 180 320 L 200 260 L 220 240 L 240 260 L 260 320 L 260 450 L 180 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.7)' stroke-width='2.5'/%3E%3C!-- 左侧中塔楼 --%3E%3Cpath d='M 240 300 L 260 240 L 280 220 L 300 240 L 320 300 L 320 450 L 240 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.7)' stroke-width='2.5'/%3E%3C!-- 主城堡中心 --%3E%3Cpath d='M 300 280 L 330 200 L 360 170 L 390 200 L 420 280 L 420 450 L 300 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.8)' stroke-width='3.5'/%3E%3C!-- 右侧中塔楼 --%3E%3Cpath d='M 420 300 L 440 240 L 460 220 L 480 240 L 500 300 L 500 450 L 420 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.7)' stroke-width='2.5'/%3E%3C!-- 右侧小塔楼 --%3E%3Cpath d='M 500 320 L 520 260 L 540 240 L 560 260 L 580 320 L 580 450 L 500 450 Z' fill='url(%23castleGrad)' stroke='rgba(255,182,193,0.7)' stroke-width='2.5'/%3E%3C!-- 主塔金色尖顶 --%3E%3Cpath d='M 360 170 L 375 120 L 390 170' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.9)' stroke-width='2.5'/%3E%3Ccircle cx='375' cy='120' r='14' fill='rgba(255,215,0,0.8)'/%3E%3C!-- 左侧塔尖 --%3E%3Cpath d='M 280 220 L 290 180 L 300 220' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.8)' stroke-width='2.5'/%3E%3Ccircle cx='290' cy='180' r='10' fill='rgba(255,215,0,0.7)'/%3E%3Cpath d='M 200 240 L 210 200 L 220 240' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.8)' stroke-width='2.5'/%3E%3Ccircle cx='210' cy='200' r='10' fill='rgba(255,215,0,0.7)'/%3E%3C!-- 右侧塔尖 --%3E%3Cpath d='M 460 220 L 470 180 L 480 220' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.8)' stroke-width='2.5'/%3E%3Ccircle cx='470' cy='180' r='10' fill='rgba(255,215,0,0.7)'/%3E%3Cpath d='M 540 240 L 550 200 L 560 240' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.8)' stroke-width='2.5'/%3E%3Ccircle cx='550' cy='200' r='10' fill='rgba(255,215,0,0.7)'/%3E%3C!-- 城堡窗户（发光） --%3E%3Crect x='315' y='320' width='25' height='30' fill='rgba(255,255,0,0.6)' stroke='rgba(255,182,193,0.8)' stroke-width='2' rx='2'/%3E%3Crect x='365' y='320' width='25' height='30' fill='rgba(255,255,0,0.6)' stroke='rgba(255,182,193,0.8)' stroke-width='2' rx='2'/%3E%3Crect x='255' y='340' width='20' height='25' fill='rgba(255,255,0,0.5)' stroke='rgba(255,182,193,0.7)' stroke-width='1.5' rx='2'/%3E%3Crect x='485' y='340' width='20' height='25' fill='rgba(255,255,0,0.5)' stroke='rgba(255,182,193,0.7)' stroke-width='1.5' rx='2'/%3E%3C!-- 星星装饰 --%3E%3Cpath d='M 60 80 L 62 95 L 77 95 L 66 105 L 68 120 L 60 112 L 52 120 L 54 105 L 43 95 L 58 95 Z' fill='rgba(255,215,0,0.6)'/%3E%3Cpath d='M 740 120 L 741 130 L 751 130 L 743 136 L 744 146 L 740 140 L 736 146 L 737 136 L 729 130 L 739 130 Z' fill='rgba(255,215,0,0.6)'/%3E%3Cpath d='M 100 200 L 101 210 L 111 210 L 103 216 L 104 226 L 100 220 L 96 226 L 97 216 L 89 210 L 99 210 Z' fill='rgba(255,215,0,0.5)'/%3E%3Cpath d='M 700 180 L 701 190 L 711 190 L 703 196 L 704 206 L 700 200 L 696 206 L 697 196 L 689 190 L 699 190 Z' fill='rgba(255,215,0,0.5)'/%3E%3C!-- 魔法光效 --%3E%3Ccircle cx='375' cy='120' r='25' fill='rgba(255,215,0,0.2)'/%3E%3C/svg%3E");
+    width: min(1200px, 100vw);
+    height: min(700px, 60vh);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700'%3E%3Cdefs%3E%3ClinearGradient id='castleBlue' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23B0E0E6;stop-opacity:0.7'/%3E%3Cstop offset='100%25' style='stop-color:%23E6E6FA;stop-opacity:0.6'/%3E%3C/linearGradient%3E%3ClinearGradient id='castlePink' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FFB6C1;stop-opacity:0.6'/%3E%3Cstop offset='100%25' style='stop-color:%23FFC0CB;stop-opacity:0.5'/%3E%3C/linearGradient%3E%3ClinearGradient id='goldGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FFD700;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%23FFA500;stop-opacity:0.7'/%3E%3C/linearGradient%3E%3C/defs%3E%3C!-- 天空和云朵 --%3E%3Cellipse cx='150' cy='120' rx='120' ry='55' fill='rgba(255,255,255,0.8)'/%3E%3Cellipse cx='1050' cy='110' rx='130' ry='60' fill='rgba(255,255,255,0.8)'/%3E%3Cellipse cx='600' cy='80' rx='110' ry='50' fill='rgba(255,255,255,0.7)'/%3E%3C!-- 迪士尼城堡主体 - 灰姑娘城堡风格 --%3E%3C!-- 左侧外塔 --%3E%3Cpath d='M 200 450 L 220 380 L 240 350 L 260 380 L 280 450 L 280 650 L 200 650 Z' fill='url(%23castleBlue)' stroke='rgba(176,224,230,0.8)' stroke-width='3'/%3E%3C!-- 左侧中塔 --%3E%3Cpath d='M 280 420 L 300 340 L 320 300 L 340 340 L 360 420 L 360 650 L 280 650 Z' fill='url(%23castleBlue)' stroke='rgba(176,224,230,0.8)' stroke-width='3'/%3E%3C!-- 主城堡中心塔 --%3E%3Cpath d='M 400 380 L 440 260 L 480 200 L 520 260 L 560 380 L 560 650 L 400 650 Z' fill='url(%23castlePink)' stroke='rgba(255,182,193,0.9)' stroke-width='4'/%3E%3C!-- 右侧中塔 --%3E%3Cpath d='M 560 420 L 580 340 L 600 300 L 620 340 L 640 420 L 640 650 L 560 650 Z' fill='url(%23castleBlue)' stroke='rgba(176,224,230,0.8)' stroke-width='3'/%3E%3C!-- 右侧外塔 --%3E%3Cpath d='M 640 450 L 660 380 L 680 350 L 700 380 L 720 450 L 720 650 L 640 650 Z' fill='url(%23castleBlue)' stroke='rgba(176,224,230,0.8)' stroke-width='3'/%3E%3C!-- 主塔金色尖顶（灰姑娘城堡标志） --%3E%3Cpath d='M 480 200 L 500 120 L 520 200' fill='url(%23goldGrad)' stroke='rgba(255,215,0,1)' stroke-width='3'/%3E%3Ccircle cx='500' cy='120' r='18' fill='rgba(255,215,0,0.9)'/%3E%3C!-- 其他塔尖 --%3E%3Cpath d='M 320 300 L 330 240 L 340 300' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.9)' stroke-width='2.5'/%3E%3Ccircle cx='330' cy='240' r='12' fill='rgba(255,215,0,0.8)'/%3E%3Cpath d='M 240 350 L 250 280 L 260 350' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.9)' stroke-width='2.5'/%3E%3Ccircle cx='250' cy='280' r='12' fill='rgba(255,215,0,0.8)'/%3E%3Cpath d='M 600 300 L 610 240 L 620 300' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.9)' stroke-width='2.5'/%3E%3Ccircle cx='610' cy='240' r='12' fill='rgba(255,215,0,0.8)'/%3E%3Cpath d='M 680 350 L 690 280 L 700 350' fill='url(%23goldGrad)' stroke='rgba(255,215,0,0.9)' stroke-width='2.5'/%3E%3Ccircle cx='690' cy='280' r='12' fill='rgba(255,215,0,0.8)'/%3E%3C!-- 城堡窗户（发光） --%3E%3Crect x='420' y='420' width='30' height='40' fill='rgba(255,255,0,0.7)' stroke='rgba(255,182,193,0.9)' stroke-width='2' rx='3'/%3E%3Crect x='470' y='420' width='30' height='40' fill='rgba(255,255,0,0.7)' stroke='rgba(255,182,193,0.9)' stroke-width='2' rx='3'/%3E%3Crect x='520' y='420' width='30' height='40' fill='rgba(255,255,0,0.7)' stroke='rgba(255,182,193,0.9)' stroke-width='2' rx='3'/%3E%3C!-- 米老鼠（左侧） --%3E%3Ccircle cx='300' cy='550' r='35' fill='%23000'/%3E%3Ccircle cx='280' cy='540' r='25' fill='%23000'/%3E%3Ccircle cx='320' cy='540' r='25' fill='%23000'/%3E%3Ccircle cx='285' cy='535' r='8' fill='white'/%3E%3Ccircle cx='315' cy='535' r='8' fill='white'/%3E%3Ccircle cx='290' cy='545' r='6' fill='%23000'/%3E%3Ccircle cx='310' cy='545' r='6' fill='%23000'/%3E%3Cpath d='M 290 560 Q 300 570 310 560' stroke='%23000' stroke-width='3' fill='none'/%3E%3C!-- 米妮（右侧） --%3E%3Ccircle cx='900' cy='550' r='35' fill='%23000'/%3E%3Ccircle cx='880' cy='540' r='25' fill='%23000'/%3E%3Ccircle cx='920' cy='540' r='25' fill='%23000'/%3E%3Ccircle cx='885' cy='535' r='8' fill='white'/%3E%3Ccircle cx='915' cy='535' r='8' fill='white'/%3E%3Ccircle cx='890' cy='545' r='6' fill='%23000'/%3E%3Ccircle cx='910' cy='545' r='6' fill='%23000'/%3E%3Cpath d='M 890 560 Q 900 570 910 560' stroke='%23000' stroke-width='3' fill='none'/%3E%3Ccircle cx='900' cy='530' r='12' fill='%23FF1493'/%3E%3C!-- 唐老鸭（左侧前） --%3E%3Cellipse cx='250' cy='600' rx='30' ry='35' fill='%23FFD700'/%3E%3Cpath d='M 240 580 Q 250 570 260 580' stroke='%23FFD700' stroke-width='4' fill='none'/%3E%3Ccircle cx='245' cy='590' r='4' fill='%23000'/%3E%3Ccircle cx='255' cy='590' r='4' fill='%23000'/%3E%3C!-- 高飞（右侧前） --%3E%3Cellipse cx='950' cy='600' rx='28' ry='32' fill='%23FFA500'/%3E%3Ccircle cx='945' cy='590' r='5' fill='%23000'/%3E%3Ccircle cx='955' cy='590' r='5' fill='%23000'/%3E%3Cpath d='M 940 600 Q 950 610 960 600' stroke='%23000' stroke-width='3' fill='none'/%3E%3C!-- 七宝（前方） --%3E%3Ccircle cx='500' cy='620' r='20' fill='%23FF69B4'/%3E%3Ccircle cx='495' cy='615' r='4' fill='white'/%3E%3Ccircle cx='505' cy='615' r='4' fill='white'/%3E%3Ccircle cx='497' cy='617' r='2' fill='%23000'/%3E%3Ccircle cx='503' cy='617' r='2' fill='%23000'/%3E%3Cpath d='M 495 625 Q 500 630 505 625' stroke='%23000' stroke-width='2' fill='none'/%3E%3C!-- 星星装饰 --%3E%3Cpath d='M 80 100 L 82 115 L 97 115 L 86 125 L 88 140 L 80 132 L 72 140 L 74 125 L 63 115 L 78 115 Z' fill='rgba(255,215,0,0.7)'/%3E%3Cpath d='M 1120 130 L 1121 140 L 1131 140 L 1123 146 L 1124 156 L 1120 150 L 1116 156 L 1117 146 L 1109 140 L 1119 140 Z' fill='rgba(255,215,0,0.7)'/%3E%3Cpath d='M 150 250 L 151 260 L 161 260 L 153 266 L 154 276 L 150 270 L 146 276 L 147 266 L 139 260 L 149 260 Z' fill='rgba(255,215,0,0.6)'/%3E%3Cpath d='M 1050 200 L 1051 210 L 1061 210 L 1053 216 L 1054 226 L 1050 220 L 1046 226 L 1047 216 L 1039 210 L 1049 210 Z' fill='rgba(255,215,0,0.6)'/%3E%3C!-- 魔法光效 --%3E%3Ccircle cx='500' cy='120' r='30' fill='rgba(255,215,0,0.25)'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center bottom;
     pointer-events: none;
     z-index: 0;
     animation: castleFloat 25s ease-in-out infinite;
-    opacity: 0.75;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .disney-castle {
+        width: 100vw;
+        height: min(400px, 40vh);
+        opacity: 0.6;
+    }
 }
 
 @keyframes lineMove {
@@ -250,6 +256,14 @@ header {
     z-index: 100;
     border-bottom: 3px solid rgba(255, 255, 255, 0.4);
     overflow: hidden;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    header {
+        min-height: 60px;
+        padding: 0 10px;
+    }
 }
 
 header::before {
@@ -319,15 +333,29 @@ header .search-input {
     background: rgba(255, 255, 255, 0.9);
     font-size: 14px;
     width: 220px;
+    max-width: 100%;
     transition: all 0.3s;
     outline: none;
+    box-sizing: border-box;
 }
 
 header .search-input:focus {
     border-color: rgba(255, 255, 255, 0.8);
     background: white;
     width: 280px;
+    max-width: 100%;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+    header .search-input {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    header .search-input:focus {
+        width: 100%;
+    }
 }
 
 #login-btn, #logout-btn {
@@ -801,6 +829,33 @@ body {
     overflow-y: auto;
     position: relative;
     overflow: hidden;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+    .blog-sidebar-right {
+        width: 280px;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .blog-sidebar-right {
+        width: 100%;
+        max-width: 100%;
+        max-height: none;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-sidebar-right {
+        width: 100%;
+        padding: 15px;
+        border-radius: 20px;
+        margin-top: 15px;
+    }
 }
 
 .important-days-list {
@@ -1152,6 +1207,16 @@ body {
     border: 3px solid rgba(74, 144, 226, 0.2);
     position: relative;
     overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .add-todo-form {
+        padding: 20px 15px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+    }
 }
 
 .add-todo-form::before {
@@ -1260,6 +1325,21 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+    .quadrant-grid {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .quadrant-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
 
 .quadrant {
@@ -1634,12 +1714,31 @@ ul.nav li {
     text-align: center;
     border: 1px solid #f4f4f4;
     border-radius: 5px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    ul.nav li {
+        width: 33.33%;
+        font-size: 14px;
+    }
 }
 
 ul.nav li a {
     font-size: 20px;
     font-weight: 400;
     color: white;
+    display: block;
+    padding: 10px 5px;
+    word-break: break-word;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    ul.nav li a {
+        font-size: 14px;
+        padding: 8px 3px;
+    }
 }
 
 ul.nav li a:hover {
@@ -1654,6 +1753,13 @@ ul.nav li a:hover {
     resize: none;
     border: 1px solid #ccc;
     padding: 5px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .PostDiaryForm-Title {
+        font-size: 14px;
+    }
 }
 
 .PostDiaryForm-Content {
@@ -1661,6 +1767,14 @@ ul.nav li a:hover {
     word-wrap: break-word;
     resize: none;
     height: 345px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .PostDiaryForm-Content {
+        height: 250px;
+    }
 }
 
 div.avatar {
@@ -1674,6 +1788,15 @@ div.avatar img {
     height: 48px;
     border-radius: 6px;
     border: 1px solid #eee;
+    max-width: 100%;
+    height: auto;
+}
+
+@media (max-width: 768px) {
+    div.avatar img {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 
@@ -1720,6 +1843,23 @@ div.avatar img {
     gap: 30px;
     width: 100%;
     box-sizing: border-box;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 1400px) {
+    .blog-container {
+        gap: 20px;
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-container {
+        flex-direction: column;
+        margin: 20px auto;
+        padding: 0 15px;
+        gap: 20px;
+    }
 }
 
 .blog-sidebar {
@@ -1728,6 +1868,28 @@ div.avatar img {
     display: flex;
     flex-direction: column;
     gap: 25px;
+    min-width: 0;
+}
+
+@media (max-width: 1400px) {
+    .blog-sidebar {
+        width: 280px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .blog-sidebar {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-sidebar {
+        width: 100%;
+        padding: 15px;
+        gap: 15px;
+    }
 }
 
 .blog-main {
@@ -1735,6 +1897,21 @@ div.avatar img {
     min-width: 0;
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+    .blog-main {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-main {
+        width: 100%;
+        padding: 0;
+    }
 }
 
 .btn-new-blog {
@@ -1753,6 +1930,15 @@ div.avatar img {
     position: relative;
     overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.4);
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .btn-new-blog {
+        padding: 14px 20px;
+        font-size: 15px;
+        border-radius: 20px;
+    }
 }
 
 .btn-new-blog::before {
@@ -2004,6 +2190,16 @@ div.avatar img {
     border: 3px solid rgba(74, 144, 226, 0.2);
     position: relative;
     overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .blog-card {
+        padding: 25px 20px;
+        margin-bottom: 25px;
+        border-radius: 20px;
+    }
 }
 
 .blog-card::after {
@@ -2057,6 +2253,15 @@ div.avatar img {
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .blog-card-header {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
 
 .blog-card-header h3 {
@@ -2083,6 +2288,14 @@ div.avatar img {
     align-items: center;
     gap: 15px;
     flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .blog-card-meta {
+        width: 100%;
+        gap: 10px;
+    }
 }
 
 .blog-time {
@@ -2240,6 +2453,16 @@ div.avatar img {
     margin-top: 20px;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .blog-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
 }
 
 .blog-read-more {
@@ -2559,6 +2782,15 @@ img {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     position: relative;
     transition: all 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .diary-entry {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
 }
 
 .diary-entry:hover {
