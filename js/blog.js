@@ -996,21 +996,19 @@ if (document.readyState === 'loading') {
         setupBlogEventListeners();
         setTimeout(initBlogMarkdownEditor, 100);
         load();
-        loadAuthorInfo();
-        
-        // 绑定编辑按钮
-        document.querySelector('#edit-author-btn')?.addEventListener('click', () => {
-            if (typeof requireLogin === 'function' && !requireLogin()) return
-            showEditAuthorModal()
-        })
         
         // 绑定添加便签按钮
         const newNoteBtn = document.querySelector('#new-note')
         if (newNoteBtn) {
-            newNoteBtn.addEventListener('click', () => {
+            newNoteBtn.addEventListener('click', function(e) {
+                e.preventDefault()
+                e.stopPropagation()
+                console.log('点击添加便签按钮')
                 if (typeof requireLogin === 'function' && !requireLogin()) return
                 showAddNoteModal()
             })
+        } else {
+            console.error('new-note按钮未找到')
         }
         
         // 加载便签

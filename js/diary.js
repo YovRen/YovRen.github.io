@@ -473,32 +473,35 @@ function renderCarousel() {
     const carouselWrapper = document.querySelector('#carousel-wrapper')
     if (!carouselWrapper || carouselImages.length === 0) return
     
-    // 上下叠加的扑克牌样式（像蜘蛛纸牌）
+    // 真正的蜘蛛纸牌堆叠效果：所有图片完全重叠，只有顶部露出一点
     carouselWrapper.innerHTML = `
-        <div class="carousel-stack" style="position: relative; width: 100%; height: 300px; overflow: visible; cursor: grab;">
+        <div class="carousel-stack" style="position: relative; width: 100%; height: 300px; overflow: hidden; cursor: grab;">
             ${carouselImages.map((img, index) => {
                 const zIndex = carouselImages.length - index
-                const offsetY = index * 20 // 每张图片向下偏移20px，更明显的堆叠效果
-                const offsetX = index * 8 // 每张图片向右偏移8px，形成明显的扑克牌效果
+                // 每张图片只露出顶部30px，形成堆叠效果
+                const visibleTop = 30
+                const topOffset = index * visibleTop
                 return `
                     <div class="carousel-card" 
                          data-index="${index}"
+                         data-top="${topOffset}"
                          style="position: absolute; 
-                                top: ${offsetY}px; 
-                                left: ${offsetX}px;
-                                right: ${offsetX}px;
-                                width: calc(100% - ${offsetX * 2}px);
-                                height: calc(100% - ${offsetY}px);
+                                top: ${topOffset}px; 
+                                left: 0;
+                                right: 0;
+                                width: 100%;
+                                height: 100%;
                                 z-index: ${zIndex};
                                 border-radius: 8px;
                                 overflow: hidden;
-                                cursor: ${img.link ? 'pointer' : 'grab'};
-                                transition: transform 0.3s, top 0.3s, left 0.3s;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1);
+                                cursor: grab;
+                                transition: transform 0.3s ease-out;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                                 border: 1px solid rgba(0,0,0,0.1);
                                 user-select: none;
                                 touch-action: pan-y;
-                                background: white;">
+                                background: white;
+                                transform: translateY(0);">
                         <img src="${img.url}" alt="${img.title || ''}" style="width: 100%; height: 100%; object-fit: contain; background: #f5f5f5; display: block; pointer-events: none;">
                         ${img.title ? `<div class="carousel-item-title" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); color: white; padding: 8px; font-size: 11px;">${img.title}</div>` : ''}
                         ${canEdit() ? `<button class="carousel-delete-btn" data-id="${img.id}" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">×</button>` : ''}
@@ -539,83 +542,62 @@ function renderCarousel() {
             })
         }
         
-        // 拖拽滑动功能
+        // 拖拽滑动功能（蜘蛛纸牌效果）
         let startY = 0
         let currentY = 0
         let isDragging = false
+        let dragCard = null
         
         item.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('carousel-delete-btn')) return
+            // 只允许拖拽最上面的卡片
+            if (parseInt(item.dataset.index) !== 0) return
+            
             isDragging = true
             carouselIsDragging = true
+            dragCard = item
             startY = e.clientY
             item.style.cursor = 'grabbing'
             item.style.transition = 'none'
+            item.style.zIndex = 10000
         })
         
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return
+        const handleMouseMove = (e) => {
+            if (!isDragging || !dragCard) return
             currentY = e.clientY - startY
-            const maxOffset = 200
-            const clampedY = Math.max(-maxOffset, Math.min(maxOffset, currentY))
-            item.style.transform = `translateY(${clampedY}px)`
-        })
+            // 允许向上拖拽（显示下一张）或向下拖拽（回弹）
+            const maxOffset = 300
+            const clampedY = Math.max(-maxOffset, Math.min(50, currentY))
+            dragCard.style.transform = `translateY(${clampedY}px)`
+        }
         
-        document.addEventListener('mouseup', () => {
-            if (isDragging) {
-                isDragging = false
-                carouselIsDragging = false
-                item.style.cursor = img.link ? 'pointer' : 'grab'
-                item.style.transition = 'transform 0.3s, top 0.3s'
-                
-                // 如果拖拽超过阈值，切换到下一张
-                if (Math.abs(currentY) > 50) {
-                    if (currentY > 0) {
-                        // 向下拖拽，显示下一张
-                        const nextIndex = (index + 1) % carouselImages.length
-                        const nextCard = carouselWrapper.querySelector(`.carousel-card[data-index="${nextIndex}"]`)
-                        if (nextCard) {
-                            nextCard.style.zIndex = 1000
-                            nextCard.style.top = '0px'
-                        }
-                    } else {
-                        // 向上拖拽，显示上一张
-                        const prevIndex = (index - 1 + carouselImages.length) % carouselImages.length
-                        const prevCard = carouselWrapper.querySelector(`.carousel-card[data-index="${prevIndex}"]`)
-                        if (prevCard) {
-                            prevCard.style.zIndex = 1000
-                            prevCard.style.top = '0px'
-                        }
-                    }
-                    
-                    setTimeout(() => {
-                        renderCarousel()
-                    }, 300)
-                } else {
-                    // 回弹
-                    item.style.transform = ''
-                }
-                currentY = 0
+        const handleMouseUp = () => {
+            if (!isDragging || !dragCard) return
+            isDragging = false
+            carouselIsDragging = false
+            dragCard.style.cursor = 'grab'
+            dragCard.style.transition = 'transform 0.3s ease-out'
+            
+            // 如果向上拖拽超过阈值，切换到下一张
+            if (currentY < -80) {
+                // 向上拖拽，将第一张移到最后
+                dragCard.style.transform = 'translateY(-100%)'
+                setTimeout(() => {
+                    carouselImages.push(carouselImages.shift())
+                    renderCarousel()
+                }, 300)
+            } else {
+                // 回弹
+                dragCard.style.transform = 'translateY(0)'
             }
-        })
+            currentY = 0
+            dragCard = null
+        }
         
-        // Hover效果：将当前图片提到最前（像扑克牌一样）
-        item.addEventListener('mouseenter', () => {
-            if (!isDragging) {
-                item.style.zIndex = 1000
-                item.style.transform = 'translateY(-8px) translateX(-2px) scale(1.02)'
-                item.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25), 0 0 4px rgba(0,0,0,0.15)'
-            }
-        })
+        document.addEventListener('mousemove', handleMouseMove)
+        document.addEventListener('mouseup', handleMouseUp)
         
-        item.addEventListener('mouseleave', () => {
-            if (!isDragging) {
-                const originalIndex = parseInt(item.dataset.index)
-                item.style.zIndex = carouselImages.length - originalIndex
-                item.style.transform = ''
-                item.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1)'
-            }
-        })
+        // 移除hover效果，保持堆叠状态
     })
     
     // 速度控制

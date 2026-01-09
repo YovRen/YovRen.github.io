@@ -801,6 +801,7 @@ async function loadHistory() {
             return new Date(b) - new Date(a)
         })
 
+        // 将内容放到白框内（blog-stats样式）
         historyList.innerHTML = sortedDates.map(date => {
             const todos = groupedByDate[date]
             const dateStr = date === '未知日期' ? date : formatDate(date)
