@@ -1637,6 +1637,12 @@ body {
     font-size: 12px;
     max-width: 100%;
     box-sizing: border-box;
+    width: 100%;
+}
+
+.quadrant-content {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .todo-content {

@@ -473,29 +473,31 @@ function renderCarousel() {
     const carouselWrapper = document.querySelector('#carousel-wrapper')
     if (!carouselWrapper || carouselImages.length === 0) return
     
-    // 真正的蜘蛛纸牌堆叠效果：所有图片完全重叠，只有顶部露出一点
+    // 真正的蜘蛛纸牌堆叠效果：底层图片的底部比上一层图片的底部低固定像素
+    const stackHeight = 300
+    const bottomOffset = 25 // 每层底部比上一层低25px
     carouselWrapper.innerHTML = `
-        <div class="carousel-stack" style="position: relative; width: 100%; height: 300px; overflow: hidden; cursor: grab;">
+        <div class="carousel-stack" style="position: relative; width: 100%; height: ${stackHeight + (carouselImages.length - 1) * bottomOffset}px; overflow: hidden; cursor: grab;">
             ${carouselImages.map((img, index) => {
                 const zIndex = carouselImages.length - index
-                // 每张图片只露出顶部30px，形成堆叠效果
-                const visibleTop = 30
-                const topOffset = index * visibleTop
+                // 计算每张图片的位置：底层图片的底部比上一层低bottomOffset像素
+                // 第一张图片在顶部，第二张图片的底部比第一张低bottomOffset，以此类推
+                const topPosition = index * bottomOffset
+                const cardHeight = stackHeight
                 return `
                     <div class="carousel-card" 
                          data-index="${index}"
-                         data-top="${topOffset}"
                          style="position: absolute; 
-                                top: ${topOffset}px; 
+                                top: ${topPosition}px; 
                                 left: 0;
                                 right: 0;
                                 width: 100%;
-                                height: 100%;
+                                height: ${cardHeight}px;
                                 z-index: ${zIndex};
                                 border-radius: 8px;
                                 overflow: hidden;
                                 cursor: grab;
-                                transition: transform 0.3s ease-out;
+                                transition: transform 0.3s ease-out, top 0.3s ease-out;
                                 box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                                 border: 1px solid rgba(0,0,0,0.1);
                                 user-select: none;

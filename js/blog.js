@@ -997,19 +997,26 @@ if (document.readyState === 'loading') {
         setTimeout(initBlogMarkdownEditor, 100);
         load();
         
-        // 绑定添加便签按钮
-        const newNoteBtn = document.querySelector('#new-note')
-        if (newNoteBtn) {
-            newNoteBtn.addEventListener('click', function(e) {
-                e.preventDefault()
-                e.stopPropagation()
-                console.log('点击添加便签按钮')
-                if (typeof requireLogin === 'function' && !requireLogin()) return
-                showAddNoteModal()
-            })
-        } else {
-            console.error('new-note按钮未找到')
-        }
+        // 绑定添加便签按钮（使用事件委托，确保按钮存在）
+        setTimeout(() => {
+            const newNoteBtn = document.querySelector('#new-note')
+            if (newNoteBtn) {
+                // 移除旧的事件监听器
+                const newBtn = newNoteBtn.cloneNode(true)
+                newNoteBtn.parentNode.replaceChild(newBtn, newNoteBtn)
+                
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    console.log('点击添加便签按钮')
+                    if (typeof requireLogin === 'function' && !requireLogin()) return
+                    showAddNoteModal()
+                })
+                console.log('便签按钮事件已绑定')
+            } else {
+                console.error('new-note按钮未找到')
+            }
+        }, 100)
         
         // 加载便签
         loadNotes()
