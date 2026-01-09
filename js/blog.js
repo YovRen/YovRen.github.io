@@ -482,7 +482,7 @@ function createBlogCard(blog) {
                 <button class="blog-read-more" data-id="${blogId}">阅读全文»</button>
             </div>
         </div>
-        <div class="blog-card-full" style="display: none;">
+        <div class="blog-card-full">
             <div class="blog-card-header">
                 <div class="blog-header-left">
                     <span class="blog-title">${title || '无标题'}</span>
@@ -506,6 +506,7 @@ function createBlogCard(blog) {
                         ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
                     </div>
                 ` : ''}
+                <button class="blog-read-more" data-id="${blogId}">收起</button>
             </div>
         </div>
     `
