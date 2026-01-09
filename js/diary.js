@@ -210,13 +210,7 @@ async function getData() {
     const currentUser = AV.User.current()
     
     if (!currentUser) {
-        // 未登录时只显示公开的日记（如果有公开字段的话）
-        const queryAll = new AV.Query('journal');
-        await queryAll.find().then((rows) => {
-            for (let row of rows) {
-                data.push(row);
-            }
-        });
+        // 未登录时不显示任何日记，需要登录才能查看
         return data
     }
     
