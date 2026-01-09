@@ -658,24 +658,27 @@ body {
 
 /* 历史记录侧边栏 */
 .history-sidebar {
-    width: 280px;
+    width: 320px;
     flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 8px 30px rgba(74, 144, 226, 0.12), 0 0 20px rgba(118, 75, 162, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 3px solid rgba(74, 144, 226, 0.2);
     max-height: calc(100vh - 140px);
     overflow-y: auto;
     transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.history-sidebar.collapsed {
-    width: 60px;
-    padding: 20px 10px;
+.blog-sidebar.collapsed {
+    width: 80px;
+    padding: 25px 15px;
 }
 
-.history-sidebar.collapsed .history-header h3,
-.history-sidebar.collapsed .history-list {
+.blog-sidebar.collapsed .blog-navigation,
+.blog-sidebar.collapsed .history-list {
     display: none;
 }
 
@@ -683,30 +686,39 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--primary);
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(90deg, var(--primary), var(--primary-light), transparent) 1;
 }
 
 .history-header h3 {
     margin: 0;
     font-size: 18px;
-    color: var(--primary);
+    font-weight: 700;
+    background: var(--bg-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .toggle-btn {
-    background: var(--primary);
+    background: var(--bg-gradient);
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 6px;
+    padding: 8px 16px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 12px;
-    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .toggle-btn:hover {
-    background: #dda0dd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
 }
 
 .history-list {
@@ -745,16 +757,21 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
-    background: #f8f9fa;
-    border-radius: 6px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.08), rgba(118, 75, 162, 0.05));
+    border-radius: 15px;
     font-size: 13px;
-    transition: all 0.2s;
+    transition: all 0.3s;
+    border: 2px solid rgba(74, 144, 226, 0.1);
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px rgba(74, 144, 226, 0.08);
 }
 
 .history-todo-item:hover {
-    background: #e9ecef;
-    transform: translateX(3px);
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.15), rgba(118, 75, 162, 0.1));
+    transform: translateX(8px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+    border-color: rgba(74, 144, 226, 0.3);
 }
 
 .history-todo-title {
@@ -777,31 +794,48 @@ body {
 .quadrant-container {
     flex: 1;
     min-width: 0;
+    width: 100%;
 }
 
 .add-todo-form {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+    border-radius: 25px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 30px rgba(74, 144, 226, 0.12), 0 0 20px rgba(118, 75, 162, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 3px solid rgba(74, 144, 226, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.add-todo-form::before {
+    content: '📝';
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    opacity: 0.2;
+    animation: floatIcon 3s ease-in-out infinite;
 }
 
 .todo-input {
     width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
+    padding: 16px 20px;
+    border: 3px solid rgba(74, 144, 226, 0.2);
+    border-radius: 20px;
     font-size: 16px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     transition: all 0.3s;
     box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.08);
 }
 
 .todo-input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(221, 160, 221, 0.1);
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15), 0 4px 12px rgba(74, 144, 226, 0.2);
+    transform: translateY(-2px);
 }
 
 .todo-form-options {
@@ -825,76 +859,130 @@ body {
 
 .option-group select,
 .option-group input[type="date"] {
-    padding: 6px 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border: 2px solid rgba(74, 144, 226, 0.2);
+    border-radius: 12px;
     font-size: 14px;
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s;
+    box-shadow: 0 2px 6px rgba(74, 144, 226, 0.08);
+}
+
+.option-group select:focus,
+.option-group input[type="date"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+    transform: translateY(-1px);
 }
 
 .btn-add {
-    padding: 8px 20px;
-    background: var(--primary);
+    padding: 12px 28px;
+    background: var(--bg-gradient);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s;
     margin-left: auto;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3), 0 0 10px rgba(118, 75, 162, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-add::before {
+    content: '✨';
+    position: absolute;
+    left: -20px;
+    transition: left 0.3s;
 }
 
 .btn-add:hover {
-    background: #dda0dd;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4), 0 0 15px rgba(118, 75, 162, 0.3);
+}
+
+.btn-add:hover::before {
+    left: 15px;
 }
 
 /* 四象限网格 */
 .quadrant-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 30px;
 }
 
 .quadrant {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    min-height: 300px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(74, 144, 226, 0.12), 0 0 20px rgba(118, 75, 162, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 3px solid rgba(74, 144, 226, 0.2);
+    min-height: 350px;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.quadrant::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--bg-gradient);
+    transform: scaleY(0);
+    transition: transform 0.4s;
+    border-radius: 25px 0 0 25px;
+}
+
+.quadrant:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(74, 144, 226, 0.18), 0 0 25px rgba(118, 75, 162, 0.12);
+}
+
+.quadrant:hover::before {
+    transform: scaleY(1);
 }
 
 .quadrant-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid;
+    position: relative;
 }
 
 .quadrant-header h3 {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .quadrant-count {
-    background: var(--primary);
+    background: var(--bg-gradient);
     color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
+    padding: 6px 16px;
+    border-radius: 20px;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 /* 第一象限：重要且紧急 */
 .quadrant-1 {
-    border-top: 4px solid #ff6b6b;
+    border-top: 5px solid #ff6b6b;
 }
 
 .quadrant-1 .quadrant-header {
@@ -903,15 +991,19 @@ body {
 
 .quadrant-1 .quadrant-header h3 {
     color: #ff6b6b;
+    background: linear-gradient(135deg, #ff6b6b, #ff8787);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .quadrant-1 .quadrant-count {
-    background: #ff6b6b;
+    background: linear-gradient(135deg, #ff6b6b, #ff8787);
 }
 
 /* 第二象限：重要但不紧急 */
 .quadrant-2 {
-    border-top: 4px solid #51cf66;
+    border-top: 5px solid #51cf66;
 }
 
 .quadrant-2 .quadrant-header {
@@ -920,15 +1012,19 @@ body {
 
 .quadrant-2 .quadrant-header h3 {
     color: #51cf66;
+    background: linear-gradient(135deg, #51cf66, #69db7c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .quadrant-2 .quadrant-count {
-    background: #51cf66;
+    background: linear-gradient(135deg, #51cf66, #69db7c);
 }
 
 /* 第三象限：紧急但不重要 */
 .quadrant-3 {
-    border-top: 4px solid #ffa500;
+    border-top: 5px solid #ffa500;
 }
 
 .quadrant-3 .quadrant-header {
@@ -937,15 +1033,19 @@ body {
 
 .quadrant-3 .quadrant-header h3 {
     color: #ffa500;
+    background: linear-gradient(135deg, #ffa500, #ffb84d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .quadrant-3 .quadrant-count {
-    background: #ffa500;
+    background: linear-gradient(135deg, #ffa500, #ffb84d);
 }
 
 /* 第四象限：不重要也不紧急 */
 .quadrant-4 {
-    border-top: 4px solid #868e96;
+    border-top: 5px solid #868e96;
 }
 
 .quadrant-4 .quadrant-header {
@@ -954,10 +1054,14 @@ body {
 
 .quadrant-4 .quadrant-header h3 {
     color: #868e96;
+    background: linear-gradient(135deg, #868e96, #adb5bd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .quadrant-4 .quadrant-count {
-    background: #868e96;
+    background: linear-gradient(135deg, #868e96, #adb5bd);
 }
 
 .quadrant-content {
@@ -972,42 +1076,81 @@ body {
 .empty-quadrant {
     text-align: center;
     color: var(--muted);
-    padding: 40px 20px;
-    font-size: 14px;
+    padding: 60px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0.6;
 }
 
 /* 待办事项项 */
 .todo-item {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 12px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 3px solid transparent;
-    transition: all 0.2s;
+    gap: 15px;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+    border-radius: 18px;
+    border-left: 4px solid transparent;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.08);
+    border: 2px solid rgba(74, 144, 226, 0.1);
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.todo-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    transform: scaleY(0);
+    transition: transform 0.3s;
 }
 
 .todo-item:hover {
-    background: #e9ecef;
-    transform: translateX(3px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.95) 100%);
+    transform: translateX(8px) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.15), 0 0 10px rgba(118, 75, 162, 0.1);
+    border-color: rgba(74, 144, 226, 0.3);
+}
+
+.todo-item:hover::before {
+    transform: scaleY(1);
 }
 
 .quadrant-1 .todo-item {
     border-left-color: #ff6b6b;
 }
 
+.quadrant-1 .todo-item::before {
+    background: linear-gradient(180deg, #ff6b6b, #ff8787);
+}
+
 .quadrant-2 .todo-item {
     border-left-color: #51cf66;
+}
+
+.quadrant-2 .todo-item::before {
+    background: linear-gradient(180deg, #51cf66, #69db7c);
 }
 
 .quadrant-3 .todo-item {
     border-left-color: #ffa500;
 }
 
+.quadrant-3 .todo-item::before {
+    background: linear-gradient(180deg, #ffa500, #ffb84d);
+}
+
 .quadrant-4 .todo-item {
     border-left-color: #868e96;
+}
+
+.quadrant-4 .todo-item::before {
+    background: linear-gradient(180deg, #868e96, #adb5bd);
 }
 
 .todo-checkbox {

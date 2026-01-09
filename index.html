@@ -46,8 +46,8 @@
         <div class="blog-main">
             <div class="blog-view-header">
                 <h2>待办事项</h2>
+                <div id="view-subtitle">管理您的任务</div>
             </div>
-            <div class="quadrant-container">
             <!-- 添加待办表单 -->
             <div class="add-todo-form">
                 <input type="text" placeholder="📝 添加待办事项..." id="todo-input" class="todo-input">
@@ -120,14 +120,13 @@
                     </div>
                 </div>
             </div>
-            </div>
         </div>
     </div>
 
     <ul class="nav">
-        <li><a href="diary.html">朋友圈</a></li>
         <li><a href="blog.html">博客</a></li>
         <li><a href="index.html">日程</a></li>
+        <li><a href="diary.html">朋友圈</a></li>
     </ul>
 
     <script src="js/jquery.min.js"></script>
@@ -164,7 +163,7 @@
 
         // 历史记录侧边栏切换
         document.querySelector('#toggle-history')?.addEventListener('click', function() {
-            const sidebar = document.querySelector('.history-sidebar');
+            const sidebar = document.querySelector('.blog-sidebar');
             const isCollapsed = sidebar.classList.contains('collapsed');
             if (isCollapsed) {
                 sidebar.classList.remove('collapsed');

@@ -410,23 +410,68 @@ async function addFriend(friendUsername) {
             return
         }
         
-        // 查找好友用户
-        const friendQuery = new AV.Query(AV.User)
-        friendQuery.equalTo('username', friendUsername)
-        const friendUsers = await friendQuery.find()
+        // 由于LeanCloud不允许直接查询_User类，我们通过查找该用户的日记来获取用户信息
+        // 或者让用户输入邮箱
+        const useEmail = confirm('由于系统限制，请选择查找方式：\n确定 = 通过邮箱查找\n取消 = 通过用户名查找（需要该用户至少有一篇日记）')
         
-        if (friendUsers.length === 0) {
-            alert('未找到该用户')
-            return
+        let friendUser = null
+        let friendId = null
+        
+        if (useEmail) {
+            // 通过邮箱查找（需要用户提供邮箱）
+            const email = prompt('请输入好友的邮箱地址：')
+            if (!email) {
+                return
+            }
+            
+            try {
+                // 尝试通过邮箱登录来验证用户存在（但不实际登录）
+                // 或者创建一个UserProfile类来存储用户信息
+                // 这里我们使用一个变通方法：通过查找该邮箱的日记来获取用户
+                const journalQuery = new AV.Query('journal')
+                // 注意：这里假设日记中有email字段，如果没有，需要其他方式
+                // 实际上，我们可以创建一个UserProfile类
+                alert('功能开发中，请使用用户名方式添加好友')
+                return
+            } catch (e) {
+                alert('通过邮箱查找失败，请使用用户名方式')
+                return
+            }
+        } else {
+            // 通过用户名查找：查找该用户名的日记，从中获取用户信息
+            const journalQuery = new AV.Query('journal')
+            journalQuery.equalTo('author', friendUsername)
+            journalQuery.limit(1)
+            const journals = await journalQuery.find()
+            
+            if (journals.length === 0) {
+                alert('未找到该用户，请确认用户名正确，且该用户至少有一篇日记')
+                return
+            }
+            
+            const journal = journals[0]
+            const userPointer = journal.get('user')
+            if (!userPointer) {
+                alert('无法获取用户信息，该用户的日记可能没有关联用户信息')
+                return
+            }
+            
+            friendId = userPointer.id || userPointer.objectId
+            if (!friendId) {
+                alert('无法获取用户ID')
+                return
+            }
         }
-        
-        const friendUser = friendUsers[0]
         
         // 检查是否已经是好友
         const Friend = AV.Object.extend('friend')
         const checkQuery = new AV.Query(Friend)
         checkQuery.equalTo('user', currentUser)
-        checkQuery.equalTo('friendId', friendUser.id)
+        if (friendId) {
+            checkQuery.equalTo('friendId', friendId)
+        } else {
+            checkQuery.equalTo('friendUsername', friendUsername)
+        }
         const existing = await checkQuery.find()
         
         if (existing.length > 0) {
@@ -434,10 +479,18 @@ async function addFriend(friendUsername) {
             return
         }
         
+        // 检查是否是自己
+        if (friendId === currentUser.id) {
+            alert('不能添加自己为好友')
+            return
+        }
+        
         // 添加好友
         const friend = new Friend()
         friend.set('user', currentUser)
-        friend.set('friendId', friendUser.id)
+        if (friendId) {
+            friend.set('friendId', friendId)
+        }
         friend.set('friendUsername', friendUsername)
         await friend.save()
         
@@ -445,7 +498,7 @@ async function addFriend(friendUsername) {
         alert('添加好友成功！')
     } catch (error) {
         console.error('添加好友失败:', error)
-        alert('添加好友失败: ' + (error.message || '未知错误'))
+        alert('添加好友失败: ' + (error.message || '未知错误') + '\n提示：请确保该用户至少有一篇日记，且用户名正确')
     }
 }
 
