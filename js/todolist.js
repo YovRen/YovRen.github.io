@@ -146,11 +146,20 @@ async function saveData(data) {
             todo.set('deadline', deadlineDate);
         }
         if (data.completedDate) {
-            // 将字符串日期转换为 Date 对象
-            const completedDateObj = typeof data.completedDate === 'string' 
-                ? new Date(data.completedDate) 
-                : data.completedDate;
-            todo.set('completedDate', completedDateObj);
+            // 确保保存为字符串格式
+            let dateStr;
+            if (typeof data.completedDate === 'string') {
+                dateStr = data.completedDate;
+            } else if (data.completedDate instanceof Date) {
+                const d = new Date(data.completedDate);
+                d.setHours(0, 0, 0, 0);
+                dateStr = d.getFullYear() + '-' + 
+                         String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+                         String(d.getDate()).padStart(2, '0');
+            } else {
+                dateStr = String(data.completedDate);
+            }
+            todo.set('completedDate', dateStr);
         }
         
         // 设置ACL为所有人可读写（如果需要权限控制，可以后续修改）
@@ -342,10 +351,13 @@ function bindEvents() {
                 const todo = AV.Object.createWithoutData('todolist', todoId)
                 todo.set('done', this.checked)
                 if (this.checked) {
-                    // 保存为 Date 对象
+                    // 保存为字符串格式 YYYY-MM-DD
                     const completedDate = new Date();
                     completedDate.setHours(0, 0, 0, 0);
-                    todo.set('completedDate', completedDate)
+                    const dateStr = completedDate.getFullYear() + '-' + 
+                                   String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                   String(completedDate.getDate()).padStart(2, '0');
+                    todo.set('completedDate', dateStr)
                     todoItem.classList.add('checked')
                 } else {
                     todo.set('completedDate', null)
@@ -393,10 +405,13 @@ function bindEvents() {
                 const todo = AV.Object.createWithoutData('todolist', todoId)
                 todo.set('archived', true)
                 todo.set('done', true)
-                // 保存为 Date 对象
+                // 保存为字符串格式 YYYY-MM-DD
                 const completedDate = new Date();
                 completedDate.setHours(0, 0, 0, 0);
-                todo.set('completedDate', completedDate)
+                const dateStr = completedDate.getFullYear() + '-' + 
+                               String(completedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                               String(completedDate.getDate()).padStart(2, '0');
+                todo.set('completedDate', dateStr)
                 await todo.save()
                 await load()
             } catch (error) {

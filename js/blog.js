@@ -1,15 +1,19 @@
 // AV.init 已在 HTML 中初始化，这里不再重复初始化
 // 直接使用 AV.Query 和 AV.User，不声明常量避免重复声明错误
 
-let blogTitle, blogContent, blogTags, blogSubmit, blogCancel, blogOverlay;
+let blogTitle, blogContent, blogTags, blogCategory, blogSubmit, blogCancel, blogOverlay;
 let newBlogBtn, blogList, searchInput, blogEditingId;
 let allBlogs = []
 let blogContentEditor = null
+let currentFilter = 'all'
+let currentCategory = null
+let currentArchive = null
 
 function initBlogElements() {
     blogTitle = document.querySelector("#blog-title")
     blogContent = document.querySelector("#blog-content")
     blogTags = document.querySelector("#blog-tags")
+    blogCategory = document.querySelector("#blog-category")
     blogSubmit = document.querySelector("#blog-submit")
     blogCancel = document.querySelector("#blog-cancel")
     blogOverlay = document.querySelector("#blog-overlay")
@@ -76,6 +80,7 @@ function setupBlogEventListeners() {
                 blogContent.value = ''
             }
             if (blogTags) blogTags.value = ''
+            if (blogCategory) blogCategory.value = ''
             // 重新初始化编辑器（如果还没初始化）
             if (!blogContentEditor && blogContent) {
                 setTimeout(() => {
@@ -94,6 +99,7 @@ function setupBlogEventListeners() {
             if (blogTitle) blogTitle.value = ''
             if (blogContent) blogContent.value = ''
             if (blogTags) blogTags.value = ''
+            if (blogCategory) blogCategory.value = ''
         })
     }
 
@@ -115,20 +121,67 @@ function setupBlogEventListeners() {
         searchInput.addEventListener("input", (e) => {
             const keyword = e.target.value.toLowerCase()
             if (keyword === '') {
-                renderBlogs(allBlogs)
+                if (currentFilter === 'category') {
+                    filterByCategory(currentCategory)
+                } else if (currentFilter === 'archive') {
+                    filterByArchive(currentArchive)
+                } else {
+                    showAll()
+                }
             } else {
-                const filtered = allBlogs.filter(blog => {
+                let baseBlogs = allBlogs
+                if (currentFilter === 'category' && currentCategory) {
+                    baseBlogs = allBlogs.filter(b => (b.attributes.category || '未分类') === currentCategory)
+                } else if (currentFilter === 'archive' && currentArchive) {
+                    const [year, month] = currentArchive.split('-')
+                    baseBlogs = allBlogs.filter(b => {
+                        const time = b.attributes.time || ''
+                        if (time) {
+                            const datePart = time.split(' ')[0]
+                            const [blogYear, blogMonth] = datePart.split('-')
+                            return blogYear === year && blogMonth === month
+                        }
+                        return false
+                    })
+                }
+                
+                const filtered = baseBlogs.filter(blog => {
                     const title = blog.attributes.title || ''
                     const content = blog.attributes.content || ''
                     const tags = blog.attributes.tags || ''
+                    const category = blog.attributes.category || ''
                     return title.toLowerCase().includes(keyword) ||
                         content.toLowerCase().includes(keyword) ||
-                        tags.toLowerCase().includes(keyword)
+                        tags.toLowerCase().includes(keyword) ||
+                        category.toLowerCase().includes(keyword)
                 })
                 renderBlogs(filtered)
+                updateViewTitle('搜索结果', `找到 ${filtered.length} 篇文章`)
             }
         })
     }
+    
+    // 导航按钮事件
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filter = btn.dataset.filter
+            if (filter === 'all') {
+                showAll()
+            } else if (filter === 'category') {
+                // 显示分类视图，但不筛选
+                currentFilter = 'category'
+                renderBlogs(allBlogs)
+                updateViewTitle('全部博客', `共 ${allBlogs.length} 篇文章`)
+                updateNavButtons('category')
+            } else if (filter === 'archive') {
+                // 显示归档视图，但不筛选
+                currentFilter = 'archive'
+                renderBlogs(allBlogs)
+                updateViewTitle('全部博客', `共 ${allBlogs.length} 篇文章`)
+                updateNavButtons('archive')
+            }
+        })
+    })
 
     // 提交表单
     if (blogSubmit) {
@@ -143,14 +196,16 @@ function setupBlogEventListeners() {
                     await updateBlog(blogEditingId.value, {
                         title: blogTitle ? blogTitle.value : '',
                         content: contentValue,
-                        tags: blogTags ? blogTags.value : ''
+                        tags: blogTags ? blogTags.value : '',
+                        category: blogCategory ? blogCategory.value : ''
                     })
                 } else {
                     // 新建模式
                     saveBlog({
                         title: blogTitle ? blogTitle.value : '',
                         content: contentValue,
-                        tags: blogTags ? blogTags.value : ''
+                        tags: blogTags ? blogTags.value : '',
+                        category: blogCategory ? blogCategory.value : ''
                     })
                 }
                 if (blogTitle) blogTitle.value = ''
@@ -160,6 +215,7 @@ function setupBlogEventListeners() {
                     blogContent.value = ''
                 }
                 if (blogTags) blogTags.value = ''
+                if (blogCategory) blogCategory.value = ''
                 if (blogEditingId) blogEditingId.value = ''
                 if (blogOverlay) blogOverlay.hidden = true
                 await load()
@@ -192,6 +248,7 @@ function saveBlog(data) {
     blog.set('title', data.title);
     blog.set('content', data.content);
     blog.set('tags', data.tags || '');
+    blog.set('category', data.category || '未分类');
     blog.set('time', time());
 
     // 使用当前登录用户作为作者（必须登录）
@@ -212,6 +269,7 @@ async function updateBlog(id, data) {
     blog.set('title', data.title);
     blog.set('content', data.content);
     blog.set('tags', data.tags || '');
+    blog.set('category', data.category || '未分类');
     await blog.save();
 }
 
@@ -228,8 +286,17 @@ async function deleteBlog(id) {
 
 async function load() {
     allBlogs = await getBlogs()
+    // 按时间倒序排列
+    allBlogs.sort((a, b) => {
+        const timeA = a.attributes.time || '';
+        const timeB = b.attributes.time || '';
+        return timeB.localeCompare(timeA);
+    })
     renderBlogs(allBlogs)
     updateBlogStats(allBlogs)
+    renderCategories(allBlogs)
+    renderArchives(allBlogs)
+    updateViewTitle('全部博客', `共 ${allBlogs.length} 篇文章`)
 }
 
 function renderBlogs(blogs) {
@@ -260,6 +327,7 @@ function createBlogCard(blog) {
     const contentText = blog.attributes.content || ''
     const contentHtml = typeof marked !== 'undefined' ? marked.parse(contentText) : contentText.replace(/\n/g, '<br>')
     const time = blog.attributes.time || ''
+    const category = blog.attributes.category || '未分类'
     const tags = blog.attributes.tags || ''
     const tagArray = tags.split(',').filter(t => t.trim())
 
@@ -279,11 +347,14 @@ function createBlogCard(blog) {
         <div class="blog-card-content">
             ${contentHtml}
         </div>
-        ${tagArray.length > 0 ? `
-            <div class="blog-tags">
-                ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
-            </div>
-        ` : ''}
+        <div class="blog-card-footer">
+            ${category ? `<span class="blog-category">📁 ${category}</span>` : ''}
+            ${tagArray.length > 0 ? `
+                <div class="blog-tags">
+                    ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
+                </div>
+            ` : ''}
+        </div>
     `
 
     return card
@@ -307,6 +378,7 @@ function bindBlogEvents() {
                     blogContent.value = blog.attributes.content || ''
                 }
                 if (blogTags) blogTags.value = blog.attributes.tags || ''
+                if (blogCategory) blogCategory.value = blog.attributes.category || ''
                 if (blogOverlay) blogOverlay.hidden = false
                 if (blogCancel) blogCancel.style.display = 'inline-block'
             }
@@ -324,21 +396,166 @@ function bindBlogEvents() {
 function updateBlogStats(blogs) {
     const totalCount = blogs.length
     let totalWords = 0
-    const dates = new Set()
+    const categories = new Set()
 
     blogs.forEach(blog => {
         totalWords += (blog.attributes.content || '').length
-        if (blog.attributes.time) {
-            dates.add(blog.attributes.time.split(" ")[0])
-        }
+        const category = blog.attributes.category || '未分类'
+        categories.add(category)
     })
 
     const totalCountEl = document.querySelector("#blog-total-count")
     const totalWordsEl = document.querySelector("#blog-total-words")
-    const totalDaysEl = document.querySelector("#blog-total-days")
+    const categoryCountEl = document.querySelector("#blog-category-count")
     if (totalCountEl) totalCountEl.textContent = totalCount
     if (totalWordsEl) totalWordsEl.textContent = totalWords
-    if (totalDaysEl) totalDaysEl.textContent = dates.size
+    if (categoryCountEl) categoryCountEl.textContent = categories.size
+}
+
+// 渲染分类列表
+function renderCategories(blogs) {
+    const categoryList = document.querySelector("#category-list")
+    if (!categoryList) return
+    
+    const categoryMap = new Map()
+    blogs.forEach(blog => {
+        const category = blog.attributes.category || '未分类'
+        categoryMap.set(category, (categoryMap.get(category) || 0) + 1)
+    })
+    
+    const sortedCategories = Array.from(categoryMap.entries())
+        .sort((a, b) => b[1] - a[1])
+    
+    categoryList.innerHTML = sortedCategories.map(([category, count]) => 
+        `<div class="category-item" data-category="${category}">
+            <span class="category-name">${category}</span>
+            <span class="category-count">${count}</span>
+        </div>`
+    ).join('')
+    
+    // 绑定分类点击事件
+    categoryList.querySelectorAll('.category-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const category = item.dataset.category
+            filterByCategory(category)
+        })
+    })
+    
+    // 更新分类建议
+    const suggestions = document.querySelector("#category-suggestions")
+    if (suggestions) {
+        suggestions.innerHTML = sortedCategories.map(([category]) => 
+            `<option value="${category}">`
+        ).join('')
+    }
+}
+
+// 渲染归档列表
+function renderArchives(blogs) {
+    const archiveList = document.querySelector("#archive-list")
+    if (!archiveList) return
+    
+    const archiveMap = new Map()
+    blogs.forEach(blog => {
+        const time = blog.attributes.time || ''
+        if (time) {
+            const datePart = time.split(' ')[0] // 获取日期部分
+            const [year, month] = datePart.split('-')
+            if (year && month) {
+                const archiveKey = `${year}-${month}`
+                const archiveLabel = `${year}年${parseInt(month)}月`
+                archiveMap.set(archiveKey, {
+                    label: archiveLabel,
+                    count: (archiveMap.get(archiveKey)?.count || 0) + 1
+                })
+            }
+        }
+    })
+    
+    const sortedArchives = Array.from(archiveMap.entries())
+        .sort((a, b) => b[0].localeCompare(a[0]))
+    
+    archiveList.innerHTML = sortedArchives.map(([key, {label, count}]) => 
+        `<div class="archive-item" data-archive="${key}">
+            <span class="archive-label">${label}</span>
+            <span class="archive-count">${count}</span>
+        </div>`
+    ).join('')
+    
+    // 绑定归档点击事件
+    archiveList.querySelectorAll('.archive-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const archive = item.dataset.archive
+            filterByArchive(archive)
+        })
+    })
+}
+
+// 按分类筛选
+function filterByCategory(category) {
+    currentFilter = 'category'
+    currentCategory = category
+    currentArchive = null
+    
+    const filtered = allBlogs.filter(blog => {
+        const blogCategory = blog.attributes.category || '未分类'
+        return blogCategory === category
+    })
+    
+    renderBlogs(filtered)
+    updateViewTitle(`分类: ${category}`, `共 ${filtered.length} 篇文章`)
+    updateNavButtons('category')
+}
+
+// 按归档筛选
+function filterByArchive(archive) {
+    currentFilter = 'archive'
+    currentArchive = archive
+    currentCategory = null
+    
+    const [year, month] = archive.split('-')
+    const filtered = allBlogs.filter(blog => {
+        const time = blog.attributes.time || ''
+        if (time) {
+            const datePart = time.split(' ')[0]
+            const [blogYear, blogMonth] = datePart.split('-')
+            return blogYear === year && blogMonth === month
+        }
+        return false
+    })
+    
+    renderBlogs(filtered)
+    const label = `${year}年${parseInt(month)}月`
+    updateViewTitle(`归档: ${label}`, `共 ${filtered.length} 篇文章`)
+    updateNavButtons('archive')
+}
+
+// 显示全部
+function showAll() {
+    currentFilter = 'all'
+    currentCategory = null
+    currentArchive = null
+    renderBlogs(allBlogs)
+    updateViewTitle('全部博客', `共 ${allBlogs.length} 篇文章`)
+    updateNavButtons('all')
+}
+
+// 更新视图标题
+function updateViewTitle(title, subtitle) {
+    const titleEl = document.querySelector("#view-title")
+    const subtitleEl = document.querySelector("#view-subtitle")
+    if (titleEl) titleEl.textContent = title
+    if (subtitleEl) subtitleEl.textContent = subtitle
+}
+
+// 更新导航按钮状态
+function updateNavButtons(active) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active')
+        if (btn.dataset.filter === active) {
+            btn.classList.add('active')
+        }
+    })
 }
 
 // 初始化

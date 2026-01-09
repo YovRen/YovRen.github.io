@@ -30,14 +30,41 @@
     <div class="blog-container">
         <div class="blog-sidebar">
             <button id="new-blog" class="btn-new-blog">✍️ 写新博客</button>
+
+            <div class="blog-navigation">
+                <div class="nav-section">
+                    <h4 class="nav-title">📚 导航</h4>
+                    <div class="nav-buttons">
+                        <button class="nav-btn active" data-filter="all">全部</button>
+                        <button class="nav-btn" data-filter="category">分类</button>
+                        <button class="nav-btn" data-filter="archive">归档</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="blog-stats">
                 <h4>📊 博客统计</h4>
                 <p>总文章数: <span id="blog-total-count">0</span></p>
                 <p>总字数: <span id="blog-total-words">0</span></p>
+                <p>分类数: <span id="blog-category-count">0</span></p>
+            </div>
+
+            <div class="blog-categories" id="blog-categories">
+                <h4>🏷️ 分类</h4>
+                <div id="category-list"></div>
+            </div>
+
+            <div class="blog-archives" id="blog-archives">
+                <h4>📅 归档</h4>
+                <div id="archive-list"></div>
             </div>
         </div>
 
         <div class="blog-main">
+            <div class="blog-view-header">
+                <h2 id="view-title">全部博客</h2>
+                <div id="view-subtitle"></div>
+            </div>
             <div id="blog-list"></div>
         </div>
     </div>
@@ -52,8 +79,14 @@
             </div>
 
             <div style="margin: 10px 0;">
+                <label for="blog-category">分类：</label>
+                <input type="text" id="blog-category" class="form-control" placeholder="例如: 技术、生活、思考"
+                    list="category-suggestions">
+                <datalist id="category-suggestions"></datalist>
+            </div>
+            <div style="margin: 10px 0;">
                 <label for="blog-tags">标签（用逗号分隔）：</label>
-                <input type="text" id="blog-tags" class="form-control" placeholder="例如: 技术,生活,思考">
+                <input type="text" id="blog-tags" class="form-control" placeholder="例如: JavaScript,前端,教程">
             </div>
 
             <div class="form-buttons">
@@ -93,7 +126,7 @@
         document.querySelector('#logout-btn')?.addEventListener('click', async () => {
             await logout();
         });
-        
+
         // 检查编辑权限
         function requireLogin() {
             if (!canEdit()) {
