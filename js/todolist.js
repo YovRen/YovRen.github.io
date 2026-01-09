@@ -238,6 +238,164 @@ function getDeadlineInfo(deadline) {
     }
 }
 
+// 加载重要日
+async function loadImportantDays() {
+    try {
+        const importantDaysList = document.querySelector('#important-days-list')
+        if (!importantDaysList) return
+        
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            importantDaysList.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">请先登录</div>'
+            return
+        }
+        
+        const ImportantDay = AV.Object.extend('importantDay')
+        const query = new AV.Query(ImportantDay)
+        query.equalTo('user', currentUser)
+        query.ascending('date')
+        const results = await query.find()
+        
+        if (results.length === 0) {
+            importantDaysList.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无重要日</div>'
+            return
+        }
+        
+        const now = new Date()
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        
+        importantDaysList.innerHTML = results.map(day => {
+            const date = new Date(day.get('date'))
+            const dateStr = date.toISOString().split('T')[0]
+            const title = day.get('title') || '未命名'
+            const description = day.get('description') || ''
+            const id = day.id
+            
+            // 计算距离今天的天数
+            const dayDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+            const diffTime = dayDate - today
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+            
+            let dayText = ''
+            if (diffDays === 0) {
+                dayText = '<span style="color: #ff6b6b; font-weight: bold;">今天</span>'
+            } else if (diffDays === 1) {
+                dayText = '<span style="color: #ffa500; font-weight: bold;">明天</span>'
+            } else if (diffDays > 0) {
+                dayText = `<span style="color: #51cf66;">还有 ${diffDays} 天</span>`
+            } else {
+                dayText = `<span style="color: #868e96;">已过 ${Math.abs(diffDays)} 天</span>`
+            }
+            
+            return `
+                <div class="important-day-item" data-id="${id}">
+                    <div class="important-day-header">
+                        <span class="important-day-date">${dateStr}</span>
+                        <button class="important-day-delete" data-id="${id}" style="background: transparent; border: none; color: #ff6b6b; cursor: pointer; font-size: 12px; padding: 2px 6px;">删除</button>
+                    </div>
+                    <div class="important-day-title">${title}</div>
+                    ${description ? `<div class="important-day-description">${description}</div>` : ''}
+                    <div class="important-day-countdown">${dayText}</div>
+                </div>
+            `
+        }).join('')
+        
+        // 绑定删除事件
+        importantDaysList.querySelectorAll('.important-day-delete').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.stopPropagation()
+                if (confirm('确定要删除这个重要日吗？')) {
+                    const id = this.dataset.id
+                    await deleteImportantDay(id)
+                }
+            })
+        })
+        
+        // 绑定编辑事件
+        importantDaysList.querySelectorAll('.important-day-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target.classList.contains('important-day-delete')) return
+                const id = this.dataset.id
+                editImportantDay(id)
+            })
+        })
+    } catch (error) {
+        console.error('加载重要日失败:', error)
+        const importantDaysList = document.querySelector('#important-days-list')
+        if (importantDaysList) {
+            importantDaysList.innerHTML = '<div style="color: #ff6b6b; font-size: 13px; padding: 10px;">加载失败</div>'
+        }
+    }
+}
+
+// 保存重要日
+async function saveImportantDay(data) {
+    try {
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            throw new Error('请先登录')
+        }
+        
+        const ImportantDay = AV.Object.extend('importantDay')
+        let importantDay
+        
+        if (data.id) {
+            // 更新
+            importantDay = AV.Object.createWithoutData('importantDay', data.id)
+        } else {
+            // 新建
+            importantDay = new ImportantDay()
+        }
+        
+        importantDay.set('user', currentUser)
+        importantDay.set('date', new Date(data.date))
+        importantDay.set('title', data.title)
+        if (data.description) {
+            importantDay.set('description', data.description)
+        }
+        
+        await importantDay.save()
+        await loadImportantDays()
+        return importantDay
+    } catch (error) {
+        console.error('保存重要日失败:', error)
+        throw error
+    }
+}
+
+// 删除重要日
+async function deleteImportantDay(id) {
+    try {
+        const importantDay = AV.Object.createWithoutData('importantDay', id)
+        await importantDay.destroy()
+        await loadImportantDays()
+    } catch (error) {
+        console.error('删除重要日失败:', error)
+        alert('删除失败: ' + (error.message || '未知错误'))
+    }
+}
+
+// 编辑重要日
+async function editImportantDay(id) {
+    try {
+        const importantDay = AV.Object.createWithoutData('importantDay', id)
+        await importantDay.fetch()
+        
+        const date = importantDay.get('date')
+        const dateStr = date ? new Date(date).toISOString().split('T')[0] : ''
+        
+        document.querySelector('#important-day-date').value = dateStr
+        document.querySelector('#important-day-title').value = importantDay.get('title') || ''
+        document.querySelector('#important-day-description').value = importantDay.get('description') || ''
+        document.querySelector('#editing-important-day-id').value = id
+        
+        document.querySelector('#important-day-modal').style.display = 'flex'
+    } catch (error) {
+        console.error('编辑重要日失败:', error)
+        alert('加载失败: ' + (error.message || '未知错误'))
+    }
+}
+
 async function load() {
     try {
         console.log('开始加载数据...');
@@ -541,16 +699,77 @@ function formatDate(dateStr) {
 }
 
 // 初始化
+// 初始化重要日功能
+function initImportantDays() {
+    // 添加重要日按钮
+    document.querySelector('#add-important-day-btn')?.addEventListener('click', function() {
+        document.querySelector('#important-day-date').value = ''
+        document.querySelector('#important-day-title').value = ''
+        document.querySelector('#important-day-description').value = ''
+        document.querySelector('#editing-important-day-id').value = ''
+        document.querySelector('#important-day-modal').style.display = 'flex'
+    })
+    
+    // 保存重要日
+    document.querySelector('#save-important-day-btn')?.addEventListener('click', async function() {
+        const date = document.querySelector('#important-day-date').value
+        const title = document.querySelector('#important-day-title').value
+        const description = document.querySelector('#important-day-description').value
+        const id = document.querySelector('#editing-important-day-id').value
+        
+        if (!date || !title.trim()) {
+            alert('请填写日期和标题')
+            return
+        }
+        
+        try {
+            this.disabled = true
+            this.textContent = '保存中...'
+            await saveImportantDay({
+                id: id || null,
+                date: date,
+                title: title.trim(),
+                description: description.trim()
+            })
+            document.querySelector('#important-day-modal').style.display = 'none'
+            alert('保存成功！')
+        } catch (error) {
+            alert('保存失败: ' + (error.message || '未知错误'))
+        } finally {
+            this.disabled = false
+            this.textContent = '保存'
+        }
+    })
+    
+    // 取消按钮
+    document.querySelector('#cancel-important-day-btn')?.addEventListener('click', function() {
+        document.querySelector('#important-day-modal').style.display = 'none'
+    })
+    
+    // 点击遮罩层关闭
+    document.querySelector('#important-day-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none'
+        }
+    })
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         if (initElements()) {
             setupEventListeners();
             load();
+            loadHistory();
+            loadImportantDays();
+            initImportantDays();
         }
     });
 } else {
     if (initElements()) {
         setupEventListeners();
         load();
+        loadHistory();
+        loadImportantDays();
+        initImportantDays();
     }
 }

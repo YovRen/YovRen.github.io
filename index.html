@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <!-- 右侧：四象限待办列表 -->
+        <!-- 中间：四象限待办列表 -->
         <div class="blog-main">
             <div class="blog-view-header">
                 <h2>待办事项</h2>
@@ -120,6 +120,39 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- 右侧：重要日展示 -->
+        <div class="blog-sidebar-right">
+            <div class="blog-navigation">
+                <div class="nav-section">
+                    <h4 class="nav-title">📅 重要日</h4>
+                    <button id="add-important-day-btn" class="toggle-btn" style="font-size: 12px; padding: 6px 12px;">+ 添加</button>
+                </div>
+            </div>
+            <div class="important-days-list" id="important-days-list">
+                <div class="important-days-loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加重要日弹窗 -->
+    <div class="add-important-day-modal-overlay" id="important-day-modal" style="display: none;">
+        <div class="add-important-day-modal">
+            <h3>添加重要日</h3>
+            <div class="modal-form">
+                <label>日期：</label>
+                <input type="date" id="important-day-date" class="form-control">
+                <label>标题：</label>
+                <input type="text" id="important-day-title" class="form-control" placeholder="例如：生日、纪念日等">
+                <label>描述（可选）：</label>
+                <textarea id="important-day-description" class="form-control" rows="3" placeholder="描述这个重要日..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button id="save-important-day-btn" class="btn-add">保存</button>
+                <button id="cancel-important-day-btn" class="btn" style="background: #ccc; margin-left: 10px;">取消</button>
+            </div>
+            <input type="hidden" id="editing-important-day-id" value="">
         </div>
     </div>
 
