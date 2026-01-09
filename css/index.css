@@ -820,6 +820,32 @@ body {
     justify-content: flex-end;
 }
 
+/* 标签云样式 */
+.blog-tags-cloud {
+    margin-top: 15px;
+    line-height: 2;
+}
+
+.tag-cloud-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.25);
+    border-color: rgba(74, 144, 226, 0.4) !important;
+}
+
+.popular-blog-item:hover,
+.popular-diary-item:hover,
+.recommend-friend-item:hover {
+    transform: translateX(-5px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+    border-color: rgba(74, 144, 226, 0.3);
+}
+
+@media (max-width: 1400px) {
+    .blog-sidebar-right {
+        width: 280px;
+    }
+}
+
 @media (max-width: 1200px) {
     .blog-sidebar-right {
         display: none;
@@ -1511,11 +1537,13 @@ div.avatar img {
 }
 
 .blog-container {
-    max-width: 1600px;
+    max-width: 100%;
     margin: 50px auto;
-    padding: 0 50px;
+    padding: 0 30px;
     display: flex;
-    gap: 50px;
+    gap: 30px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .blog-sidebar {
@@ -1529,6 +1557,8 @@ div.avatar img {
 .blog-main {
     flex: 1;
     min-width: 0;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .btn-new-blog {

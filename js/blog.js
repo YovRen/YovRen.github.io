@@ -293,6 +293,106 @@ async function deleteBlog(id) {
     }
 }
 
+// 加载标签云
+async function loadTagsCloud() {
+    try {
+        const tagsCloudEl = document.querySelector('#blog-tags-cloud')
+        if (!tagsCloudEl) return
+        
+        const tagCounts = {}
+        allBlogs.forEach(blog => {
+            const tags = blog.attributes.tags
+            if (tags) {
+                tags.split(',').forEach(tag => {
+                    const trimmedTag = tag.trim()
+                    if (trimmedTag) {
+                        tagCounts[trimmedTag] = (tagCounts[trimmedTag] || 0) + 1
+                    }
+                })
+            }
+        })
+        
+        const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])
+        
+        if (sortedTags.length === 0) {
+            tagsCloudEl.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无标签</div>'
+            return
+        }
+        
+        tagsCloudEl.innerHTML = sortedTags.map(([tag, count]) => {
+            const size = Math.min(14 + count * 2, 20)
+            return `
+                <span class="tag-cloud-item" data-tag="${tag}" style="font-size: ${size}px; margin: 5px; display: inline-block; padding: 4px 10px; background: linear-gradient(135deg, rgba(74, 144, 226, 0.15), rgba(118, 75, 162, 0.1)); border-radius: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid rgba(74, 144, 226, 0.2);">
+                    ${tag} <span style="font-size: 11px; opacity: 0.7;">(${count})</span>
+                </span>
+            `
+        }).join('')
+        
+        // 绑定标签点击事件
+        tagsCloudEl.querySelectorAll('.tag-cloud-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const tag = this.dataset.tag
+                filterByTag(tag)
+            })
+        })
+    } catch (error) {
+        console.error('加载标签云失败:', error)
+    }
+}
+
+// 按标签筛选
+function filterByTag(tag) {
+    const filtered = allBlogs.filter(blog => {
+        const tags = blog.attributes.tags || ''
+        return tags.split(',').map(t => t.trim()).includes(tag)
+    })
+    renderBlogs(filtered, `标签: ${tag}`, `共 ${filtered.length} 篇文章`)
+}
+
+// 加载热门文章
+async function loadPopularBlogs() {
+    try {
+        const popularEl = document.querySelector('#blog-popular')
+        if (!popularEl) return
+        
+        // 按内容长度排序（假设长的文章更受欢迎）
+        const popular = [...allBlogs].sort((a, b) => {
+            const lenA = (a.attributes.content || '').length
+            const lenB = (b.attributes.content || '').length
+            return lenB - lenA
+        }).slice(0, 5)
+        
+        if (popular.length === 0) {
+            popularEl.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无文章</div>'
+            return
+        }
+        
+        popularEl.innerHTML = popular.map((blog, index) => {
+            const title = blog.attributes.title || '无标题'
+            const time = blog.attributes.time || ''
+            return `
+                <div class="popular-blog-item" data-id="${blog.id}" style="padding: 12px; margin-bottom: 10px; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(118, 75, 162, 0.05)); border-radius: 15px; cursor: pointer; transition: all 0.3s; border: 2px solid rgba(74, 144, 226, 0.15);">
+                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text-color);">${title}</div>
+                    <div style="font-size: 12px; color: var(--muted);">${time}</div>
+                </div>
+            `
+        }).join('')
+        
+        // 绑定点击事件
+        popularEl.querySelectorAll('.popular-blog-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const id = this.dataset.id
+                const blog = allBlogs.find(b => b.id === id)
+                if (blog) {
+                    viewBlog(blog)
+                }
+            })
+        })
+    } catch (error) {
+        console.error('加载热门文章失败:', error)
+    }
+}
+
 async function load() {
     allBlogs = await getBlogs()
     // 按时间倒序排列
@@ -305,6 +405,8 @@ async function load() {
     updateBlogStats(allBlogs)
     renderCategories(allBlogs)
     renderArchives(allBlogs)
+    loadTagsCloud()
+    loadPopularBlogs()
     updateViewTitle('全部博客', `共 ${allBlogs.length} 篇文章`)
 }
 

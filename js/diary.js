@@ -325,12 +325,124 @@ async function deleteData(id) {
     }
 }
 
+// 加载热门动态
+async function loadPopularDiaries() {
+    try {
+        const popularEl = document.querySelector('#diary-popular')
+        if (!popularEl) return
+        
+        // 按内容长度排序
+        const popular = [...allDiaries].sort((a, b) => {
+            const lenA = (a.attributes.content || '').length
+            const lenB = (b.attributes.content || '').length
+            return lenB - lenA
+        }).slice(0, 5)
+        
+        if (popular.length === 0) {
+            popularEl.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无动态</div>'
+            return
+        }
+        
+        popularEl.innerHTML = popular.map((diary) => {
+            const title = diary.attributes.title || '无标题'
+            const time = diary.attributes.time || ''
+            const author = diary.attributes.author || '未知'
+            return `
+                <div class="popular-diary-item" data-id="${diary.id}" style="padding: 12px; margin-bottom: 10px; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(118, 75, 162, 0.05)); border-radius: 15px; cursor: pointer; transition: all 0.3s; border: 2px solid rgba(74, 144, 226, 0.15);">
+                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text-color);">${title}</div>
+                    <div style="font-size: 12px; color: var(--muted);">${author} · ${time}</div>
+                </div>
+            `
+        }).join('')
+        
+        // 绑定点击事件
+        popularEl.querySelectorAll('.popular-diary-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const id = this.dataset.id
+                const diary = allDiaries.find(d => d.id === id)
+                if (diary) {
+                    // 滚动到该动态
+                    const diaryEl = document.querySelector(`[data-diary-id="${id}"]`)
+                    if (diaryEl) {
+                        diaryEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        diaryEl.style.animation = 'pulse 0.5s'
+                        setTimeout(() => {
+                            diaryEl.style.animation = ''
+                        }, 500)
+                    }
+                }
+            })
+        })
+    } catch (error) {
+        console.error('加载热门动态失败:', error)
+    }
+}
+
+// 加载推荐好友
+async function loadRecommendFriends() {
+    try {
+        const recommendEl = document.querySelector('#diary-recommend')
+        if (!recommendEl) return
+        
+        const currentUser = AV.User.current()
+        if (!currentUser) {
+            recommendEl.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">请先登录</div>'
+            return
+        }
+        
+        // 获取所有用户（通过日记作者）
+        const authors = new Set()
+        allDiaries.forEach(diary => {
+            const author = diary.attributes.author
+            if (author && author !== currentUser.get('username')) {
+                authors.add(author)
+            }
+        })
+        
+        // 获取已有好友
+        const friendUsernames = new Set(friends.map(f => f.username))
+        
+        // 过滤掉已有好友
+        const recommendList = Array.from(authors).filter(author => !friendUsernames.has(author)).slice(0, 5)
+        
+        if (recommendList.length === 0) {
+            recommendEl.innerHTML = '<div style="color: var(--muted); font-size: 13px; padding: 10px;">暂无推荐</div>'
+            return
+        }
+        
+        recommendEl.innerHTML = recommendList.map((author) => {
+            return `
+                <div class="recommend-friend-item" data-author="${author}" style="padding: 12px; margin-bottom: 10px; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(118, 75, 162, 0.05)); border-radius: 15px; cursor: pointer; transition: all 0.3s; border: 2px solid rgba(74, 144, 226, 0.15); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px; color: var(--text-color);">${author}</div>
+                        <div style="font-size: 12px; color: var(--muted);">点击添加好友</div>
+                    </div>
+                    <button class="btn-add-friend-small" data-author="${author}" style="background: var(--bg-gradient); color: white; border: none; border-radius: 12px; padding: 6px 12px; font-size: 12px; cursor: pointer;">+</button>
+                </div>
+            `
+        }).join('')
+        
+        // 绑定添加好友事件
+        recommendEl.querySelectorAll('.btn-add-friend-small').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.stopPropagation()
+                const author = this.dataset.author
+                await addFriend(author)
+            })
+        })
+    } catch (error) {
+        console.error('加载推荐好友失败:', error)
+    }
+}
+
 async function load() {
     allDiaries = await getData()
     await loadFriends()
     renderDiaries(allDiaries)
     updateStats(allDiaries)
     renderFriends()
+    loadPopularDiaries()
+    loadRecommendFriends()
     updateViewTitle('全部动态', `共 ${allDiaries.length} 条动态`)
 }
 
@@ -463,12 +575,18 @@ async function addFriend(friendUsername) {
             return
         }
         
-        // 检查是否已经是好友
-        const Friend = AV.Object.extend('friend')
-        const checkQuery = new AV.Query(Friend)
-        checkQuery.equalTo('user', currentUser)
-        checkQuery.equalTo('friendId', friendId)
-        const existing = await checkQuery.find()
+        // 检查是否已经是好友（先尝试查询，如果类不存在则跳过检查）
+        let existing = []
+        try {
+            const Friend = AV.Object.extend('friend')
+            const checkQuery = new AV.Query(Friend)
+            checkQuery.equalTo('user', currentUser)
+            checkQuery.equalTo('friendId', friendId)
+            existing = await checkQuery.find()
+        } catch (checkError) {
+            console.log('检查好友关系失败（可能是类不存在）:', checkError)
+            // 如果类不存在，继续创建
+        }
         
         if (existing.length > 0) {
             alert('该用户已经是您的好友')
@@ -481,12 +599,29 @@ async function addFriend(friendUsername) {
             return
         }
         
-        // 添加好友
-        const friend = new Friend()
-        friend.set('user', currentUser)
-        friend.set('friendId', friendId)
-        friend.set('friendUsername', friendUsername)
-        await friend.save()
+        // 添加好友（如果类不存在会自动创建）
+        try {
+            const Friend = AV.Object.extend('friend')
+            const friend = new Friend()
+            friend.set('user', currentUser)
+            friend.set('friendId', friendId)
+            friend.set('friendUsername', friendUsername)
+            
+            // 设置ACL权限
+            const acl = new AV.ACL()
+            acl.setPublicReadAccess(true)
+            acl.setPublicWriteAccess(true)
+            friend.setACL(acl)
+            
+            await friend.save()
+        } catch (saveError) {
+            console.error('保存好友失败:', saveError)
+            // 如果保存失败，可能是类不存在，提示用户
+            if (saveError.message && saveError.message.includes('404') || saveError.message.includes('doesn\'t exists')) {
+                throw new Error('好友类不存在，请先在LeanCloud控制台创建"friend"类，或联系管理员')
+            }
+            throw saveError
+        }
         
         await loadFriends()
         alert('添加好友成功！')
