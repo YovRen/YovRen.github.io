@@ -3839,25 +3839,30 @@ div.balloon {
 
 /* 文章详情页样式 */
 #blog-detail-page {
-    width: 100%;
+    width: 100vw;
     position: relative;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding: 0;
 }
 
 .blog-detail-content-wrapper {
     width: 100%;
     background: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 0;
+    padding: 40px 60px;
+    box-shadow: none;
+    border: none;
     display: flex;
-    gap: 20px;
+    gap: 40px;
     position: relative;
+    min-height: calc(100vh - 100px);
 }
 
 .blog-detail-main-content {
     flex: 1;
     min-width: 0;
+    padding-right: 20px;
 }
 
 .blog-detail-toc-wrapper {
@@ -3895,12 +3900,12 @@ div.balloon {
 
 .blog-toc {
     position: sticky;
-    top: 80px;
-    max-height: calc(100vh - 100px);
+    top: 100px;
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
     background: transparent;
     border-radius: 10px;
-    padding: 15px;
+    padding: 20px;
     box-shadow: none;
     border: none;
 }
@@ -3961,9 +3966,10 @@ div.balloon {
 }
 
 .blog-detail-header {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
     border-bottom: 2px solid #e8e8e3;
+    background: transparent;
 }
 
 .blog-detail-title {
@@ -4003,6 +4009,8 @@ div.balloon {
     line-height: 1.8;
     font-size: 16px;
     font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    padding: 0;
+    margin: 0;
 }
 
 .blog-detail-body h1,
