@@ -655,7 +655,7 @@ function showBlogDetail(blogId) {
     const blog = allBlogs.find(b => b.id === blogId)
     if (!blog) return
     
-    // 隐藏博客列表、左侧边栏，显示详情页，右侧显示目录
+    // 隐藏博客列表、左侧边栏，显示详情页
     const blogList = document.querySelector('#blog-list')
     const detailPage = document.querySelector('#blog-detail-page')
     const detailContent = document.querySelector('#blog-detail-content')
@@ -663,7 +663,6 @@ function showBlogDetail(blogId) {
     const blogSidebarRight = document.querySelector('.blog-sidebar-right')
     const blogViewHeader = document.querySelector('.blog-view-header')
     const blogNotesSection = document.querySelector('#blog-notes-section')
-    const blogTocSection = document.querySelector('#blog-toc-section')
     
     if (!blogList || !detailPage || !detailContent) return
     
@@ -671,10 +670,10 @@ function showBlogDetail(blogId) {
     if (blogList) blogList.style.display = 'none'
     if (blogSidebar) blogSidebar.style.display = 'none'
     if (blogViewHeader) blogViewHeader.style.display = 'none'
+    if (blogSidebarRight) blogSidebarRight.style.display = 'none'
     
-    // 切换右侧：隐藏便签，显示目录
+    // 隐藏便签
     if (blogNotesSection) blogNotesSection.style.display = 'none'
-    if (blogTocSection) blogTocSection.style.display = 'block'
     
     // 显示详情页
     detailPage.style.display = 'block'
@@ -722,7 +721,7 @@ function showBlogDetail(blogId) {
         </div>
     `
     
-    // 渲染目录
+    // 渲染目录（目录现在在详情页内部）
     const tocList = document.querySelector('#toc-list')
     if (tocList) {
         tocList.innerHTML = toc
@@ -736,10 +735,10 @@ function showBlogDetail(blogId) {
             if (blogList) blogList.style.display = 'block'
             if (blogSidebar) blogSidebar.style.display = 'block'
             if (blogViewHeader) blogViewHeader.style.display = 'block'
+            if (blogSidebarRight) blogSidebarRight.style.display = 'flex'
             
-            // 切换右侧：显示便签，隐藏目录
+            // 显示便签
             if (blogNotesSection) blogNotesSection.style.display = 'block'
-            if (blogTocSection) blogTocSection.style.display = 'none'
             
             // 隐藏详情页
             detailPage.style.display = 'none'
