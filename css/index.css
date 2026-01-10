@@ -2436,6 +2436,11 @@ div.avatar img {
     border-radius: 4px;
     transition: all 0.2s;
     opacity: 0.6;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .blog-edit-btn:hover,
@@ -2462,6 +2467,11 @@ div.avatar img {
     transition: all 0.2s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     font-weight: 500;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .blog-tag:hover {
@@ -2656,6 +2666,11 @@ div.avatar img {
     font-weight: 400;
     transition: all 0.2s;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .blog-read-more:hover {
@@ -2676,6 +2691,8 @@ div.avatar img {
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     transition: all 0.2s;
+    height: 36px;
+    box-sizing: border-box;
 }
 
 .blog-category:hover {
@@ -2875,9 +2892,13 @@ div.avatar img {
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     text-decoration: none;
+    height: 36px;
+    box-sizing: border-box;
 }
 
 .btn:hover {
@@ -3817,12 +3838,40 @@ div.balloon {
 }
 
 /* 文章详情页样式 */
+#blog-detail-page {
+    width: 100%;
+    position: relative;
+}
+
 .blog-detail-content-wrapper {
     width: 100%;
 }
 
-#blog-detail-page {
-    width: 100%;
+.blog-back-btn {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    z-index: 1000;
+    padding: 8px 16px;
+    background: #ffffff;
+    color: #666;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blog-back-btn:hover {
+    background: #f5f5f5;
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 .blog-toc {
@@ -3831,6 +3880,13 @@ div.balloon {
     padding: 15px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
     border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+#blog-toc-section .blog-toc {
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
 }
 
 .blog-toc h4 {
@@ -3900,11 +3956,13 @@ div.balloon {
     color: #333;
     margin: 0 0 15px 0;
     line-height: 1.4;
+    text-align: center;
 }
 
 .blog-detail-meta {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     font-size: 14px;
     color: #999;
@@ -3916,6 +3974,7 @@ div.balloon {
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 15px;
+    justify-content: center;
 }
 
 .blog-detail-actions {

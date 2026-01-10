@@ -701,34 +701,24 @@ function showBlogDetail(blogId) {
     // 生成目录
     const toc = generateTOC(contentHtml)
     
-    // 渲染详情页内容（使用博客卡片样式，保持白底格式）
+    // 渲染详情页内容（不分框，直接显示）
     detailContent.innerHTML = `
-        <div class="blog-card" style="margin-bottom: 0;">
-            <div class="blog-card-header">
-                <div class="blog-header-left">
-                    <span class="blog-title" style="font-size: 28px;">${title}</span>
+        <div class="blog-detail-header">
+            <h1 class="blog-detail-title">${title}</h1>
+            <div class="blog-detail-meta">
+                <span>📅 发表于 ${time}</span>
+                <span>|</span>
+                <span>📁 分类于 ${category}</span>
+                ${author ? `<span>|</span><span>👤 ${author}</span>` : ''}
+            </div>
+            ${tagArray.length > 0 ? `
+                <div class="blog-detail-tags">
+                    ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
                 </div>
-                <div class="blog-header-right">
-                    <span class="blog-author">👤 ${author}</span>
-                    <span class="blog-time">${time || ''}</span>
-                    ${canEdit() ? `
-                        <button class="blog-edit-btn" data-id="${blogId}">✏️</button>
-                        <button class="blog-delete-btn" data-id="${blogId}">🗑️</button>
-                    ` : ''}
-                </div>
-            </div>
-            <div class="blog-card-content">
-                ${contentHtml}
-            </div>
-            <div class="blog-card-footer">
-                ${category ? `<span class="blog-category">📁 ${category}</span>` : ''}
-                ${tagArray.length > 0 ? `
-                    <div class="blog-tags">
-                        ${tagArray.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
-                    </div>
-                ` : ''}
-                <button id="back-to-list" class="btn" style="margin-left: auto;">← 返回列表</button>
-            </div>
+            ` : ''}
+        </div>
+        <div class="blog-detail-body">
+            ${contentHtml}
         </div>
     `
     
@@ -761,7 +751,7 @@ function showBlogDetail(blogId) {
     
     // 渲染LaTeX和Mermaid
     setTimeout(() => {
-        const contentEl = detailContent.querySelector('.blog-card-content')
+        const contentEl = detailContent.querySelector('.blog-detail-body')
         if (contentEl) {
             // 为标题添加ID，用于目录锚点
             contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((heading, index) => {
