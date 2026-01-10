@@ -86,16 +86,16 @@
             
             <!-- 文章详情页 -->
             <div id="blog-detail-page" style="display: none;">
-                <button id="back-to-list" class="blog-back-btn">← 返回列表</button>
-                <div class="blog-detail-content-wrapper">
-                    <div class="blog-detail-main-content">
-                        <div id="blog-detail-content"></div>
-                    </div>
-                    <div class="blog-detail-toc-wrapper">
+                <div class="blog-detail-layout">
+                    <div class="blog-detail-sidebar">
+                        <button id="back-to-list" class="blog-back-btn">← 返回列表</button>
                         <div class="blog-toc" id="blog-toc">
                             <h4>📑 目录</h4>
                             <div id="toc-list"></div>
                         </div>
+                    </div>
+                    <div class="blog-detail-main">
+                        <div id="blog-detail-content"></div>
                     </div>
                 </div>
             </div>
